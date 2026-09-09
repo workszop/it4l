@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>System dwójkowy - Substrate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script>
+  (function(){
+    try {
+      var saved = localStorage.getItem('substrate-theme');
+      document.documentElement.dataset.theme = saved || 'light';
+    } catch (_) {
+      document.documentElement.dataset.theme = 'light';
+    }
+  })();
+</script>
+<style>
+  /* ── edulab design system — Editorial Color ──────────────────────────
+     Fonts: Outfit (display) · IBM Plex Sans (sans) · Roboto Mono (mono)
+     Paper white page, warm ink, yellow primary, blue + green secondary,
+     red for danger. Every colour below is an edulab token.
+     ─────────────────────────────────────────────────────────────────── */
+  :root {
+    /* ── edulab brand fonts ── */
+    --font-display: 'Outfit', 'IBM Plex Sans', system-ui, sans-serif;
+    --font-sans:    'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    --font-mono:    'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    /* ── edulab raw palette ── */
+    --paper:   #FFFFFF;  --paper-2: #FBF7E6;  --paper-3: #F5EDCB;
+    --surface: #FFFFFF;
+    --edu-ink: #1C1917;  --edu-ink-2: #57534E;  --edu-ink-3: #948C82;
+    --line:    #EDE7D2;  --line-2:  #DDD4B6;
+
+    --yellow: #FFD500;  --yellow-600: #F0C800;  --yellow-soft: #FFD500;  --yellow-ink: #1C1917;
+    --blue:   #1E8FC2;  --blue-600:   #177AA8;  --blue-soft:   #1E8FC2;  --blue-ink:   #FFFFFF;
+    --green:  #00A651;  --green-600:  #009444;  --green-soft:  #00A651;  --green-ink:  #FFFFFF;
+    --red:    #E5322D;  --red-600:    #C92823;  --red-soft:    #E5322D;  --red-ink:    #FFFFFF;
+    --grape:  #7A5AC2;
+
+    --primary: var(--yellow);  --on-primary: var(--yellow-ink);
+    --focus-ring: 0 0 0 3px color-mix(in srgb, var(--yellow) 45%, transparent);
+
+    /* ── radii & elevation ── */
+    --r-xs: 6px; --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+    --shadow-sm: 0 1px 2px rgba(33,30,26,.06), 0 1px 1px rgba(33,30,26,.04);
+    --shadow-md: 0 4px 16px rgba(33,30,26,.08), 0 1px 3px rgba(33,30,26,.05);
+    --shadow-lg: 0 16px 40px rgba(33,30,26,.12), 0 3px 8px rgba(33,30,26,.06);
+    --shadow-primary: 0 8px 22px color-mix(in srgb, var(--yellow) 30%, transparent);
+
+    /* ── layout ── */
+    --pad-x: 30px;
+    --pad-y: 72px;
+    --gap: 28px;
+    --shell: 1100px;
+  }
+
+  /* ── Light (default): edulab paper ──────────────────────────────────── */
+  html[data-theme="light"] {
+    --bg:        var(--paper);
+    --bg-2:      var(--paper-2);
+    --bg-3:      var(--paper-3);
+    --ink:       var(--edu-ink);
+    --ink-soft:  var(--edu-ink-2);
+    --ink-mute:  var(--edu-ink-3);
+    --rule:      var(--line-2);
+    --rule-soft: var(--line);
+    --accent:    var(--blue);
+    --accent-2:  var(--blue-600);
+    --accent-tint:        var(--paper-2);
+    --accent-tint-soft:   var(--paper-2);
+    --accent-tint-strong: var(--paper-3);
+    --overlay:   rgba(255,255,255,.94);
+    --card:      var(--surface);
+    --logo-filter: none;
+    --hero-bg:    #24211E;
+    --hero-ink:   #FFFFFF;
+    --hero-ink-2: rgba(255,255,255,.74);
+    --error: var(--red);
+    --success: var(--green);
+  }
+
+  /* ── Dark: edulab ink surfaces (yellow reads as text on black) ──────── */
+  html[data-theme="dark"] {
+    --bg:        #1C1917;
+    --bg-2:      #262220;
+    --bg-3:      #322D29;
+    --ink:       #FFFFFF;
+    --ink-soft:  rgba(255,255,255,.74);
+    --ink-mute:  rgba(255,255,255,.52);
+    --rule:      rgba(255,255,255,.30);
+    --rule-soft: rgba(255,255,255,.14);
+    --accent:    var(--yellow);
+    --accent-2:  var(--yellow-600);
+    --accent-tint:        rgba(255,255,255,.06);
+    --accent-tint-soft:   rgba(255,255,255,.04);
+    --accent-tint-strong: rgba(255,213,0,.22);
+    --overlay:   rgba(28,25,23,.94);
+    --card:      #262220;
+    --logo-filter: invert(1);
+    --hero-bg:    #24211E;
+    --hero-ink:   #FFFFFF;
+    --hero-ink-2: rgba(255,255,255,.74);
+    --error: var(--red);
+    --success: var(--green);
+  }
+
+  /* ── Reset ──────────────────────────────────────────────────────────── */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background .25s ease, color .25s ease;
+  }
+  a { color: inherit; text-decoration: none; cursor: pointer; }
+  button { font-family: inherit; }
+
+  /* Content shell — edulab caps the column at 1100px */
+  .shell { max-width: var(--shell); margin: 0 auto; width: 100%; }
+
+  /* Functional label: mono, uppercase, tracked */
+  .kicker {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .dot { color: var(--ink-mute); padding: 0 6px; }
+
+  /* ── Theme toggle — full pill, never a partial contour ──────────────── */
+  .theme-toggle {
+    position: fixed;
+    top: 14px; right: 20px;
+    z-index: 100;
+    appearance: none; cursor: pointer;
+    background: var(--bg-2);
+    border: none;
+    color: var(--ink-soft);
+    padding: 9px 16px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: .02em;
+    transition: background .15s, color .15s;
+  }
+  .theme-toggle:hover { background: var(--yellow); color: var(--yellow-ink); }
+  .theme-toggle:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .theme-toggle .th-mark {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: -1px;
+    background: var(--ink);
+  }
+  .theme-toggle:hover .th-mark { background: var(--yellow-ink); }
+  .theme-toggle .lbl-jasny { display: inline; }
+  .theme-toggle .lbl-ciemny { display: none; }
+  html[data-theme="light"] .theme-toggle .lbl-jasny { display: none; }
+  html[data-theme="light"] .theme-toggle .lbl-ciemny { display: inline; }
+
+  /* ── edulab brand bar (required chrome) ─────────────────────────────── */
+  .masthead {
+    position: sticky; top: 0; z-index: 50; width: 100%;
+    background: var(--overlay);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .masthead .row {
+    max-width: var(--shell); margin: 0 auto;
+    padding: 8px var(--pad-x);
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .masthead .brand { display: flex; align-items: center; gap: 2px; cursor: pointer; }
+  .masthead .edu-logo {
+    width: 64px; height: 64px; display: block; margin-right: -6px;
+    filter: var(--logo-filter);
+  }
+  .masthead .brand .wordmark {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 22px; letter-spacing: -.02em; color: var(--ink);
+  }
+  .masthead .topnav { display: flex; gap: 4px; padding-right: 132px; }
+  .masthead .topnav a {
+    font-family: var(--font-sans); font-weight: 600; font-size: 14px;
+    color: var(--ink-soft);
+    padding: 8px 14px; border-radius: var(--r-pill);
+    transition: background .15s, color .15s;
+  }
+  .masthead .topnav a:hover { background: var(--bg-2); color: var(--ink); }
+  .masthead .topnav a.active { background: var(--yellow); color: var(--yellow-ink); }
+
+  /* ── Detail page frame ──────────────────────────────────────────────── */
+  .detail {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 48px var(--pad-x) calc(var(--pad-y) * 1.2);
+  }
+  .detail-back {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-mute); margin-bottom: 48px;
+  }
+  .detail-back a { transition: color .15s; }
+  .detail-back a:hover { color: var(--accent); }
+
+  .detail-head {
+    max-width: 760px; margin: 0 auto;
+    text-align: left;
+  }
+  .detail-meta {
+    display: flex; align-items: center;
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: .06em; text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .detail-head h1 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: clamp(40px, 5vw, 72px); line-height: 1.05;
+    letter-spacing: -.02em;
+    margin: 0 0 24px; text-wrap: balance;
+  }
+  .detail-dek {
+    font-family: var(--font-sans); font-style: italic;
+    font-size: clamp(20px, 1.6vw, 24px);
+    line-height: 1.45; color: var(--ink-soft); margin: 0 0 32px;
+    max-width: 50ch;
+  }
+  .detail-byline {
+    display: flex; align-items: center;
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: .06em; text-transform: uppercase;
+  }
+
+  .detail-rule {
+    height: 1px; background: var(--rule); opacity: .5;
+    margin: 56px auto;
+    max-width: 760px;
+    border: none;
+  }
+
+  .detail-prose {
+    max-width: 660px; margin: 0 auto 48px;
+  }
+  .detail-prose p {
+    font-family: var(--font-sans); font-size: 19px; line-height: 1.6;
+    color: var(--ink); margin: 0 0 24px; text-wrap: pretty;
+  }
+  .detail-prose p em { font-style: italic; color: var(--accent-2); }
+  .detail-prose p code,
+  .detail-prose code {
+    font-family: var(--font-mono); font-size: 15px;
+    background: var(--bg-2); padding: 1px 6px; border-radius: 3px;
+    color: var(--accent);
+  }
+  .detail-prose h3 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 28px; margin: 48px 0 16px;
+    letter-spacing: -.005em;
+  }
+  .detail-prose .dropcap .dc {
+    font-family: var(--font-sans); font-style: italic;
+    font-size: 80px; line-height: .8;
+    float: left; padding: 6px 14px 0 0;
+    color: var(--accent);
+  }
+
+  /* ── Demo container ─────────────────────────────────────────────────── */
+  .detail-demo {
+    max-width: 1080px; margin: 64px auto;
+    padding: 40px;
+    background: var(--bg-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 4px;
+  }
+  .detail-demo .demo-head { margin-bottom: 32px; max-width: 60ch; }
+  .detail-demo .demo-head h2 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 32px; margin: 8px 0 8px; letter-spacing: -.01em;
+  }
+  .detail-demo .demo-head p {
+    font-family: var(--font-sans); font-size: 16px; color: var(--ink-soft); margin: 0;
+  }
+
+  /* Inner widget shell - borrowed from .tcp-demo */
+  .demo-shell {
+    background: var(--bg);
+    border: 1px solid var(--rule-soft);
+    border-radius: 3px;
+    padding: 28px;
+  }
+
+  /* ── Bits row ───────────────────────────────────────────────────────── */
+  .bits {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 10px;
+    margin: 4px 0 24px;
+  }
+  .bit {
+    aspect-ratio: 1;
+    border: 1px solid var(--rule-soft);
+    border-radius: 2px;
+    background: var(--bg-2);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s, border-color .15s, color .15s;
+    user-select: none;
+    padding: 6px;
+  }
+  .bit:hover { border-color: var(--ink-soft); }
+  .bit.on {
+    background: transparent;
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .bit-value {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 3.4vw, 36px);
+    font-weight: 400;
+    line-height: 1;
+    color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+  }
+  .bit.on .bit-value { color: var(--accent); }
+  .bit-power {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    margin-top: 8px;
+    color: var(--ink-mute);
+    letter-spacing: .04em;
+  }
+  .bit-power-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    margin-top: 2px;
+    color: var(--ink-mute);
+    letter-spacing: .04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .bit.on .bit-power, .bit.on .bit-power-num { color: var(--accent-2); }
+
+  /* ── Number readouts ────────────────────────────────────────────────── */
+  .number-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .number-box {
+    border: 1px solid var(--rule-soft);
+    border-radius: 2px;
+    padding: 14px 16px;
+    background: var(--bg-2);
+  }
+  .number-box label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 8px;
+  }
+  .number-box input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--ink);
+    font-size: 24px;
+    font-weight: 400;
+    font-family: var(--font-mono);
+    outline: none;
+    padding: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .number-box.binary input { letter-spacing: .15em; }
+
+  .calculation {
+    background: var(--bg-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 2px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    overflow-x: auto;
+    letter-spacing: .04em;
+  }
+  .calculation .term { color: var(--ink); }
+  .calculation .op { color: var(--ink-mute); margin: 0 6px; }
+  .calculation .equals { color: var(--ink-mute); margin: 0 8px; }
+  .calculation .result { color: var(--accent); font-weight: 500; }
+  .calculation .empty { color: var(--ink-mute); font-style: italic; font-family: var(--font-mono); letter-spacing: 0; }
+
+  /* ── Buttons ────────────────────────────────────────────────────────── */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+    align-items: center;
+  }
+  .btn {
+    appearance: none; cursor: pointer;
+    background: transparent;
+    border: 1px solid var(--rule-soft);
+    color: var(--ink-soft);
+    padding: 8px 14px;
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    transition: border-color .15s, color .15s, background .15s;
+  }
+  .btn:hover { border-color: var(--ink-soft); color: var(--ink); }
+  .btn.primary {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    transition: transform .15s ease, background .15s ease;
+  }
+  .btn.primary:hover { background: var(--accent); transform: translateY(-1px); }
+
+  /* ── Tabs ───────────────────────────────────────────────────────────── */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--rule-soft);
+    margin-bottom: 28px;
+    gap: 4px;
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 12px 18px 14px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    color: var(--ink-mute);
+    cursor: pointer;
+    transition: color .15s, border-color .15s;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    margin-bottom: -1px;
+  }
+  .tab.active {
+    color: var(--accent);
+  }
+  .tab:hover:not(.active) { color: var(--ink); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn .2s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .tab-intro {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin: 0 0 24px;
+    line-height: 1.55;
+    max-width: 64ch;
+  }
+
+  /* ── RGB demo ───────────────────────────────────────────────────────── */
+  .rgb-demo {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 36px;
+    align-items: start;
+  }
+  .color-preview {
+    aspect-ratio: 1;
+    border-radius: 2px;
+    border: 1px solid var(--rule-soft);
+    transition: background .2s;
+  }
+  .channel { margin-bottom: 22px; }
+  .channel:last-child { margin-bottom: 0; }
+  .channel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .channel-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .channel-values {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .04em;
+  }
+  .channel input[type="range"] {
+    width: 100%;
+    accent-color: currentColor;
+  }
+  .channel.red { color: var(--red); }
+  .channel.green { color: var(--green); }
+  .channel.blue { color: var(--blue); }
+
+  /* ── ASCII ──────────────────────────────────────────────────────────── */
+  .ascii-input {
+    width: 100%;
+    background: var(--bg-2);
+    border: 1px solid var(--rule-soft);
+    color: var(--ink);
+    padding: 12px 14px;
+    border-radius: 2px;
+    font-size: 16px;
+    outline: none;
+    margin: 4px 0 24px;
+    font-family: var(--font-mono);
+    transition: border-color .15s;
+  }
+  .ascii-input:focus { border-color: var(--accent); }
+  .ascii-results {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .ascii-char {
+    border: 1px solid var(--rule-soft);
+    background: var(--bg-2);
+    padding: 14px 16px;
+    border-radius: 2px;
+    text-align: center;
+    min-width: 96px;
+  }
+  .ascii-char .char {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .ascii-char .dec {
+    font-family: var(--font-mono);
+    color: var(--ink-mute);
+    font-size: 10px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  .ascii-char .bin {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    margin-top: 6px;
+    letter-spacing: .1em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Quiz ───────────────────────────────────────────────────────────── */
+  .quiz-question {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin: 8px 0 24px;
+    padding: 20px 24px;
+    background: var(--bg-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 0 2px 2px 0;
+  }
+  .quiz-question .q-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .quiz-question .target {
+    font-family: var(--font-display);
+    color: var(--ink);
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .quiz-feedback {
+    margin-top: 18px;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    min-height: 22px;
+    color: var(--ink-soft);
+  }
+  .quiz-feedback.success { color: var(--success); }
+  .quiz-feedback.error { color: var(--error); }
+  .score-row {
+    display: flex;
+    gap: 28px;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule-soft);
+    color: var(--ink-mute);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  .score-row strong {
+    color: var(--ink);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Examples ───────────────────────────────────────────────────────── */
+  .example-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  .example-btn {
+    appearance: none;
+    background: var(--bg-2);
+    border: 1px solid var(--rule-soft);
+    color: var(--ink);
+    padding: 16px 14px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, padding-left .15s;
+    text-align: left;
+    font-family: inherit;
+  }
+  .example-btn:hover {
+    border-color: var(--accent);
+    padding-left: 20px;
+  }
+  .example-btn:hover .num { color: var(--accent); }
+  .example-btn .num {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    font-weight: 400;
+    display: block;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    transition: color .15s;
+  }
+  .example-btn .label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-mute);
+    margin-top: 6px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  /* ── Aside (further reading) ────────────────────────────────────────── */
+  .detail-aside {
+    max-width: 660px; margin: 48px auto;
+    padding: 24px 28px;
+    background: var(--bg-2);
+    border-radius: 0 3px 3px 0;
+  }
+  .detail-aside h6 {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--ink-mute);
+    margin: 0 0 12px;
+  }
+  .detail-aside ul { margin: 0; padding: 0; list-style: none; }
+  .detail-aside li { padding: 6px 0; }
+  .detail-aside a {
+    font-family: var(--font-sans); font-size: 16px; color: var(--ink);
+    border-bottom: 1px solid var(--rule-soft);
+    transition: color .15s, border-color .15s;
+  }
+  .detail-aside a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── Related ────────────────────────────────────────────────────────── */
+  .detail-related {
+    max-width: 1080px; margin: 80px auto 0;
+    border-top: 1px solid var(--rule-soft);
+    padding-top: 48px;
+  }
+  .detail-related h3 {
+    font-family: var(--font-display); font-weight: 400; font-size: 28px;
+    margin: 0 0 32px; letter-spacing: -.005em;
+  }
+  .related-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+  }
+  .related-grid .related {
+    padding: 20px 0; border-top: 1px solid var(--rule);
+    cursor: pointer; transition: padding .15s;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .related-grid .related:hover { padding-left: 8px; }
+  .related-grid .related:hover h4 { color: var(--accent); }
+  .related-grid .related .kicker { color: var(--accent); }
+  .related-grid .related h4 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 22px; line-height: 1.15; margin: 0;
+    letter-spacing: -.005em; transition: color .15s;
+  }
+  .related-grid .related .read {
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: .04em; margin-top: auto; padding-top: 8px;
+    text-transform: uppercase;
+  }
+
+  /* ── Footer ─────────────────────────────────────────────────────────── */
+  .footer { padding: 60px var(--pad-x) 32px; max-width: var(--shell); margin: 0 auto; }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px;
+    padding-bottom: 32px;
+    border-top: 1px solid var(--rule);
+    padding-top: 32px;
+  }
+  .footer .col h6 {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-mute); margin: 0 0 14px;
+  }
+  .footer .col p {
+    font-family: var(--font-sans); font-size: 14px; color: var(--ink-soft);
+    line-height: 1.5; margin: 0;
+  }
+  .footer .col a {
+    display: block; font-family: var(--font-sans); font-size: 14px;
+    color: var(--ink); padding: 3px 0;
+  }
+  .footer .col a:hover { color: var(--accent); }
+
+  /* ── Responsive ─────────────────────────────────────────────────────── */
+  @media (max-width: 1100px) {
+    .related-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 760px) {
+    :root { --pad-x: 28px; --pad-y: 64px; }
+    .detail-demo { padding: 24px; }
+    .demo-shell { padding: 18px; }
+    .number-display { grid-template-columns: 1fr; }
+    .rgb-demo { grid-template-columns: 1fr; }
+    .related-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .masthead .topnav { display: none; }
+    .bits { gap: 6px; }
+  }
+  @media (max-width: 1100px) {
+    .masthead .topnav { padding-right: 90px; }
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     edulab component layer — flat fills, full contours, soft shadows.
+     Overrides the editorial idiom above; every value is an edulab token.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /* Display font has no true italic — drop synthesised obliques */
+  .hero-dek, .detail-dek, .masthead .brand .tag,
+  .row-author, .detail-prose .dropcap .dc, .toc .ttl { font-style: normal; }
+
+  /* ── Buttons: primary = solid yellow pill, secondary = sand pill ────── */
+  .btn {
+    background: var(--bg-2);
+    border: none;
+    color: var(--ink-soft);
+    padding: 9px 18px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0;
+    text-transform: none;
+    transition: background .15s, color .15s;
+  }
+  .btn:hover { background: var(--bg-3); color: var(--ink); border: none; }
+  .btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .btn.primary, .btn.accent {
+    background: var(--yellow);
+    border: none;
+    color: var(--yellow-ink);
+    padding: 11px 22px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0;
+    text-transform: none;
+    box-shadow: var(--shadow-primary);
+  }
+  .btn.primary:hover, .btn.primary:hover:not(:disabled), .btn.accent:hover {
+    background: var(--yellow-600); color: var(--yellow-ink); transform: none;
+  }
+  .btn.active {
+    background: var(--yellow); color: var(--yellow-ink); border: none;
+  }
+  .btn:disabled, .btn.primary:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+
+  /* ── Chip / tag: solid colour, white text (dark on yellow) ──────────── */
+  .pill {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .08em; text-transform: uppercase;
+    background: var(--blue-soft); color: var(--blue-ink);
+    border: none;
+    padding: 4px 10px; border-radius: var(--r-pill);
+  }
+
+  /* ── Full contours only: no coloured edge on one side ───────────────── */
+  .detail-aside {
+    border-left: none;
+    background: var(--bg-2);
+    border-radius: var(--r-lg);
+    padding: 22px 26px;
+  }
+  .tab.active, .file-tab.active {
+    border-bottom-color: transparent;
+    background: var(--yellow);
+    color: var(--yellow-ink);
+    border-radius: var(--r-pill);
+  }
+
+  /* ── Section eyebrow: functional label, no leading dash ─────────────── */
+  .section-head .kicker, .demo-head .kicker { color: var(--ink-mute); }
+
+  /* ── Cards & wells: generous radii, soft low shadow ─────────────────── */
+  .demo-frame, .demo-card, .card, .panel {
+    border-radius: var(--r-lg);
+  }
+
+  /* ── Page header scheme: solid ink title → full-width lead ──────────── */
+  .detail { max-width: var(--shell); }
+  .detail-head { max-width: 760px; }
+  .detail-head h1 {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(2.1rem, 4.6vw, 3rem);
+    letter-spacing: -.025em; line-height: 1.05;
+    color: var(--ink); margin: 0 0 20px;
+  }
+  .detail-dek {
+    font-family: var(--font-sans); font-style: normal; font-weight: 400;
+    font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6;
+    color: var(--ink-soft); max-width: none; margin: 0 0 24px;
+  }
+  /* meta + byline sit under the lead, never above the title */
+  .detail-meta, .detail-byline {
+    display: block; line-height: 2;
+    font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-mute); margin: 0;
+  }
+  /* Functional label chip inside panels: solid colour, white text */
+  .pane-label, .vp-label {
+    background: var(--blue-soft); color: var(--blue-ink);
+    border: none; border-radius: var(--r-pill); padding: 3px 10px;
+  }
+  .detail-prose p {
+    font-family: var(--font-sans); font-size: 18px; line-height: 1.68;
+    color: var(--ink);
+  }
+  .detail-prose h3 {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 25px; letter-spacing: -.01em;
+  }
+  .detail-prose p code, .detail-prose code {
+    font-family: var(--font-mono); font-size: 15px;
+    background: var(--bg-3); color: var(--ink);
+    padding: .12em .4em; border-radius: var(--r-xs);
+  }
+  .detail-prose .dropcap .dc {
+    font-family: var(--font-display); font-style: normal; font-weight: 700;
+    color: var(--yellow-ink);
+  }
+  .detail-rule { max-width: 760px; background: var(--rule-soft); opacity: 1; }
+
+  /* ── Binary: quiz card is a full block ──────────────────────────────── */
+  .quiz-question {
+    border-left: none;
+    background: var(--bg-2); border-radius: var(--r-md); padding: 16px 20px;
+  }
+  /* An active bit is a solid yellow cell — dark ink on it, never colour-on-colour */
+  .bit { border-radius: var(--r-sm); }
+  .bit.on, .bit-cell.on, .bit.active {
+    background: var(--yellow); border-color: var(--yellow); color: var(--yellow-ink);
+  }
+  .bit.on .bit-value,
+  .bit.on .bit-power,
+  .bit.on .bit-power-num { color: var(--yellow-ink); }
+  .bit-value { font-family: var(--font-display); font-weight: 600; }
+  .number-box, .calc-box { border-radius: var(--r-md); }
+
+
+  /* Outfit has no true italic — italic text falls back to IBM Plex Sans */
+  .compare-sub, .compare-side .compare-sub, .status-line, .file-sub,
+  .calculation .empty, .cart-empty, .asm-cmt, .up-mark, .nb-mark,
+  .m-body p:first-child::first-letter { font-family: var(--font-sans); }
+
+  /* ── Dark hero band (matches the index) ─────────────────────────────── */
+  .detail-hero {
+    background: var(--hero-bg);
+    padding: 26px var(--pad-x) 60px;
+    margin-bottom: 0;
+  }
+  .detail-hero-inner { max-width: var(--shell); margin: 0 auto; }
+  .detail-hero .detail-back {
+    font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--hero-ink-2); margin-bottom: 44px;
+  }
+  .detail-hero .detail-back a { color: var(--hero-ink-2); transition: color .15s; }
+  .detail-hero .detail-back a:hover { color: var(--yellow); }
+  .detail-hero h1 {
+    max-width: 900px; margin: 0 0 20px;
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(2.1rem, 4.6vw, 3rem);
+    letter-spacing: -.025em; line-height: 1.05;
+    color: var(--hero-ink); text-wrap: balance;
+  }
+  .detail-hero .detail-dek {
+    max-width: 720px; margin: 0;
+    font-family: var(--font-sans); font-style: normal;
+    font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6;
+    color: var(--hero-ink-2);
+  }
+  /* the band already separates hero from prose */
+  .detail-hero + .detail .detail-rule,
+  .detail-hero + main .detail-rule { display: none; }
+  .detail { padding-top: 56px; }
+
+  .footer .col .foot-copy {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em;
+    color: var(--ink-mute); margin-top: 14px;
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" aria-label="Przełącz motyw">
+  <span class="th-mark"></span>
+  <span class="lbl-jasny">Jasny</span>
+  <span class="lbl-ciemny">Ciemny</span>
+</button>
+
+<header class="masthead">
+  <div class="row">
+    <a href="index.html" class="brand">
+      <img class="edu-logo" src="edulab-mark-ink.png" alt="edulab" />
+      <span class="wordmark">edulab</span>
+    </a>
+    <nav class="topnav">
+      <a href="index.html">Indeks</a>
+      <a href="#">Sieci</a>
+      <a href="#" class="active">Krzem</a>
+      <a href="compilation.html">Metody</a>
+      <a href="#">O piśmie</a>
+    </nav>
+  </div>
+</header>
+
+<header class="detail-hero">
+  <div class="detail-hero-inner">
+    <div class="detail-back"><a href="index.html">← Powrót do indeksu</a></div>
+    <h1>System dwójkowy</h1>
+    <p class="detail-dek">Komputer ma do dyspozycji dwa stany, włączony i wyłączony. Buduje z nich liczby, znaki i kolory, czyli wszystko, co widzisz na ekranie.</p>
+  </div>
+</header>
+
+<article class="detail">
+
+  <hr class="detail-rule" />
+
+  <section class="detail-prose dropcap">
+    <p><span class="dc">K</span>omputer nie wie, czym jest liczba. Nie wie też, czym jest litera, kolor ani sekunda muzyki. Zna jeden, jedyny stan rzeczy: w obwodzie albo płynie prąd, albo nie. Wszystko, co dzieje się powyżej tego poziomu, jest <em>konwencją</em>, umową, w której zgadzamy się, że pewien układ ośmiu przełączników będzie znaczył <code>5</code>, inny - wielką literę <code>A</code>, jeszcze inny - odcień ciepłej szarości.</p>
+    <p>Ta demonstracja pokazuje pierwszą i najważniejszą z tych konwencji: zapis dwójkowy. Dalej - kilka jego praktycznych konsekwencji.</p>
+  </section>
+
+  <section class="detail-demo">
+    <header class="demo-head">
+      <h2>Włącz pozycję, zobacz liczbę</h2>
+      <p>Każdy z ośmiu bitów ma przypisaną wartość: kolejną potęgę dwójki. Kliknij, żeby ją włączyć lub wyłączyć. Suma wartości aktywnych pozycji to liczba zapisana w systemie dwójkowym.</p>
+    </header>
+
+    <div class="demo-shell">
+      <div class="bits" id="bits"></div>
+
+      <div class="number-display">
+        <div class="number-box">
+          <label>Wartość dziesiętna · 0–255</label>
+          <input type="number" id="decimalInput" min="0" max="255" value="5" />
+        </div>
+        <div class="number-box binary">
+          <label>Zapis dwójkowy</label>
+          <input type="text" id="binaryInput" maxlength="8" value="00000101" />
+        </div>
+      </div>
+
+      <div class="calculation" id="calculation"></div>
+
+      <div class="controls">
+        <button class="btn primary" onclick="animateCount()">Animuj zliczanie 0–16</button>
+        <button class="btn" onclick="setNumber(0)">Wyzeruj</button>
+        <button class="btn" onclick="setNumber(255)">Wszystkie aktywne</button>
+        <button class="btn" onclick="setNumber(Math.floor(Math.random()*256))">Losuj</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="detail-prose">
+    <h3>Tak samo jak w dziesiętnym</h3>
+    <p>Zapis dwójkowy działa dokładnie tak, jak ten, którego uczyliśmy się w szkole; różni je tylko podstawa.</p>
+    <p>W systemie dziesiętnym mamy dziesięć cyfr (od <code>0</code> do <code>9</code>) i potęgi dziesiątki: jedności, dziesiątki, setki, tysiące. Liczbę <em>247</em> czytamy jako <code>2 × 100 + 4 × 10 + 7 × 1</code>, i robimy to tak odruchowo, że nie zauważamy, jak wygląda ten rachunek.</p>
+    <p>W systemie dwójkowym do dyspozycji mamy tylko dwie cyfry (<code>0</code> i <code>1</code>) i potęgi dwójki: <code>1, 2, 4, 8, 16, 32, 64, 128</code>. Ta sama liczba <em>247</em> to <code>11110111</code>, czyli <code>128 + 64 + 32 + 16 + 4 + 2 + 1</code>. Każda zapalona pozycja oznacza, że odpowiadającą jej wagę dodajemy do sumy; wygaszona - że ją pomijamy.</p>
+    <p>Z obu systemów wynika ta sama własność: każda liczba całkowita ma dokładnie jeden taki zapis. To nie jest osobliwość komputerów, lecz cecha matematyki. Ale dopiero w systemie dwójkowym da się ją zrealizować w ośmiu fizycznych przewodach: prąd albo brak prądu.</p>
+
+    <h3>Dlaczego akurat osiem</h3>
+    <p>Osiem bitów to <em>bajt</em> - najmniejsza porcja pamięci, do której procesor zwraca się jednym ruchem. Bajt mieści 256 różnych stanów: od <code>00000000</code> do <code>11111111</code>. Tyle wystarczy, by zakodować jeden ze 128 znaków ASCII, jeden poziom natężenia w jednym z trzech kanałów koloru albo niewielką liczbę całkowitą. Większe rzeczy, jak słowa, obrazy i dźwięk, buduje się z bajtów tak, jak budynki z cegieł.</p>
+    <p>Poniżej kilka krótkich ćwiczeń, które pokazują tę cegłę w działaniu.</p>
+  </section>
+
+  <section class="detail-demo">
+    <header class="demo-head">
+      <h2>Bajt w działaniu</h2>
+      <p>Kolor, tekst, sprawdzian, gotowe przykłady. W każdym z tych przypadków bajt znaczy coś innego, choć fizycznie wygląda tak samo.</p>
+    </header>
+
+    <div class="demo-shell">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="colors">Kolory</button>
+        <button class="tab" data-tab="ascii">Tekst</button>
+        <button class="tab" data-tab="quiz">Ćwiczenie</button>
+        <button class="tab" data-tab="examples">Przykłady</button>
+      </div>
+
+      <div class="tab-content active" id="tab-colors">
+        <p class="tab-intro">Każdy piksel na ekranie zapisany jest jako trzy liczby z zakresu 0–255: udział czerwonego, zielonego i niebieskiego. Każda zajmuje dokładnie jeden bajt.</p>
+        <div class="rgb-demo">
+          <div>
+            <div class="channel red">
+              <div class="channel-header">
+                <span class="channel-label">Czerwony</span>
+                <span class="channel-values"><span id="rDec">200</span> · <span id="rBin">11001000</span></span>
+              </div>
+              <input type="range" min="0" max="255" value="200" id="rRange" />
+            </div>
+            <div class="channel green">
+              <div class="channel-header">
+                <span class="channel-label">Zielony</span>
+                <span class="channel-values"><span id="gDec">100</span> · <span id="gBin">01100100</span></span>
+              </div>
+              <input type="range" min="0" max="255" value="100" id="gRange" />
+            </div>
+            <div class="channel blue">
+              <div class="channel-header">
+                <span class="channel-label">Niebieski</span>
+                <span class="channel-values"><span id="bDec">50</span> · <span id="bBin">00110010</span></span>
+              </div>
+              <input type="range" min="0" max="255" value="50" id="bRange" />
+            </div>
+          </div>
+          <div class="color-preview" id="colorPreview"></div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-ascii">
+        <p class="tab-intro">W standardzie ASCII każdemu znakowi odpowiada liczba. W pamięci komputera trafia ona jako ośmiobitowy zapis dwójkowy - ten sam, który zobaczyłeś przed chwilą.</p>
+        <input class="ascii-input" id="asciiInput" value="Witaj" maxlength="20" placeholder="Wpisz tekst" />
+        <div class="ascii-results" id="asciiResults"></div>
+      </div>
+
+      <div class="tab-content" id="tab-quiz">
+        <p class="tab-intro">Ułóż wskazaną wartość, klikając bity w sekcji wyżej. Następnie sprawdź odpowiedź.</p>
+        <div class="quiz-question">
+          <span class="q-label">Cel</span>
+          <span class="target" id="quizTarget">12</span>
+        </div>
+        <div class="controls" style="margin-top:0;">
+          <button class="btn primary" onclick="checkQuiz()">Sprawdź</button>
+          <button class="btn" onclick="newQuizQuestion()">Następne pytanie</button>
+        </div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+        <div class="score-row">
+          <span>Poprawne: <strong id="quizCorrect">0</strong></span>
+          <span>Wszystkich: <strong id="quizTotal">0</strong></span>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-examples">
+        <p class="tab-intro">Kliknij wartość, aby zobaczyć jej zapis dwójkowy w sekcji wyżej.</p>
+        <div class="example-grid">
+          <button class="example-btn" onclick="setNumber(1)"><span class="num">1</span><span class="label">tylko 1</span></button>
+          <button class="example-btn" onclick="setNumber(2)"><span class="num">2</span><span class="label">tylko 2</span></button>
+          <button class="example-btn" onclick="setNumber(7)"><span class="num">7</span><span class="label">1 + 2 + 4</span></button>
+          <button class="example-btn" onclick="setNumber(15)"><span class="num">15</span><span class="label">1 + 2 + 4 + 8</span></button>
+          <button class="example-btn" onclick="setNumber(16)"><span class="num">16</span><span class="label">tylko 16</span></button>
+          <button class="example-btn" onclick="setNumber(42)"><span class="num">42</span><span class="label">32 + 8 + 2</span></button>
+          <button class="example-btn" onclick="setNumber(100)"><span class="num">100</span><span class="label">64 + 32 + 4</span></button>
+          <button class="example-btn" onclick="setNumber(128)"><span class="num">128</span><span class="label">tylko 128</span></button>
+          <button class="example-btn" onclick="setNumber(255)"><span class="num">255</span><span class="label">wszystkie pozycje</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="detail-aside">
+    <h6>Dalsza lektura</h6>
+    <ul>
+      <li><a href="#">Dlaczego dwójkowo, a nie dziesiętnie</a></li>
+      <li><a href="#">Bajt, słowo i co dalej - anatomia liczb większych niż 255</a></li>
+      <li><a href="#">Liczby ujemne i zmiennoprzecinkowe - następna konwencja</a></li>
+    </ul>
+  </aside>
+
+</article>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="col">
+      <h6>edulab</h6>
+      <p>Interaktywne demonstracje tego, co dzieje się między naciśnięciem klawisza a pikselem na ekranie.</p>
+    </div>
+    <div class="col">
+      <h6>Artykuły</h6>
+      <a href="binary.html">System dwójkowy</a>
+      <a href="image.html">Anatomia obrazu</a>
+      <a href="compilation.html">Kompilator i interpreter</a>
+      <a href="website.html">Anatomia strony WWW</a>
+      <a href="api.html">Czym jest API</a>
+    </div>
+    <div class="col">
+      <h6>Autor</h6>
+      <p>Andrzej Jankowski</p>
+      <a href="https://andrzej.ai">andrzej.ai</a>
+      <p class="foot-copy">© 2026</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const NUM_BITS = 8;
+  let currentValue = 5;
+
+  const bitsContainer = document.getElementById('bits');
+  for (let i = NUM_BITS - 1; i >= 0; i--) {
+    const power = i;
+    const value = Math.pow(2, power);
+    const bit = document.createElement('div');
+    bit.className = 'bit';
+    bit.dataset.power = power;
+    bit.innerHTML = `
+      <div class="bit-value">0</div>
+      <div class="bit-power">2<sup>${power}</sup></div>
+      <div class="bit-power-num">${value}</div>
+    `;
+    bit.addEventListener('click', () => toggleBit(power));
+    bitsContainer.appendChild(bit);
+  }
+
+  function toggleBit(power) {
+    setNumber(currentValue ^ (1 << power));
+  }
+
+  function setNumber(n) {
+    n = Math.max(0, Math.min(255, Math.floor(n)));
+    currentValue = n;
+    render();
+  }
+
+  function render() {
+    bitsContainer.querySelectorAll('.bit').forEach(bit => {
+      const power = parseInt(bit.dataset.power);
+      const isOn = (currentValue >> power) & 1;
+      bit.classList.toggle('on', !!isOn);
+      bit.querySelector('.bit-value').textContent = isOn ? '1' : '0';
+    });
+
+    document.getElementById('decimalInput').value = currentValue;
+    document.getElementById('binaryInput').value = currentValue.toString(2).padStart(8, '0');
+    renderCalculation();
+  }
+
+  function renderCalculation() {
+    const calc = document.getElementById('calculation');
+    const terms = [];
+    for (let i = NUM_BITS - 1; i >= 0; i--) {
+      if ((currentValue >> i) & 1) terms.push(Math.pow(2, i));
+    }
+    if (terms.length === 0) {
+      calc.innerHTML = '<span class="empty">- brak aktywnych pozycji, wartość 0</span>';
+      return;
+    }
+    const html = terms.map(t => `<span class="term">${t}</span>`).join('<span class="op">+</span>')
+      + `<span class="equals">=</span><span class="result">${currentValue}</span>`;
+    calc.innerHTML = html;
+  }
+
+  document.getElementById('decimalInput').addEventListener('input', e => {
+    const v = parseInt(e.target.value);
+    if (!isNaN(v)) setNumber(v);
+  });
+  document.getElementById('binaryInput').addEventListener('input', e => {
+    const cleaned = e.target.value.replace(/[^01]/g, '').slice(0, 8);
+    e.target.value = cleaned;
+    const v = parseInt(cleaned, 2);
+    if (!isNaN(v)) setNumber(v);
+  });
+
+  let countingTimer = null;
+  function animateCount() {
+    if (countingTimer) { clearInterval(countingTimer); countingTimer = null; }
+    let i = 0;
+    setNumber(0);
+    countingTimer = setInterval(() => {
+      i++;
+      setNumber(i);
+      if (i >= 16) { clearInterval(countingTimer); countingTimer = null; }
+    }, 350);
+  }
+
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  function updateRGB() {
+    const r = parseInt(document.getElementById('rRange').value);
+    const g = parseInt(document.getElementById('gRange').value);
+    const b = parseInt(document.getElementById('bRange').value);
+    document.getElementById('rDec').textContent = r;
+    document.getElementById('gDec').textContent = g;
+    document.getElementById('bDec').textContent = b;
+    document.getElementById('rBin').textContent = r.toString(2).padStart(8, '0');
+    document.getElementById('gBin').textContent = g.toString(2).padStart(8, '0');
+    document.getElementById('bBin').textContent = b.toString(2).padStart(8, '0');
+    document.getElementById('colorPreview').style.background = `rgb(${r}, ${g}, ${b})`;
+  }
+  ['rRange','gRange','bRange'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateRGB);
+  });
+  updateRGB();
+
+  function updateAscii() {
+    const text = document.getElementById('asciiInput').value;
+    const container = document.getElementById('asciiResults');
+    container.innerHTML = '';
+    for (const ch of text) {
+      const code = ch.charCodeAt(0);
+      const card = document.createElement('div');
+      card.className = 'ascii-char';
+      const display = ch === ' ' ? '␣' : ch;
+      card.innerHTML = `
+        <div class="char">${display}</div>
+        <div class="dec">kod ${code}</div>
+        <div class="bin">${code.toString(2).padStart(8, '0')}</div>
+      `;
+      container.appendChild(card);
+    }
+  }
+  document.getElementById('asciiInput').addEventListener('input', updateAscii);
+  updateAscii();
+
+  let quizTarget = 12;
+  let quizCorrect = 0;
+  let quizTotal = 0;
+  function newQuizQuestion() {
+    quizTarget = Math.floor(Math.random() * 256);
+    document.getElementById('quizTarget').textContent = quizTarget;
+    document.getElementById('quizFeedback').textContent = '';
+    document.getElementById('quizFeedback').className = 'quiz-feedback';
+  }
+  function checkQuiz() {
+    quizTotal++;
+    const fb = document.getElementById('quizFeedback');
+    if (currentValue === quizTarget) {
+      quizCorrect++;
+      fb.textContent = 'Odpowiedź poprawna.';
+      fb.className = 'quiz-feedback success';
+      setTimeout(newQuizQuestion, 1200);
+    } else {
+      fb.textContent = `Aktualna wartość: ${currentValue}. Cel: ${quizTarget}.`;
+      fb.className = 'quiz-feedback error';
+    }
+    document.getElementById('quizCorrect').textContent = quizCorrect;
+    document.getElementById('quizTotal').textContent = quizTotal;
+  }
+
+  render();
+
+  document.getElementById('themeToggle').addEventListener('click', function(){
+    var current = document.documentElement.dataset.theme;
+    var next = current === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('substrate-theme', next); } catch (_) {}
+    document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+  });
+</script>
+
+</body>
+</html>

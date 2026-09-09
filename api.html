@@ -1,0 +1,1987 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Czym jest API - Substrate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script>
+  (function(){
+    try {
+      var saved = localStorage.getItem('substrate-theme');
+      document.documentElement.dataset.theme = saved || 'light';
+    } catch (_) {
+      document.documentElement.dataset.theme = 'light';
+    }
+  })();
+</script>
+<style>
+  /* ── edulab design system — Editorial Color ──────────────────────────
+     Fonts: Outfit (display) · IBM Plex Sans (sans) · Roboto Mono (mono)
+     Paper white page, warm ink, yellow primary, blue + green secondary,
+     red for danger. Every colour below is an edulab token.
+     ─────────────────────────────────────────────────────────────────── */
+  :root {
+    /* ── edulab brand fonts ── */
+    --font-display: 'Outfit', 'IBM Plex Sans', system-ui, sans-serif;
+    --font-sans:    'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    --font-mono:    'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    /* ── edulab raw palette ── */
+    --paper:   #FFFFFF;  --paper-2: #FBF7E6;  --paper-3: #F5EDCB;
+    --surface: #FFFFFF;
+    --edu-ink: #1C1917;  --edu-ink-2: #57534E;  --edu-ink-3: #948C82;
+    --line:    #EDE7D2;  --line-2:  #DDD4B6;
+
+    --yellow: #FFD500;  --yellow-600: #F0C800;  --yellow-soft: #FFD500;  --yellow-ink: #1C1917;
+    --blue:   #1E8FC2;  --blue-600:   #177AA8;  --blue-soft:   #1E8FC2;  --blue-ink:   #FFFFFF;
+    --green:  #00A651;  --green-600:  #009444;  --green-soft:  #00A651;  --green-ink:  #FFFFFF;
+    --red:    #E5322D;  --red-600:    #C92823;  --red-soft:    #E5322D;  --red-ink:    #FFFFFF;
+    --grape:  #7A5AC2;
+
+    --primary: var(--yellow);  --on-primary: var(--yellow-ink);
+    --focus-ring: 0 0 0 3px color-mix(in srgb, var(--yellow) 45%, transparent);
+
+    /* ── radii & elevation ── */
+    --r-xs: 6px; --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+    --shadow-sm: 0 1px 2px rgba(33,30,26,.06), 0 1px 1px rgba(33,30,26,.04);
+    --shadow-md: 0 4px 16px rgba(33,30,26,.08), 0 1px 3px rgba(33,30,26,.05);
+    --shadow-lg: 0 16px 40px rgba(33,30,26,.12), 0 3px 8px rgba(33,30,26,.06);
+    --shadow-primary: 0 8px 22px color-mix(in srgb, var(--yellow) 30%, transparent);
+
+    /* ── layout ── */
+    --pad-x: 30px;
+    --pad-y: 72px;
+    --gap: 28px;
+    --shell: 1100px;
+  }
+
+  /* ── Light (default): edulab paper ──────────────────────────────────── */
+  html[data-theme="light"] {
+    --bg:        var(--paper);
+    --bg-2:      var(--paper-2);
+    --bg-3:      var(--paper-3);
+    --ink:       var(--edu-ink);
+    --ink-soft:  var(--edu-ink-2);
+    --ink-mute:  var(--edu-ink-3);
+    --rule:      var(--line-2);
+    --rule-soft: var(--line);
+    --accent:    var(--blue);
+    --accent-2:  var(--blue-600);
+    --accent-tint:        var(--paper-2);
+    --accent-tint-soft:   var(--paper-2);
+    --accent-tint-strong: var(--paper-3);
+    --overlay:   rgba(255,255,255,.94);
+    --card:      var(--surface);
+    --logo-filter: none;
+    --hero-bg:    #24211E;
+    --hero-ink:   #FFFFFF;
+    --hero-ink-2: rgba(255,255,255,.74);
+    --green-tint: color-mix(in srgb, var(--green) 12%, transparent);
+    --amber: var(--yellow);
+    --amber-tint: color-mix(in srgb, var(--yellow) 22%, transparent);
+  }
+
+  /* ── Dark: edulab ink surfaces (yellow reads as text on black) ──────── */
+  html[data-theme="dark"] {
+    --bg:        #1C1917;
+    --bg-2:      #262220;
+    --bg-3:      #322D29;
+    --ink:       #FFFFFF;
+    --ink-soft:  rgba(255,255,255,.74);
+    --ink-mute:  rgba(255,255,255,.52);
+    --rule:      rgba(255,255,255,.30);
+    --rule-soft: rgba(255,255,255,.14);
+    --accent:    var(--yellow);
+    --accent-2:  var(--yellow-600);
+    --accent-tint:        rgba(255,255,255,.06);
+    --accent-tint-soft:   rgba(255,255,255,.04);
+    --accent-tint-strong: rgba(255,213,0,.22);
+    --overlay:   rgba(28,25,23,.94);
+    --card:      #262220;
+    --logo-filter: invert(1);
+    --hero-bg:    #24211E;
+    --hero-ink:   #FFFFFF;
+    --hero-ink-2: rgba(255,255,255,.74);
+    --green-tint: color-mix(in srgb, var(--green) 22%, transparent);
+    --amber: var(--yellow);
+    --amber-tint: color-mix(in srgb, var(--yellow) 22%, transparent);
+  }
+
+  /* ── Reset ──────────────────────────────────────────────────────────── */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background .25s ease, color .25s ease;
+  }
+  a { color: inherit; text-decoration: none; cursor: pointer; }
+  button { font-family: inherit; }
+
+  /* Content shell — edulab caps the column at 1100px */
+  .shell { max-width: var(--shell); margin: 0 auto; width: 100%; }
+
+  /* Functional label: mono, uppercase, tracked */
+  .kicker {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .dot { color: var(--ink-mute); padding: 0 6px; }
+
+  /* ── Theme toggle — full pill, never a partial contour ──────────────── */
+  .theme-toggle {
+    position: fixed;
+    top: 14px; right: 20px;
+    z-index: 100;
+    appearance: none; cursor: pointer;
+    background: var(--bg-2);
+    border: none;
+    color: var(--ink-soft);
+    padding: 9px 16px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: .02em;
+    transition: background .15s, color .15s;
+  }
+  .theme-toggle:hover { background: var(--yellow); color: var(--yellow-ink); }
+  .theme-toggle:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .theme-toggle .th-mark {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: -1px;
+    background: var(--ink);
+  }
+  .theme-toggle:hover .th-mark { background: var(--yellow-ink); }
+  .theme-toggle .lbl-jasny { display: inline; }
+  .theme-toggle .lbl-ciemny { display: none; }
+  html[data-theme="light"] .theme-toggle .lbl-jasny { display: none; }
+  html[data-theme="light"] .theme-toggle .lbl-ciemny { display: inline; }
+
+  /* ── edulab brand bar (required chrome) ─────────────────────────────── */
+  .masthead {
+    position: sticky; top: 0; z-index: 50; width: 100%;
+    background: var(--overlay);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .masthead .row {
+    max-width: var(--shell); margin: 0 auto;
+    padding: 8px var(--pad-x);
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .masthead .brand { display: flex; align-items: center; gap: 2px; cursor: pointer; }
+  .masthead .edu-logo {
+    width: 64px; height: 64px; display: block; margin-right: -6px;
+    filter: var(--logo-filter);
+  }
+  .masthead .brand .wordmark {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 22px; letter-spacing: -.02em; color: var(--ink);
+  }
+  .masthead .topnav { display: flex; gap: 4px; padding-right: 132px; }
+  .masthead .topnav a {
+    font-family: var(--font-sans); font-weight: 600; font-size: 14px;
+    color: var(--ink-soft);
+    padding: 8px 14px; border-radius: var(--r-pill);
+    transition: background .15s, color .15s;
+  }
+  .masthead .topnav a:hover { background: var(--bg-2); color: var(--ink); }
+  .masthead .topnav a.active { background: var(--yellow); color: var(--yellow-ink); }
+
+  /* ── Detail page frame ──────────────────────────────────────────────── */
+  .detail {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 48px var(--pad-x) calc(var(--pad-y) * 1.2);
+  }
+  .detail-back {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-mute); margin-bottom: 48px;
+  }
+  .detail-back a { transition: color .15s; }
+  .detail-back a:hover { color: var(--accent); }
+
+  .detail-head { max-width: 760px; margin: 0 auto; text-align: left; }
+  .detail-meta {
+    display: flex; align-items: center;
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: .06em; text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .detail-head h1 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: clamp(40px, 5vw, 72px); line-height: 1.05;
+    letter-spacing: -.02em;
+    margin: 0 0 24px; text-wrap: balance;
+  }
+  .detail-dek {
+    font-family: var(--font-sans); font-style: italic;
+    font-size: clamp(20px, 1.6vw, 24px);
+    line-height: 1.45; color: var(--ink-soft); margin: 0 0 32px;
+    max-width: 50ch;
+  }
+  .detail-byline {
+    display: flex; align-items: center;
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: .06em; text-transform: uppercase;
+  }
+
+  .detail-rule {
+    height: 1px; background: var(--rule); opacity: .5;
+    margin: 56px auto;
+    max-width: 760px;
+    border: none;
+  }
+
+  .detail-prose { max-width: 660px; margin: 0 auto 48px; }
+  .detail-prose p {
+    font-family: var(--font-sans); font-size: 19px; line-height: 1.6;
+    color: var(--ink); margin: 0 0 24px; text-wrap: pretty;
+  }
+  .detail-prose p em { font-style: italic; color: var(--accent-2); }
+  .detail-prose p code,
+  .detail-prose code {
+    font-family: var(--font-mono); font-size: 15px;
+    background: var(--bg-2); padding: 1px 6px; border-radius: 3px;
+    color: var(--accent);
+  }
+  .detail-prose h3 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 28px; margin: 48px 0 16px;
+    letter-spacing: -.005em;
+  }
+  .detail-prose .dropcap .dc {
+    font-family: var(--font-sans); font-style: italic;
+    font-size: 80px; line-height: .8;
+    float: left; padding: 6px 14px 0 0;
+    color: var(--accent);
+  }
+
+  /* ── Demo container (breaks out of .detail to be wider) ─────────────── */
+  .demo-fullwide {
+    padding: 0 var(--pad-x);
+    margin: 64px 0;
+  }
+  .detail-demo {
+    max-width: 1480px; margin: 0 auto;
+    padding: 40px;
+    background: var(--bg-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 4px;
+  }
+  .detail.detail-after {
+    padding-top: 0;
+  }
+  .detail-demo .demo-head { margin-bottom: 32px; max-width: 70ch; }
+  .detail-demo .demo-head h2 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 32px; margin: 8px 0 8px; letter-spacing: -.01em;
+  }
+  .detail-demo .demo-head p {
+    font-family: var(--font-sans); font-size: 16px; color: var(--ink-soft); margin: 0;
+  }
+  .detail-demo .demo-head p em { font-style: italic; color: var(--accent-2); }
+
+  /* ── Buttons ────────────────────────────────────────────────────────── */
+  .btn {
+    appearance: none; cursor: pointer;
+    background: transparent;
+    border: 1px solid var(--rule-soft);
+    color: var(--ink-soft);
+    padding: 8px 14px;
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    transition: border-color .15s, color .15s, background .15s;
+  }
+  .btn:hover { border-color: var(--ink-soft); color: var(--ink); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.primary {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    transition: transform .15s ease, background .15s ease, opacity .15s;
+  }
+  .btn.primary:hover:not(:disabled) { background: var(--accent); transform: translateY(-1px); }
+
+  /* ── Aside ──────────────────────────────────────────────────────────── */
+  .detail-aside {
+    max-width: 660px; margin: 48px auto;
+    padding: 24px 28px;
+    background: var(--bg-2);
+    border-radius: 0 3px 3px 0;
+  }
+  .detail-aside h6 {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--ink-mute);
+    margin: 0 0 12px;
+  }
+  .detail-aside ul { margin: 0; padding: 0; list-style: none; }
+  .detail-aside li { padding: 6px 0; }
+  .detail-aside a {
+    font-family: var(--font-sans); font-size: 16px; color: var(--ink);
+    border-bottom: 1px solid var(--rule-soft);
+    transition: color .15s, border-color .15s;
+  }
+  .detail-aside a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── Related ────────────────────────────────────────────────────────── */
+  .detail-related {
+    max-width: 1080px; margin: 80px auto 0;
+    border-top: 1px solid var(--rule-soft);
+    padding-top: 48px;
+  }
+  .detail-related h3 {
+    font-family: var(--font-display); font-weight: 400; font-size: 28px;
+    margin: 0 0 32px; letter-spacing: -.005em;
+  }
+  .related-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+  }
+  .related-grid .related {
+    padding: 20px 0; border-top: 1px solid var(--rule);
+    cursor: pointer; transition: padding .15s;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .related-grid .related:hover { padding-left: 8px; }
+  .related-grid .related:hover h4 { color: var(--accent); }
+  .related-grid .related .kicker { color: var(--accent); }
+  .related-grid .related h4 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 22px; line-height: 1.15; margin: 0;
+    letter-spacing: -.005em; transition: color .15s;
+  }
+  .related-grid .related .read {
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: .04em; margin-top: auto; padding-top: 8px;
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     API DEMO — SCENE: server + client side-by-side
+     ════════════════════════════════════════════════════════════ */
+
+  .api-scene {
+    background: var(--bg);
+    border: 1px solid var(--rule-soft);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  /* ── city selector row ──────────────────────────────────────── */
+  .api-city-row {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .api-city-row label {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--ink-mute);
+  }
+  .city-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .city-chip {
+    appearance: none; cursor: pointer;
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em;
+    padding: 6px 14px; border: 1px solid var(--rule-soft); border-radius: 2px;
+    background: transparent; color: var(--ink-soft);
+    transition: all .15s;
+  }
+  .city-chip:hover { border-color: var(--ink-soft); color: var(--ink); }
+  .city-chip.active {
+    border-color: var(--accent); color: var(--accent);
+    background: var(--accent-tint);
+  }
+
+  /* ── two-panel layout ───────────────────────────────────────── */
+  .api-panels {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    min-height: 460px;
+  }
+
+  /* ── server panel ───────────────────────────────────────────── */
+  .panel-server {
+    border-right: 1px solid var(--rule-soft);
+    display: flex; flex-direction: column;
+    min-width: 0;
+  }
+  .panel-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--rule-soft);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .panel-icon {
+    width: 32px; height: 32px; border-radius: 2px;
+    background: var(--bg-2); border: 1px solid var(--rule-soft);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .panel-icon svg { width: 18px; height: 18px; }
+  .panel-title {
+    font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+    color: var(--ink);
+  }
+  .panel-sub {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em;
+    color: var(--ink-mute); text-transform: uppercase;
+  }
+
+  /* ── weather table ──────────────────────────────────────────── */
+  .weather-table {
+    flex: 1; padding: 20px 24px;
+    overflow: auto;
+  }
+  .weather-table table {
+    width: 100%; border-collapse: collapse;
+    font-family: var(--font-mono); font-size: 12px;
+  }
+  .weather-table th {
+    text-align: left; padding: 0 8px 10px;
+    font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ink-mute); font-weight: 500;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .weather-table th:first-child { padding-left: 0; }
+  .weather-table td {
+    padding: 9px 8px;
+    border-bottom: 1px solid var(--rule-soft);
+    color: var(--ink-soft);
+    transition: background .2s, color .2s;
+  }
+  .weather-table td:first-child { padding-left: 0; color: var(--ink); }
+  .weather-table tr.highlighted td {
+    background: var(--accent-tint);
+    color: var(--ink);
+  }
+  .weather-table tr.highlighted td:first-child {
+    color: var(--accent);
+  }
+  .weather-table .condition-badge {
+    font-family: var(--font-mono); font-size: 10px;
+    padding: 2px 7px; border-radius: 2px;
+    border: 1px solid var(--rule-soft);
+    color: var(--ink-mute);
+  }
+  tr.highlighted .condition-badge {
+    border-color: var(--accent); color: var(--accent);
+  }
+
+  /* ── api docs panel (server side) ───────────────────────────── */
+  .api-docs {
+    border-top: 1px solid var(--rule-soft);
+    padding: 18px 24px 22px;
+    background: var(--bg-2);
+  }
+  .api-docs-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .api-docs-head .docs-label {
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-mute);
+  }
+  .api-docs-head .docs-version {
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em;
+    color: var(--ink-mute);
+    border: 1px solid var(--rule-soft);
+    padding: 2px 6px; border-radius: 2px;
+  }
+  .api-docs h5 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 14px; margin: 0 0 10px;
+    color: var(--ink); letter-spacing: -.005em;
+  }
+  .api-docs .endpoint-row {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 11px;
+    padding: 6px 0; border-bottom: 1px solid var(--rule-soft);
+    margin-bottom: 12px;
+  }
+  .api-docs .ep-method {
+    color: var(--accent); font-weight: 500; letter-spacing: .04em;
+    font-size: 10px;
+    border: 1px solid var(--accent);
+    padding: 1px 6px; border-radius: 2px;
+    background: var(--accent-tint);
+  }
+  .api-docs .ep-path { color: var(--ink-soft); }
+  .api-docs .ep-path .ep-param { color: var(--accent); }
+
+  .api-docs dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 6px 14px;
+    font-family: var(--font-mono); font-size: 10.5px;
+    line-height: 1.5;
+  }
+  .api-docs dt {
+    color: var(--ink-mute);
+    letter-spacing: .04em;
+  }
+  .api-docs dd {
+    margin: 0;
+    color: var(--ink-soft);
+  }
+  .api-docs dd .req-tag {
+    font-size: 9px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-mute); margin-left: 6px;
+  }
+  .api-docs dd code {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--accent);
+  }
+
+  .api-docs .docs-section + .docs-section {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--rule-soft);
+  }
+  .api-docs .codes {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .api-docs .code-chip {
+    font-family: var(--font-mono); font-size: 10px;
+    padding: 3px 8px; border-radius: 2px;
+    border: 1px solid var(--rule-soft);
+    color: var(--ink-soft);
+    letter-spacing: .04em;
+  }
+  .api-docs .code-chip.ok   { border-color: var(--green); color: var(--green); }
+  .api-docs .code-chip.warn { border-color: var(--amber); color: var(--amber); }
+
+  /* ── arrow channel ──────────────────────────────────────────── */
+  .panel-channel {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 16px 0; gap: 12px;
+    position: relative;
+  }
+  .channel-line {
+    width: 1px; flex: 1;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--rule-soft) 0,
+      var(--rule-soft) 4px,
+      transparent 4px,
+      transparent 10px
+    );
+    position: absolute; top: 0; bottom: 0; left: 50%;
+  }
+
+  .channel-arrow {
+    position: relative; z-index: 2;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--bg-2); border: 1px solid var(--rule-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 13px; color: var(--ink-mute);
+    transition: all .3s;
+  }
+  .channel-arrow.req-active {
+    border-color: var(--accent); color: var(--accent);
+    background: var(--accent-tint);
+    animation: pulse-req .6s ease-out;
+  }
+  .channel-arrow.res-active {
+    border-color: var(--green); color: var(--green);
+    background: var(--green-tint);
+    animation: pulse-res .6s ease-out;
+  }
+  @keyframes pulse-req {
+    0%   { transform: scale(1); box-shadow: 0 0 0 0 var(--accent-tint); }
+    50%  { transform: scale(1.15); box-shadow: 0 0 0 8px transparent; }
+    100% { transform: scale(1); }
+  }
+  @keyframes pulse-res {
+    0%   { transform: scale(1); box-shadow: 0 0 0 0 var(--green-tint); }
+    50%  { transform: scale(1.15); box-shadow: 0 0 0 8px transparent; }
+    100% { transform: scale(1); }
+  }
+
+  .channel-label {
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: .10em;
+    text-transform: uppercase; color: var(--ink-mute);
+    writing-mode: vertical-rl;
+    position: relative; z-index: 2;
+  }
+
+  /* ── client panel ───────────────────────────────────────────── */
+  .panel-client {
+    border-left: 1px solid var(--rule-soft);
+    display: flex; flex-direction: column;
+    min-width: 0;
+  }
+
+  /* ── news site mock ─────────────────────────────────────────── */
+  .news-mock {
+    flex: 1; display: flex; flex-direction: column;
+  }
+
+  /* brand bar */
+  .news-brand-bar {
+    padding: 10px 20px;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--rule-soft);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .news-brand {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .news-logo {
+    width: 22px; height: 22px;
+    color: var(--accent);
+  }
+  .news-brand-name {
+    font-family: var(--font-display); font-size: 16px; font-weight: 600;
+    letter-spacing: .02em; color: var(--ink);
+  }
+  .news-brand-name .nb-mark {
+    color: var(--accent); font-style: italic;
+  }
+  .news-live {
+    display: flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-mute);
+  }
+  .news-live-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 0 rgba(239,68,68,.55);
+    animation: live-pulse 1.6s ease-out infinite;
+  }
+  @keyframes live-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(239,68,68,.55); }
+    70%  { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+  }
+
+  /* nav */
+  .news-nav {
+    padding: 8px 20px;
+    border-bottom: 1px solid var(--rule-soft);
+    display: flex; gap: 14px; flex-wrap: wrap;
+    overflow: hidden;
+  }
+  .news-nav a {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .10em;
+    text-transform: uppercase; color: var(--ink-mute);
+    padding: 4px 0;
+    cursor: default;
+    border-bottom: 1px solid transparent;
+  }
+  .news-nav a.active {
+    color: var(--ink);
+  }
+
+  /* date strip */
+  .news-date-strip {
+    padding: 7px 20px;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--rule-soft);
+    display: flex; justify-content: space-between;
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-mute);
+  }
+
+  /* weather widget */
+  .news-weather-strip {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .news-weather-heading {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: .10em;
+    text-transform: uppercase; color: var(--ink-mute);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .news-weather-heading::before {
+    content: ""; width: 12px; height: 1px; background: var(--accent);
+  }
+
+  .weather-widget-row {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+  .weather-icon-box {
+    background: var(--bg-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .3s;
+  }
+  .weather-icon-box.updated { border-color: var(--accent); }
+  .weather-icon-box svg {
+    width: 36px; height: 36px;
+    color: var(--ink-soft);
+    transition: color .3s;
+  }
+  .weather-icon-box.updated svg { color: var(--accent); }
+
+  .news-weather-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  }
+  .weather-stat {
+    background: var(--bg-2); border: 1px solid var(--rule-soft);
+    border-radius: 2px; padding: 8px 10px;
+    display: flex; flex-direction: column; gap: 2px;
+    transition: border-color .3s, background .3s;
+  }
+  .weather-stat.updated {
+    border-color: var(--accent);
+    background: var(--accent-tint-soft, rgba(127,212,216,.04));
+  }
+  html[data-theme="light"] .weather-stat.updated {
+    background: rgba(181,106,29,.04);
+  }
+  .weather-stat-label {
+    font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .10em;
+    text-transform: uppercase; color: var(--ink-mute);
+  }
+  .weather-stat-value {
+    font-family: var(--font-display); font-size: 18px; font-weight: 400;
+    color: var(--ink); line-height: 1.1;
+    transition: color .3s;
+  }
+  .weather-stat.updated .weather-stat-value { color: var(--accent); }
+  html[data-theme="light"] .weather-stat.updated .weather-stat-value { color: var(--accent); }
+  .weather-stat-sub {
+    font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute);
+  }
+
+  /* hero article */
+  .news-hero {
+    padding: 18px 20px 20px;
+    border-bottom: 1px solid var(--rule-soft);
+    display: flex; flex-direction: column; gap: 10px;
+    background: var(--bg-2);
+  }
+  .news-hero-tag {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent);
+    font-weight: 500;
+  }
+  .news-hero-title {
+    font-family: var(--font-display); font-size: 22px; font-weight: 500;
+    line-height: 1.18; color: var(--ink); margin: 0;
+    letter-spacing: -.01em; text-wrap: balance;
+  }
+  .news-hero-dek {
+    font-family: var(--font-sans); font-size: 14px; line-height: 1.55;
+    color: var(--ink-soft); margin: 0;
+  }
+  .news-hero-meta {
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--ink-mute);
+    display: flex; gap: 8px; align-items: center;
+    flex-wrap: wrap;
+  }
+  .news-hero-meta .author-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* story list */
+  .news-stories {
+    flex: 1;
+    padding: 4px 20px;
+  }
+  .news-story {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .news-story:last-child { border-bottom: none; }
+  .news-story-thumb {
+    width: 56px; height: 44px;
+    background: var(--bg-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .news-story-thumb svg {
+    width: 100%; height: 100%;
+    color: var(--ink-mute);
+  }
+  .news-story-body {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .news-story-tag {
+    font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  .news-story-title {
+    font-family: var(--font-display); font-size: 13px; font-weight: 500;
+    line-height: 1.3; color: var(--ink);
+  }
+  .news-story-meta {
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: .04em;
+    color: var(--ink-mute);
+    margin-top: 2px;
+  }
+
+  /* market ticker */
+  .news-ticker {
+    padding: 8px 16px;
+    background: var(--bg-2);
+    border-top: 1px solid var(--rule-soft);
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .04em;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .news-ticker .ticker-tag {
+    color: var(--ink); border: 1px solid var(--rule-soft);
+    padding: 2px 6px; border-radius: 2px;
+    letter-spacing: .12em; text-transform: uppercase;
+    font-size: 8.5px;
+    flex-shrink: 0;
+  }
+  .ticker-strip {
+    display: flex; gap: 18px;
+    animation: ticker-scroll 28s linear infinite;
+  }
+  @keyframes ticker-scroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .ticker-item {
+    display: inline-flex; align-items: center; gap: 4px;
+    color: var(--ink-soft);
+  }
+  .ticker-item.up   { color: var(--green); }
+  .ticker-item.down { color: var(--red); }
+  html[data-theme="light"] .ticker-item.down { color: var(--red-600); }
+  .ticker-item .tick-arrow {
+    font-size: 10px; line-height: 1;
+  }
+  .ticker-item .tick-name {
+    color: var(--ink-mute); margin-right: 2px; letter-spacing: .04em;
+  }
+
+  /* ── bottom control strip ───────────────────────────────────── */
+  .api-controls {
+    padding: 20px 24px;
+    border-top: 1px solid var(--rule-soft);
+    display: flex; flex-direction: column; gap: 16px;
+  }
+
+  /* ── request/response panels ────────────────────────────────── */
+  .rr-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+  .rr-panel {
+    background: var(--bg-2); border: 1px solid var(--rule-soft);
+    border-radius: 2px; overflow: hidden;
+    min-width: 0;
+  }
+  .rr-header {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--rule-soft);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .rr-badge {
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: .10em;
+    text-transform: uppercase; padding: 2px 7px; border-radius: 2px;
+    font-weight: 500;
+  }
+  .rr-badge.req { border: 1px solid var(--accent); color: var(--accent); }
+  .rr-badge.res { border: 1px solid var(--green); color: var(--green); }
+  .rr-title {
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
+  }
+  .rr-status {
+    margin-left: auto;
+    font-family: var(--font-mono); font-size: 10px;
+  }
+  .rr-status.ok { color: var(--green); }
+  .rr-status.idle { color: var(--ink-mute); }
+  .rr-body {
+    padding: 14px;
+    font-family: var(--font-mono); font-size: 11.5px;
+    line-height: 1.65; color: var(--ink-soft);
+    white-space: pre;
+    overflow: auto;
+    min-height: 140px;
+  }
+  .rr-body .json-key { color: var(--ink-mute); }
+  .rr-body .json-str { color: var(--accent-2); }
+  .rr-body .json-num { color: var(--accent); }
+  .rr-body .json-ok  { color: var(--green); }
+  .rr-body .json-ts  { color: var(--ink-mute); font-size: 10px; }
+
+  /* ── send button row ────────────────────────────────────────── */
+  .api-send-row {
+    display: flex; align-items: center; gap: 16px;
+  }
+  .api-send-row .method-badge {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em;
+    padding: 6px 10px; border: 1px solid var(--rule-soft); border-radius: 2px;
+    color: var(--accent); border-color: var(--accent);
+    background: var(--accent-tint);
+  }
+  .api-send-row .endpoint-path {
+    font-family: var(--font-mono); font-size: 13px; color: var(--ink-soft);
+    flex: 1;
+  }
+  .api-send-row .endpoint-path .path-accent { color: var(--accent); }
+
+  /* ── step explainer ─────────────────────────────────────────── */
+  .step-track {
+    display: flex; gap: 0;
+    border: 1px solid var(--rule-soft);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .step-block {
+    flex: 1; padding: 12px 16px;
+    border-right: 1px solid var(--rule-soft);
+    display: flex; flex-direction: column; gap: 4px;
+    transition: background .3s;
+    position: relative;
+  }
+  .step-block:last-child { border-right: none; }
+  .step-block.active {
+    background: var(--accent-tint);
+  }
+  .step-block.done {
+    background: var(--green-tint);
+  }
+  .step-num {
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-mute);
+  }
+  .step-block.active .step-num { color: var(--accent); }
+  .step-block.done .step-num { color: var(--green); }
+  .step-name {
+    font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+    color: var(--ink-soft);
+  }
+  .step-block.active .step-name { color: var(--accent); }
+  .step-block.done .step-name { color: var(--green); }
+  .step-desc {
+    font-family: var(--font-sans); font-size: 13px; color: var(--ink-mute);
+    line-height: 1.4;
+  }
+  .step-indicator {
+    position: absolute; top: 10px; right: 10px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--rule-soft);
+    transition: background .3s;
+  }
+  .step-block.active .step-indicator { background: var(--accent); }
+  .step-block.done .step-indicator { background: var(--green); }
+
+  /* ── footer ─────────────────────────────────────────────────── */
+  .footer { padding: 60px var(--pad-x) 32px; max-width: var(--shell); margin: 0 auto; }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px;
+    padding: 32px 0;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .footer .col h6 {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-mute); margin: 0 0 14px;
+  }
+  .footer .col p {
+    font-family: var(--font-sans); font-size: 14px; color: var(--ink-soft);
+    line-height: 1.6; margin: 0 0 6px;
+  }
+  .footer .col a {
+    display: block; font-family: var(--font-sans); font-size: 14px;
+    color: var(--ink); padding: 3px 0;
+  }
+  .footer .col a:hover { color: var(--accent); }
+  @media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr; gap: 28px; } }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     edulab component layer — flat fills, full contours, soft shadows.
+     Overrides the editorial idiom above; every value is an edulab token.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /* Display font has no true italic — drop synthesised obliques */
+  .hero-dek, .detail-dek, .masthead .brand .tag,
+  .row-author, .detail-prose .dropcap .dc, .toc .ttl { font-style: normal; }
+
+  /* ── Buttons: primary = solid yellow pill, secondary = sand pill ────── */
+  .btn {
+    background: var(--bg-2);
+    border: none;
+    color: var(--ink-soft);
+    padding: 9px 18px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0;
+    text-transform: none;
+    transition: background .15s, color .15s;
+  }
+  .btn:hover { background: var(--bg-3); color: var(--ink); border: none; }
+  .btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .btn.primary, .btn.accent {
+    background: var(--yellow);
+    border: none;
+    color: var(--yellow-ink);
+    padding: 11px 22px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0;
+    text-transform: none;
+    box-shadow: var(--shadow-primary);
+  }
+  .btn.primary:hover, .btn.primary:hover:not(:disabled), .btn.accent:hover {
+    background: var(--yellow-600); color: var(--yellow-ink); transform: none;
+  }
+  .btn.active {
+    background: var(--yellow); color: var(--yellow-ink); border: none;
+  }
+  .btn:disabled, .btn.primary:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+
+  /* ── Chip / tag: solid colour, white text (dark on yellow) ──────────── */
+  .pill {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .08em; text-transform: uppercase;
+    background: var(--blue-soft); color: var(--blue-ink);
+    border: none;
+    padding: 4px 10px; border-radius: var(--r-pill);
+  }
+
+  /* ── Full contours only: no coloured edge on one side ───────────────── */
+  .detail-aside {
+    border-left: none;
+    background: var(--bg-2);
+    border-radius: var(--r-lg);
+    padding: 22px 26px;
+  }
+  .tab.active, .file-tab.active {
+    border-bottom-color: transparent;
+    background: var(--yellow);
+    color: var(--yellow-ink);
+    border-radius: var(--r-pill);
+  }
+
+  /* ── Section eyebrow: functional label, no leading dash ─────────────── */
+  .section-head .kicker, .demo-head .kicker { color: var(--ink-mute); }
+
+  /* ── Cards & wells: generous radii, soft low shadow ─────────────────── */
+  .demo-frame, .demo-card, .card, .panel {
+    border-radius: var(--r-lg);
+  }
+
+  /* ── Page header scheme: solid ink title → full-width lead ──────────── */
+  .detail { max-width: var(--shell); }
+  .detail-head { max-width: 760px; }
+  .detail-head h1 {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(2.1rem, 4.6vw, 3rem);
+    letter-spacing: -.025em; line-height: 1.05;
+    color: var(--ink); margin: 0 0 20px;
+  }
+  .detail-dek {
+    font-family: var(--font-sans); font-style: normal; font-weight: 400;
+    font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6;
+    color: var(--ink-soft); max-width: none; margin: 0 0 24px;
+  }
+  /* meta + byline sit under the lead, never above the title */
+  .detail-meta, .detail-byline {
+    display: block; line-height: 2;
+    font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-mute); margin: 0;
+  }
+  /* Functional label chip inside panels: solid colour, white text */
+  .pane-label, .vp-label {
+    background: var(--blue-soft); color: var(--blue-ink);
+    border: none; border-radius: var(--r-pill); padding: 3px 10px;
+  }
+  .detail-prose p {
+    font-family: var(--font-sans); font-size: 18px; line-height: 1.68;
+    color: var(--ink);
+  }
+  .detail-prose h3 {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 25px; letter-spacing: -.01em;
+  }
+  .detail-prose p code, .detail-prose code {
+    font-family: var(--font-mono); font-size: 15px;
+    background: var(--bg-3); color: var(--ink);
+    padding: .12em .4em; border-radius: var(--r-xs);
+  }
+  .detail-prose .dropcap .dc {
+    font-family: var(--font-display); font-style: normal; font-weight: 700;
+    color: var(--yellow-ink);
+  }
+  .detail-rule { max-width: 760px; background: var(--rule-soft); opacity: 1; }
+
+  /* ── API: chips are solid colour blocks, selection is yellow ────────── */
+  .city-chip {
+    font-family: var(--font-sans); font-weight: 600; font-size: 13px;
+    letter-spacing: 0; border: none; background: var(--bg-2);
+    border-radius: var(--r-pill); padding: 8px 16px; color: var(--ink-soft);
+  }
+  .city-chip:hover { border: none; background: var(--bg-3); color: var(--ink); }
+  .city-chip.active {
+    border: none; background: var(--yellow); color: var(--yellow-ink);
+  }
+  .weather-table .condition-badge {
+    border: none; border-radius: var(--r-pill); padding: 3px 9px;
+    background: var(--bg-2); color: var(--ink-mute);
+  }
+  tr.highlighted .condition-badge {
+    border: none; background: var(--blue-soft); color: var(--blue-ink);
+  }
+  .api-docs .ep-method, .api-send-row .method-badge {
+    border: none; border-radius: var(--r-pill); padding: 3px 9px;
+    background: var(--green-soft); color: var(--green-ink);
+  }
+
+  /* ── API: simulated portal chrome keeps full contours ───────────────── */
+  .news-nav a.active {
+    border-bottom-color: transparent;
+    background: var(--yellow); color: var(--yellow-ink);
+    border-radius: var(--r-pill);
+  }
+  .news-hero { border-left: none; }
+
+
+  /* Outfit has no true italic — italic text falls back to IBM Plex Sans */
+  .compare-sub, .compare-side .compare-sub, .status-line, .file-sub,
+  .calculation .empty, .cart-empty, .asm-cmt, .up-mark, .nb-mark,
+  .m-body p:first-child::first-letter { font-family: var(--font-sans); }
+
+  /* ── Dark hero band (matches the index) ─────────────────────────────── */
+  .detail-hero {
+    background: var(--hero-bg);
+    padding: 26px var(--pad-x) 60px;
+    margin-bottom: 0;
+  }
+  .detail-hero-inner { max-width: var(--shell); margin: 0 auto; }
+  .detail-hero .detail-back {
+    font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--hero-ink-2); margin-bottom: 44px;
+  }
+  .detail-hero .detail-back a { color: var(--hero-ink-2); transition: color .15s; }
+  .detail-hero .detail-back a:hover { color: var(--yellow); }
+  .detail-hero h1 {
+    max-width: 900px; margin: 0 0 20px;
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(2.1rem, 4.6vw, 3rem);
+    letter-spacing: -.025em; line-height: 1.05;
+    color: var(--hero-ink); text-wrap: balance;
+  }
+  .detail-hero .detail-dek {
+    max-width: 720px; margin: 0;
+    font-family: var(--font-sans); font-style: normal;
+    font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6;
+    color: var(--hero-ink-2);
+  }
+  /* the band already separates hero from prose */
+  .detail-hero + .detail .detail-rule,
+  .detail-hero + main .detail-rule { display: none; }
+  .detail { padding-top: 56px; }
+
+  .footer .col .foot-copy {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em;
+    color: var(--ink-mute); margin-top: 14px;
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="
+  var t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = t;
+  localStorage.setItem('substrate-theme', t);
+">
+  <span class="th-mark"></span>
+  <span class="lbl-jasny">Jasny</span>
+  <span class="lbl-ciemny">Ciemny</span>
+</button>
+
+<!-- ── Masthead ─────────────────────────────────────────────────────── -->
+<header class="masthead">
+  <div class="row">
+    <a href="index.html" class="brand">
+      <img class="edu-logo" src="edulab-mark-ink.png" alt="edulab" />
+      <span class="wordmark">edulab</span>
+    </a>
+    <nav class="topnav">
+      <a href="index.html">Indeks</a>
+      <a href="#" class="active">Sieci</a>
+      <a href="#">Krzem</a>
+      <a href="#">Metody</a>
+      <a href="#">O nas</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ── Article ───────────────────────────────────────────────────────── -->
+<main>
+<header class="detail-hero">
+  <div class="detail-hero-inner">
+    <div class="detail-back"><a href="index.html">← Powrót do indeksu</a></div>
+    <h1>Czym jest API</h1>
+    <p class="detail-dek">Aplikacje rzadko działają same. Pobierają dane od innych programów przez interfejs, który nazywa się API. Pokazujemy, jak ta rozmowa wygląda od środka.</p>
+  </div>
+</header>
+
+<div class="detail">
+
+  <hr class="detail-rule" />
+
+  <!-- prose intro -->
+  <div class="detail-prose">
+    <p class="dropcap"><span class="dc">K</span>iedy portal z wiadomościami pokazuje temperaturę za oknem, nie ma własnego termometru. Pyta o nią inny program - serwis pogodowy, który gdzieś trzyma bazę pomiarów z całego świata i udostępnia ją na żądanie. Mechanizm takiego pytania nazywa się <em>API</em>: skrót od Application Programming Interface. Po polsku: interfejs, przez który jeden program rozmawia z drugim.</p>
+
+    <p>Najprostsza analogia to restauracja. Siedzisz przy stoliku i nie wchodzisz do kuchni. Zamiast tego podajesz zamówienie kelnerowi, a on wraca z gotowym daniem. Kuchnia nigdy Cię nie widziała; zna tylko zamówienie zapisane na kartce. API pełni rolę takiego kelnera: przyjmuje pytanie, zanosi je we właściwe miejsce i wraca z odpowiedzią.</p>
+
+    <p>W internecie ta rozmowa toczy się zwykle w kilku krokach i trwa setki milisekund. Klient (na przykład strona otwarta w przeglądarce) wysyła zapytanie pod konkretny adres, taki jak <code>/api/weather?city=Warsaw</code>. Serwer odbiera je, odszukuje pasujące dane i odsyła odpowiedź w uzgodnionym formacie; dzisiaj prawie zawsze jest to <em>JSON</em>, czyli prosty zapis tekstowy, czytelny zarówno dla człowieka, jak i dla maszyny. Demonstracja niżej pokazuje tę wymianę krok po kroku.</p>
+  </div>
+
+</div><!-- /detail (close to let demo go full-wide) -->
+
+<!-- ═══ DEMO BLOCK (full-width breakout) ════════════════════════ -->
+<section class="demo-fullwide">
+  <div class="detail-demo" id="demo">
+    <div class="demo-head">
+      <h2>Jak portal pobiera dane pogodowe</h2>
+      <p>Po lewej baza serwera pogodowego, po prawej strona portalu z wiadomościami. Wybierz miasto i kliknij <em>Wyślij zapytanie</em> i zobacz, jak liczba w bazie staje się liczbą w nagłówku artykułu.</p>
+    </div>
+
+    <div class="api-scene">
+
+      <!-- city selector -->
+      <div class="api-city-row">
+        <label>Wybierz miasto:</label>
+        <div class="city-chips" id="cityChips">
+          <button class="city-chip active" data-city="New York">New York</button>
+          <button class="city-chip" data-city="London">London</button>
+          <button class="city-chip" data-city="Tokyo">Tokyo</button>
+          <button class="city-chip" data-city="Sydney">Sydney</button>
+          <button class="city-chip" data-city="Paris">Paris</button>
+        </div>
+      </div>
+
+      <!-- two panels: server | channel | client -->
+      <div class="api-panels">
+
+        <!-- SERVER -->
+        <div class="panel-server">
+          <div class="panel-header">
+            <div class="panel-icon">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--ink-mute)">
+                <rect x="2" y="3" width="16" height="5" rx="1"/>
+                <rect x="2" y="12" width="16" height="5" rx="1"/>
+                <circle cx="16" cy="5.5" r="1" fill="currentColor" stroke="none"/>
+                <circle cx="16" cy="14.5" r="1" fill="currentColor" stroke="none"/>
+              </svg>
+            </div>
+            <div>
+              <div class="panel-title">Serwer pogodowy</div>
+              <div class="panel-sub">weather-api.example.com</div>
+            </div>
+          </div>
+          <div class="weather-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Miasto</th>
+                  <th>Temp (°C)</th>
+                  <th>Wilg.</th>
+                  <th>Pogoda</th>
+                </tr>
+              </thead>
+              <tbody id="weatherTableBody">
+                <!-- filled by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="api-docs">
+            <div class="api-docs-head">
+              <span class="docs-label">- Dokumentacja API</span>
+              <span class="docs-version">v1.2</span>
+            </div>
+
+            <div class="docs-section">
+              <h5>Pobierz pogodę dla miasta</h5>
+              <div class="endpoint-row">
+                <span class="ep-method">GET</span>
+                <span class="ep-path">/api/weather?city=<span class="ep-param">{city}</span></span>
+              </div>
+              <dl>
+                <dt>city</dt>
+                <dd><code>string</code><span class="req-tag">wymagane</span></dd>
+                <dt>units</dt>
+                <dd><code>"metric"</code> lub <code>"imperial"</code><span class="req-tag">opcjonalne</span></dd>
+                <dt>lang</dt>
+                <dd><code>"pl"</code>, <code>"en"</code>...<span class="req-tag">opcjonalne</span></dd>
+              </dl>
+            </div>
+
+            <div class="docs-section">
+              <h5>Format odpowiedzi</h5>
+              <dl>
+                <dt>status</dt>
+                <dd><code>"success"</code> lub <code>"error"</code></dd>
+                <dt>data.city</dt>
+                <dd><code>string</code> - nazwa miasta</dd>
+                <dt>data.temperature</dt>
+                <dd><code>number</code> - temperatura</dd>
+                <dt>data.humidity</dt>
+                <dd><code>number</code> - wilgotność (%)</dd>
+                <dt>data.description</dt>
+                <dd><code>string</code> - stan pogody</dd>
+                <dt>data.timestamp</dt>
+                <dd><code>ISO 8601</code> - moment pomiaru</dd>
+              </dl>
+            </div>
+
+            <div class="docs-section">
+              <h5>Możliwe odpowiedzi</h5>
+              <div class="codes">
+                <span class="code-chip ok">200 OK</span>
+                <span class="code-chip warn">400 Bad Request</span>
+                <span class="code-chip warn">404 Not Found</span>
+                <span class="code-chip warn">429 Too Many Requests</span>
+                <span class="code-chip warn">500 Server Error</span>
+              </div>
+            </div>
+
+            <div class="docs-section">
+              <h5>Limity i uwierzytelnianie</h5>
+              <dl>
+                <dt>auth</dt>
+                <dd>nagłówek <code>X-API-Key</code></dd>
+                <dt>limit</dt>
+                <dd>60 zapytań na minutę</dd>
+                <dt>cache</dt>
+                <dd>5 minut po stronie serwera</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHANNEL -->
+        <div class="panel-channel">
+          <div class="channel-line"></div>
+          <div class="channel-arrow" id="arrowReq" title="Zapytanie (Request)">→</div>
+          <div class="channel-label">HTTP / JSON</div>
+          <div class="channel-arrow" id="arrowRes" title="Odpowiedź (Response)">←</div>
+        </div>
+
+        <!-- CLIENT -->
+        <div class="panel-client">
+          <div class="panel-header">
+            <div class="panel-icon">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--ink-mute)">
+                <rect x="2" y="2" width="16" height="12" rx="1"/>
+                <path d="M7 18h6M10 14v4"/>
+              </svg>
+            </div>
+            <div>
+              <div class="panel-title">Portal z wiadomościami</div>
+              <div class="panel-sub">dailynews.example.com</div>
+            </div>
+          </div>
+          <div class="news-mock">
+            <!-- brand bar -->
+            <div class="news-brand-bar">
+              <div class="news-brand">
+                <svg class="news-logo" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2 L14.6 8.4 L21.5 9 L16.3 13.6 L17.8 20.4 L12 16.9 L6.2 20.4 L7.7 13.6 L2.5 9 L9.4 8.4 Z"/>
+                </svg>
+                <span class="news-brand-name"><span class="nb-mark">D</span>aily News</span>
+              </div>
+              <div class="news-live">
+                <span class="news-live-dot" id="newsDot"></span>
+                <span>Na żywo</span>
+              </div>
+            </div>
+
+            <!-- nav -->
+            <nav class="news-nav">
+              <a class="active">Aktualności</a>
+              <a>Sport</a>
+              <a>Kultura</a>
+              <a>Biznes</a>
+              <a>Świat</a>
+            </nav>
+
+            <!-- date strip -->
+            <div class="news-date-strip">
+              <span>Środa · 26 kwietnia 2026</span>
+              <span>Wydanie 14:32</span>
+            </div>
+
+            <!-- weather widget -->
+            <div class="news-weather-strip">
+              <div class="news-weather-heading" id="newsWeatherHeading">Pogoda w —</div>
+              <div class="weather-widget-row">
+                <div class="weather-icon-box" id="weatherIconBox">
+                  <!-- icon swapped by JS -->
+                  <svg id="weatherIcon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="20" cy="20" r="6"/>
+                    <line x1="20" y1="6"  x2="20" y2="10"/>
+                    <line x1="20" y1="30" x2="20" y2="34"/>
+                    <line x1="6"  y1="20" x2="10" y2="20"/>
+                    <line x1="30" y1="20" x2="34" y2="20"/>
+                    <line x1="10" y1="10" x2="13" y2="13"/>
+                    <line x1="27" y1="27" x2="30" y2="30"/>
+                    <line x1="10" y1="30" x2="13" y2="27"/>
+                    <line x1="27" y1="13" x2="30" y2="10"/>
+                  </svg>
+                </div>
+                <div class="news-weather-cards">
+                  <div class="weather-stat" id="statTemp">
+                    <div class="weather-stat-label">Temperatura</div>
+                    <div class="weather-stat-value" id="statTempVal">—°C</div>
+                  </div>
+                  <div class="weather-stat" id="statHum">
+                    <div class="weather-stat-label">Wilgotność</div>
+                    <div class="weather-stat-value" id="statHumVal">—%</div>
+                  </div>
+                  <div class="weather-stat" id="statCond">
+                    <div class="weather-stat-label">Stan</div>
+                    <div class="weather-stat-value" id="statCondVal" style="font-size:13px;padding-top:3px">—</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- hero article -->
+            <article class="news-hero">
+              <div class="news-hero-tag">Wybory · Tekst dnia</div>
+              <h3 class="news-hero-title">Rekordowa frekwencja w wyborach lokalnych</h3>
+              <p class="news-hero-dek">Komisje pracują od ósmej rano. W kilku miastach wojewódzkich frekwencja przekroczyła już 60%, najwyższy wynik od dekady. Państwowa Komisja Wyborcza zapowiada pierwsze cząstkowe wyniki na 22:00.</p>
+              <div class="news-hero-meta">
+                <span class="author-dot"></span>
+                <span>M. Kowalski</span>
+                <span>·</span>
+                <span>14 min temu</span>
+                <span>·</span>
+                <span>2 min czytania</span>
+              </div>
+            </article>
+
+            <!-- story list -->
+            <div class="news-stories">
+
+              <article class="news-story">
+                <div class="news-story-thumb">
+                  <svg viewBox="0 0 56 44" fill="none" stroke="currentColor" stroke-width="1.1">
+                    <ellipse cx="28" cy="32" rx="22" ry="6" opacity=".5"/>
+                    <ellipse cx="28" cy="32" rx="14" ry="4" opacity=".7"/>
+                    <circle cx="28" cy="20" r="6" fill="currentColor" opacity=".25"/>
+                    <path d="M 22 20 L 34 20 M 28 14 L 28 26" opacity=".7"/>
+                  </svg>
+                </div>
+                <div class="news-story-body">
+                  <div class="news-story-tag">Sport</div>
+                  <div class="news-story-title">Legia wygrywa 3:1 w emocjonującym meczu</div>
+                  <div class="news-story-meta">A. Nowak · 1 godz. temu</div>
+                </div>
+              </article>
+
+              <article class="news-story">
+                <div class="news-story-thumb">
+                  <svg viewBox="0 0 56 44" fill="none" stroke="currentColor" stroke-width="1.1">
+                    <path d="M 8 6 L 8 38 L 28 38 L 28 6 Z" opacity=".5"/>
+                    <path d="M 28 6 L 28 38 L 48 38 L 48 6 Z" opacity=".5"/>
+                    <path d="M 8 6 Q 18 12 28 6 Q 38 12 48 6" opacity=".7"/>
+                    <line x1="14" y1="14" x2="14" y2="36" opacity=".4"/>
+                    <line x1="20" y1="14" x2="20" y2="36" opacity=".4"/>
+                    <line x1="36" y1="14" x2="36" y2="36" opacity=".4"/>
+                    <line x1="42" y1="14" x2="42" y2="36" opacity=".4"/>
+                  </svg>
+                </div>
+                <div class="news-story-body">
+                  <div class="news-story-tag">Kultura</div>
+                  <div class="news-story-title">Nowy musical bije rekordy kasowe</div>
+                  <div class="news-story-meta">K. Wiśniewska · 3 godz. temu</div>
+                </div>
+              </article>
+
+              <article class="news-story">
+                <div class="news-story-thumb">
+                  <svg viewBox="0 0 56 44" fill="none" stroke="currentColor" stroke-width="1.1">
+                    <line x1="6"  y1="38" x2="50" y2="38" opacity=".5"/>
+                    <rect x="10" y="26" width="6" height="12" fill="currentColor" opacity=".4"/>
+                    <rect x="20" y="20" width="6" height="18" fill="currentColor" opacity=".4"/>
+                    <rect x="30" y="14" width="6" height="24" fill="currentColor" opacity=".4"/>
+                    <rect x="40" y="8"  width="6" height="30" fill="currentColor" opacity=".4"/>
+                    <path d="M 13 30 L 23 24 L 33 18 L 43 12" opacity=".8"/>
+                    <path d="M 39 14 L 43 12 L 45 16" opacity=".8"/>
+                  </svg>
+                </div>
+                <div class="news-story-body">
+                  <div class="news-story-tag">Biznes</div>
+                  <div class="news-story-title">Wall Street kończy tydzień na plusie</div>
+                  <div class="news-story-meta">P. Lewandowski · 5 godz. temu</div>
+                </div>
+              </article>
+
+            </div>
+
+            <!-- market ticker -->
+            <div class="news-ticker">
+              <span class="ticker-tag">Rynki</span>
+              <div class="ticker-strip">
+                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">WIG20</span>2 412,4 +1,2%</span>
+                <span class="ticker-item down"><span class="tick-arrow">▼</span><span class="tick-name">EUR/PLN</span>4,28 -0,3%</span>
+                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">BTC</span>68 240 +2,1%</span>
+                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">S&amp;P 500</span>5 218 +0,8%</span>
+                <span class="ticker-item down"><span class="tick-arrow">▼</span><span class="tick-name">DAX</span>17 940 -0,4%</span>
+                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">Złoto</span>2 314 +0,5%</span>
+                <!-- duplicated for seamless loop -->
+                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">WIG20</span>2 412,4 +1,2%</span>
+                <span class="ticker-item down"><span class="tick-arrow">▼</span><span class="tick-name">EUR/PLN</span>4,28 -0,3%</span>
+                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">BTC</span>68 240 +2,1%</span>
+                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">S&amp;P 500</span>5 218 +0,8%</span>
+                <span class="ticker-item down"><span class="tick-arrow">▼</span><span class="tick-name">DAX</span>17 940 -0,4%</span>
+                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">Złoto</span>2 314 +0,5%</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /api-panels -->
+
+      <!-- ── step track ───────────────────────────────────────── -->
+      <div style="padding: 20px 24px; border-top: 1px solid var(--rule-soft);">
+        <div class="kicker" style="margin-bottom:12px">- Przebieg rozmowy</div>
+        <div class="step-track" id="stepTrack">
+          <div class="step-block" id="step0">
+            <div class="step-indicator"></div>
+            <div class="step-num">01</div>
+            <div class="step-name">Pytanie</div>
+            <div class="step-desc">Strona pyta o pogodę dla wybranego miasta</div>
+          </div>
+          <div class="step-block" id="step1">
+            <div class="step-indicator"></div>
+            <div class="step-num">02</div>
+            <div class="step-name">Odczyt bazy</div>
+            <div class="step-desc">Serwer odszukuje pasujący rekord w swojej bazie</div>
+          </div>
+          <div class="step-block" id="step2">
+            <div class="step-indicator"></div>
+            <div class="step-num">03</div>
+            <div class="step-name">Pakowanie</div>
+            <div class="step-desc">Dane układane w format, który klient zrozumie</div>
+          </div>
+          <div class="step-block" id="step3">
+            <div class="step-indicator"></div>
+            <div class="step-num">04</div>
+            <div class="step-name">Odpowiedź</div>
+            <div class="step-desc">Paczka z danymi wraca tą samą drogą do klienta</div>
+          </div>
+          <div class="step-block" id="step4">
+            <div class="step-indicator"></div>
+            <div class="step-num">05</div>
+            <div class="step-name">Wyświetlenie</div>
+            <div class="step-desc">Strona aktualizuje pola pogodowe nowymi danymi</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── req / res panels + send button ──────────────────── -->
+      <div class="api-controls">
+        <div class="api-send-row">
+          <span class="method-badge">GET</span>
+          <span class="endpoint-path"><span class="path-accent">/api/weather</span>?city=<span id="endpointCity" class="path-accent">New York</span></span>
+          <button class="btn primary" id="sendBtn" onclick="runDemo()">Wyślij zapytanie</button>
+        </div>
+
+        <div class="rr-grid">
+          <div class="rr-panel">
+            <div class="rr-header">
+              <span class="rr-badge req">Pytanie</span>
+              <span class="rr-title" id="reqTitle">Gotowe do wysłania</span>
+            </div>
+            <div class="rr-body" id="reqBody"><span class="json-key">{
+  "endpoint"</span>: <span class="json-str">"/api/weather"</span>,
+  <span class="json-key">"method"</span>: <span class="json-str">"GET"</span>,
+  <span class="json-key">"parameters"</span>: {
+    <span class="json-key">"city"</span>: <span class="json-str" id="reqCity">"New York"</span>
+  }
+}</div>
+          </div>
+          <div class="rr-panel">
+            <div class="rr-header">
+              <span class="rr-badge res">Odpowiedź</span>
+              <span class="rr-title" id="resTitle">Czekamy na serwer</span>
+              <span class="rr-status idle" id="resStatus">—</span>
+            </div>
+            <div class="rr-body" id="resBody"><span class="json-key" style="opacity:.4">// Tutaj pojawi się odpowiedź serwera</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /api-scene -->
+  </div><!-- /detail-demo -->
+</section>
+
+<!-- reopen .detail wrapper for the after-demo prose, aside, related -->
+<div class="detail detail-after">
+
+  <!-- prose explanation -->
+  <div class="detail-prose">
+    <h3>Co się właśnie wydarzyło</h3>
+    <p>W ułamku sekundy odbyła się pełna rozmowa między dwoma programami. Strona portalu sformułowała pytanie (<em>daj mi pogodę dla Nowego Jorku</em>) i wysłała je pod konkretny adres serwera pogodowego. Serwer odszukał rekord, opakował go w odpowiedź i odesłał z powrotem. Strona rozpakowała paczkę i podstawiła liczby do trzech kafelków. Cała wymiana zmieściła się w czasie krótszym od mrugnięcia okiem.</p>
+
+    <p>Żadna z tych dwóch stron nie musiała wiedzieć, jak dokładnie działa ta druga. Serwer nie zna wyglądu portalu; portal nie zna struktury bazy danych pogodowej. Łączy je tylko <em>kontrakt</em> - z góry uzgodniony format pytań i odpowiedzi. To właśnie jest siła tego mechanizmu: pozwala budować duże systemy z mniejszych, niezależnych części, które potrafią się ze sobą porozumieć.</p>
+
+    <h3>Dlaczego ten sposób się przyjął</h3>
+    <p>Współczesne aplikacje rzadko są samowystarczalne. Aplikacja do zamawiania jedzenia woła API restauracji, banku i kuriera w trakcie jednego zamówienia. Mapa w telefonie korzysta jednocześnie z API dostawcy mapy, ruchu drogowego i wyszukiwania adresów, a potem scala je w jeden spójny widok. Każde kliknięcie „udostępnij" w portalu społecznościowym to wywołanie API. Liczba takich rozmów w internecie idzie w biliony dziennie.</p>
+
+    <p>To wszystko działa, bo po jednej stronie linii jest <em>proste pytanie</em>, a po drugiej <em>prosta odpowiedź</em>. Reszta, czyli sieć, serwery, bazy danych i programiści, którzy to wszystko piszą, chowa się pod warstwą interfejsu. Tak jak w restauracji: nie musisz znać przepisu na zupę, żeby ją zamówić. Wystarczy, że obie strony rozumieją menu.</p>
+
+    <h3>Czego nie widać w tej demonstracji</h3>
+    <p>Pominęliśmy kilka rzeczy, które w prawdziwej aplikacji są istotne. <em>Uwierzytelnianie</em>: zwykle pytanie zawiera klucz, który serwer sprawdza, zanim w ogóle zdecyduje, czy odpowiedzieć. <em>Pamięć podręczna</em>: identyczne pytanie zadane drugi raz dostaje odpowiedź z pamięci, bez schodzenia do bazy. <em>Błędy</em>: serwer może nie odpowiedzieć w ogóle, odpowiedzieć źle albo zająć się czymś innym. Każdy z tych tematów to osobny artykuł.</p>
+
+    <p>Format <code>JSON</code>, w którym wraca odpowiedź, wygrał wśród API z prostego powodu: jest czytelny dla człowieka i jednocześnie trywialny do przetworzenia przez maszynę. Wcześniej w użyciu był XML - ten sam pomysł, ale dużo bardziej rozwlekły. Dzisiaj prawie każde nowe API mówi w JSON-ie.</p>
+  </div>
+
+  <div class="detail-aside">
+    <h6>Dalsza lektura</h6>
+    <ul>
+      <li><a href="website.html">Anatomia strony WWW - jak przeglądarka renderuje to, co dostała w odpowiedzi z API</a></li>
+      <li><a href="compilation.html">Kompilator i interpreter - inny przykład tłumaczenia z jednego języka na drugi</a></li>
+      <li><a href="binary.html">System dwójkowy - jak każdy bajt JSON-a wygląda od podszewki</a></li>
+      <li><a href="image.html">Anatomia obrazu - co wraca, kiedy API zamiast tekstu odsyła zdjęcie</a></li>
+    </ul>
+  </div>
+
+  <!-- related -->
+  <div class="detail-related">
+    <h3>Powiązane demonstracje</h3>
+    <div class="related-grid">
+      <div class="related" onclick="location.href='website.html'">
+        <div class="kicker">Przeglądarka</div>
+        <h4>Anatomia strony WWW</h4>
+        <div class="read">22 min · Interaktywne</div>
+      </div>
+      <div class="related" onclick="location.href='compilation.html'">
+        <div class="kicker">Metody</div>
+        <h4>Kompilator i interpreter</h4>
+        <div class="read">18 min · Interaktywne</div>
+      </div>
+      <div class="related" onclick="location.href='binary.html'">
+        <div class="kicker">Krzem</div>
+        <h4>System dwójkowy</h4>
+        <div class="read">14 min · Interaktywne</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /detail -->
+</main>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="col">
+      <h6>edulab</h6>
+      <p>Interaktywne demonstracje tego, co dzieje się między naciśnięciem klawisza a pikselem na ekranie.</p>
+    </div>
+    <div class="col">
+      <h6>Artykuły</h6>
+      <a href="binary.html">System dwójkowy</a>
+      <a href="image.html">Anatomia obrazu</a>
+      <a href="compilation.html">Kompilator i interpreter</a>
+      <a href="website.html">Anatomia strony WWW</a>
+      <a href="api.html">Czym jest API</a>
+    </div>
+    <div class="col">
+      <h6>Autor</h6>
+      <p>Andrzej Jankowski</p>
+      <a href="https://andrzej.ai">andrzej.ai</a>
+      <p class="foot-copy">© 2026</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ─── Data ─────────────────────────────────────────────────── */
+  const DB = {
+    'New York': { temp: 22, humidity: 65, condition: 'Sunny',         conditionPl: 'Słonecznie' },
+    'London':   { temp: 15, humidity: 80, condition: 'Cloudy',        conditionPl: 'Pochmurnie' },
+    'Tokyo':    { temp: 28, humidity: 70, condition: 'Rainy',         conditionPl: 'Deszczowo' },
+    'Sydney':   { temp: 20, humidity: 60, condition: 'Clear',         conditionPl: 'Czyste niebo' },
+    'Paris':    { temp: 18, humidity: 75, condition: 'Partly Cloudy', conditionPl: 'Zmienne chmury' },
+  };
+
+  const cities = Object.keys(DB);
+  let selectedCity = 'New York';
+  let running = false;
+  let timers = [];
+
+  /* ─── Render table ─────────────────────────────────────────── */
+  function renderTable(highlightCity) {
+    const tbody = document.getElementById('weatherTableBody');
+    tbody.innerHTML = cities.map(city => {
+      const d = DB[city];
+      const hl = city === highlightCity ? ' class="highlighted"' : '';
+      return `<tr${hl}>
+        <td>${city}</td>
+        <td>${d.temp}</td>
+        <td>${d.humidity}%</td>
+        <td><span class="condition-badge">${d.condition}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  /* ─── City chips ────────────────────────────────────────────── */
+  document.getElementById('cityChips').addEventListener('click', e => {
+    const chip = e.target.closest('.city-chip');
+    if (!chip || running) return;
+    document.querySelectorAll('.city-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    selectedCity = chip.dataset.city;
+    updateEndpoint();
+    renderTable(null);
+    resetUI();
+  });
+
+  function updateEndpoint() {
+    document.getElementById('endpointCity').textContent = selectedCity;
+    document.getElementById('reqCity').textContent = `"${selectedCity}"`;
+  }
+
+  /* ─── Step helpers ──────────────────────────────────────────── */
+  function setStep(idx, state) {
+    const el = document.getElementById('step' + idx);
+    el.classList.remove('active', 'done');
+    if (state) el.classList.add(state);
+  }
+  function clearSteps() {
+    for (let i = 0; i < 5; i++) setStep(i, null);
+  }
+
+  /* ─── Arrow ─────────────────────────────────────────────────── */
+  function flashArrow(id, cls) {
+    const el = document.getElementById(id);
+    el.classList.remove('req-active', 'res-active');
+    void el.offsetWidth;
+    el.classList.add(cls);
+    const t = setTimeout(() => el.classList.remove(cls), 800);
+    timers.push(t);
+  }
+
+  /* ─── Weather icon SVG per condition ────────────────────────── */
+  const WEATHER_ICONS = {
+    'Sunny': `
+      <circle cx="20" cy="20" r="6"/>
+      <line x1="20" y1="6"  x2="20" y2="10"/>
+      <line x1="20" y1="30" x2="20" y2="34"/>
+      <line x1="6"  y1="20" x2="10" y2="20"/>
+      <line x1="30" y1="20" x2="34" y2="20"/>
+      <line x1="10" y1="10" x2="13" y2="13"/>
+      <line x1="27" y1="27" x2="30" y2="30"/>
+      <line x1="10" y1="30" x2="13" y2="27"/>
+      <line x1="27" y1="13" x2="30" y2="10"/>
+    `,
+    'Clear': `
+      <path d="M 28 22 A 10 10 0 1 1 18 12 A 8 8 0 0 0 28 22 Z"/>
+      <circle cx="32" cy="14" r=".8" fill="currentColor"/>
+      <circle cx="10" cy="10" r=".8" fill="currentColor"/>
+      <circle cx="34" cy="28" r=".8" fill="currentColor"/>
+    `,
+    'Cloudy': `
+      <path d="M 12 26 Q 6 26 6 21 Q 6 16 11 16 Q 12 11 18 11 Q 24 11 25 16 Q 32 16 32 22 Q 32 26 27 26 Z"/>
+      <path d="M 16 30 Q 12 30 12 26 Q 12 22 17 22 Q 18 18 23 18 Q 28 18 29 22 Q 34 22 34 26 Q 34 30 30 30 Z" opacity=".5"/>
+    `,
+    'Rainy': `
+      <path d="M 12 22 Q 6 22 6 17 Q 6 12 11 12 Q 12 7 18 7 Q 24 7 25 12 Q 32 12 32 18 Q 32 22 27 22 Z"/>
+      <line x1="12" y1="26" x2="10" y2="32"/>
+      <line x1="19" y1="26" x2="17" y2="32"/>
+      <line x1="26" y1="26" x2="24" y2="32"/>
+      <line x1="32" y1="26" x2="30" y2="32"/>
+    `,
+    'Partly Cloudy': `
+      <circle cx="14" cy="14" r="5"/>
+      <line x1="14" y1="4"  x2="14" y2="7"/>
+      <line x1="4"  y1="14" x2="7"  y2="14"/>
+      <line x1="6"  y1="6"  x2="8"  y2="8"/>
+      <line x1="22" y1="6"  x2="20" y2="8"/>
+      <path d="M 16 28 Q 10 28 10 23 Q 10 18 15 18 Q 17 14 22 14 Q 28 14 29 19 Q 35 19 35 24 Q 35 28 30 28 Z" fill="var(--bg-2)"/>
+    `,
+  };
+
+  function updateWeatherIcon(condition) {
+    const svg = document.getElementById('weatherIcon');
+    if (!svg) return;
+    svg.innerHTML = WEATHER_ICONS[condition] || WEATHER_ICONS['Sunny'];
+  }
+
+  /* ─── Client panel update ───────────────────────────────────── */
+  function updateClientPanel(city, animate) {
+    const d = DB[city];
+    document.getElementById('newsWeatherHeading').textContent = `Pogoda w ${city}`;
+
+    const setVal = (id, val) => {
+      const el = document.getElementById(id);
+      el.textContent = val;
+    };
+
+    setVal('statTempVal', `${d.temp}°C`);
+    setVal('statHumVal', `${d.humidity}%`);
+    setVal('statCondVal', d.conditionPl);
+    updateWeatherIcon(d.condition);
+
+    if (animate) {
+      ['statTemp','statHum','statCond'].forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.add('updated');
+        const t = setTimeout(() => el.classList.remove('updated'), 2000);
+        timers.push(t);
+      });
+      const iconBox = document.getElementById('weatherIconBox');
+      iconBox.classList.add('updated');
+      const tIcon = setTimeout(() => iconBox.classList.remove('updated'), 2000);
+      timers.push(tIcon);
+    }
+  }
+
+  /* ─── JSON render ───────────────────────────────────────────── */
+  function renderRequestJSON(city) {
+    return `<span class="json-key">{
+  "endpoint"</span>: <span class="json-str">"/api/weather"</span>,
+  <span class="json-key">"method"</span>: <span class="json-str">"GET"</span>,
+  <span class="json-key">"parameters"</span>: {
+    <span class="json-key">"city"</span>: <span class="json-str">"${city}"</span>
+  }
+}`;
+  }
+
+  function renderResponseJSON(city) {
+    const d = DB[city];
+    const ts = new Date().toISOString();
+    return `<span class="json-key">{
+  "status"</span>: <span class="json-ok">"success"</span>,
+  <span class="json-key">"data"</span>: {
+    <span class="json-key">"city"</span>:        <span class="json-str">"${city}"</span>,
+    <span class="json-key">"temperature"</span>: <span class="json-num">${d.temp}</span>,
+    <span class="json-key">"humidity"</span>:    <span class="json-num">${d.humidity}</span>,
+    <span class="json-key">"description"</span>: <span class="json-str">"${d.condition}"</span>,
+    <span class="json-key">"timestamp"</span>:   <span class="json-ts">"${ts}"</span>
+  }
+}`;
+  }
+
+  /* ─── Reset UI ──────────────────────────────────────────────── */
+  function resetUI() {
+    timers.forEach(clearTimeout);
+    timers = [];
+    clearSteps();
+    document.getElementById('reqBody').innerHTML = renderRequestJSON(selectedCity);
+    document.getElementById('resBody').innerHTML = '<span class="json-key" style="opacity:.4">// Tutaj pojawi się odpowiedź serwera</span>';
+    document.getElementById('reqTitle').textContent = 'Gotowe do wysłania';
+    document.getElementById('resTitle').textContent = 'Czekamy na serwer';
+    document.getElementById('resStatus').textContent = '—';
+    document.getElementById('resStatus').className = 'rr-status idle';
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('sendBtn').textContent = 'Wyślij zapytanie';
+    document.getElementById('arrowReq').classList.remove('req-active','res-active');
+    document.getElementById('arrowRes').classList.remove('req-active','res-active');
+    running = false;
+    renderTable(null);
+  }
+
+  /* ─── Main demo sequence ────────────────────────────────────── */
+  function runDemo() {
+    if (running) return;
+    running = true;
+    const city = selectedCity;
+    const btn = document.getElementById('sendBtn');
+    btn.disabled = true;
+    btn.textContent = 'Wysyłanie…';
+
+    clearSteps();
+    renderTable(null);
+
+    // step 0 - wysyłanie pytania
+    setStep(0, 'active');
+    document.getElementById('reqTitle').textContent = `Wysyłam pytanie o ${city}...`;
+    flashArrow('arrowReq', 'req-active');
+
+    timers.push(setTimeout(() => {
+      setStep(0, 'done');
+      // step 1 - odczyt bazy
+      setStep(1, 'active');
+      renderTable(city); // highlight
+    }, 600));
+
+    timers.push(setTimeout(() => {
+      setStep(1, 'done');
+      // step 2 - pakowanie
+      setStep(2, 'active');
+    }, 1200));
+
+    timers.push(setTimeout(() => {
+      setStep(2, 'done');
+      // step 3 - odpowiedź w drodze
+      setStep(3, 'active');
+      flashArrow('arrowRes', 'res-active');
+      document.getElementById('resTitle').textContent = `Dane dla ${city} w drodze...`;
+      document.getElementById('resStatus').textContent = '200 OK';
+      document.getElementById('resStatus').className = 'rr-status ok';
+      document.getElementById('resBody').innerHTML = renderResponseJSON(city);
+    }, 1900));
+
+    timers.push(setTimeout(() => {
+      setStep(3, 'done');
+      // step 4 - wyświetlenie
+      setStep(4, 'active');
+      updateClientPanel(city, true);
+      document.getElementById('reqTitle').textContent = `Wysłano - ${city}`;
+      document.getElementById('resTitle').textContent = `Odpowiedź odebrana`;
+    }, 2600));
+
+    timers.push(setTimeout(() => {
+      setStep(4, 'done');
+      btn.disabled = false;
+      btn.textContent = 'Wyślij ponownie';
+      running = false;
+    }, 3400));
+  }
+
+  /* ─── Init ──────────────────────────────────────────────────── */
+  renderTable(null);
+  updateEndpoint();
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+# Local Claude Code settings
+.claude/settings.local.json
+
+# Intermediate working artifacts — never committed
+mockups/
+plans/
+superpowers/
+progress.md
+review*.md
+*.plan.md
+*.draft.*
+scratch/
+
+# Screenshots and scratch renders
+check.png
+*.tmp

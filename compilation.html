@@ -1,0 +1,1124 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kompilator i interpreter - Substrate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script>
+  (function(){
+    try {
+      var saved = localStorage.getItem('substrate-theme');
+      document.documentElement.dataset.theme = saved || 'light';
+    } catch (_) {
+      document.documentElement.dataset.theme = 'light';
+    }
+  })();
+</script>
+<style>
+  /* ── edulab design system — Editorial Color ──────────────────────────
+     Fonts: Outfit (display) · IBM Plex Sans (sans) · Roboto Mono (mono)
+     Paper white page, warm ink, yellow primary, blue + green secondary,
+     red for danger. Every colour below is an edulab token.
+     ─────────────────────────────────────────────────────────────────── */
+  :root {
+    /* ── edulab brand fonts ── */
+    --font-display: 'Outfit', 'IBM Plex Sans', system-ui, sans-serif;
+    --font-sans:    'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    --font-mono:    'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    /* ── edulab raw palette ── */
+    --paper:   #FFFFFF;  --paper-2: #FBF7E6;  --paper-3: #F5EDCB;
+    --surface: #FFFFFF;
+    --edu-ink: #1C1917;  --edu-ink-2: #57534E;  --edu-ink-3: #948C82;
+    --line:    #EDE7D2;  --line-2:  #DDD4B6;
+
+    --yellow: #FFD500;  --yellow-600: #F0C800;  --yellow-soft: #FFD500;  --yellow-ink: #1C1917;
+    --blue:   #1E8FC2;  --blue-600:   #177AA8;  --blue-soft:   #1E8FC2;  --blue-ink:   #FFFFFF;
+    --green:  #00A651;  --green-600:  #009444;  --green-soft:  #00A651;  --green-ink:  #FFFFFF;
+    --red:    #E5322D;  --red-600:    #C92823;  --red-soft:    #E5322D;  --red-ink:    #FFFFFF;
+    --grape:  #7A5AC2;
+
+    --primary: var(--yellow);  --on-primary: var(--yellow-ink);
+    --focus-ring: 0 0 0 3px color-mix(in srgb, var(--yellow) 45%, transparent);
+
+    /* ── radii & elevation ── */
+    --r-xs: 6px; --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+    --shadow-sm: 0 1px 2px rgba(33,30,26,.06), 0 1px 1px rgba(33,30,26,.04);
+    --shadow-md: 0 4px 16px rgba(33,30,26,.08), 0 1px 3px rgba(33,30,26,.05);
+    --shadow-lg: 0 16px 40px rgba(33,30,26,.12), 0 3px 8px rgba(33,30,26,.06);
+    --shadow-primary: 0 8px 22px color-mix(in srgb, var(--yellow) 30%, transparent);
+
+    /* ── layout ── */
+    --pad-x: 30px;
+    --pad-y: 72px;
+    --gap: 28px;
+    --shell: 1100px;
+  }
+
+  /* ── Light (default): edulab paper ──────────────────────────────────── */
+  html[data-theme="light"] {
+    --bg:        var(--paper);
+    --bg-2:      var(--paper-2);
+    --bg-3:      var(--paper-3);
+    --ink:       var(--edu-ink);
+    --ink-soft:  var(--edu-ink-2);
+    --ink-mute:  var(--edu-ink-3);
+    --rule:      var(--line-2);
+    --rule-soft: var(--line);
+    --accent:    var(--blue);
+    --accent-2:  var(--blue-600);
+    --accent-tint:        var(--paper-2);
+    --accent-tint-soft:   var(--paper-2);
+    --accent-tint-strong: var(--paper-3);
+    --overlay:   rgba(255,255,255,.94);
+    --card:      var(--surface);
+    --logo-filter: none;
+    --hero-bg:    #24211E;
+    --hero-ink:   #FFFFFF;
+    --hero-ink-2: rgba(255,255,255,.74);
+  }
+
+  /* ── Dark: edulab ink surfaces (yellow reads as text on black) ──────── */
+  html[data-theme="dark"] {
+    --bg:        #1C1917;
+    --bg-2:      #262220;
+    --bg-3:      #322D29;
+    --ink:       #FFFFFF;
+    --ink-soft:  rgba(255,255,255,.74);
+    --ink-mute:  rgba(255,255,255,.52);
+    --rule:      rgba(255,255,255,.30);
+    --rule-soft: rgba(255,255,255,.14);
+    --accent:    var(--yellow);
+    --accent-2:  var(--yellow-600);
+    --accent-tint:        rgba(255,255,255,.06);
+    --accent-tint-soft:   rgba(255,255,255,.04);
+    --accent-tint-strong: rgba(255,213,0,.22);
+    --overlay:   rgba(28,25,23,.94);
+    --card:      #262220;
+    --logo-filter: invert(1);
+    --hero-bg:    #24211E;
+    --hero-ink:   #FFFFFF;
+    --hero-ink-2: rgba(255,255,255,.74);
+  }
+
+  /* ── Reset ──────────────────────────────────────────────────────────── */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background .25s ease, color .25s ease;
+  }
+  a { color: inherit; text-decoration: none; cursor: pointer; }
+  button { font-family: inherit; }
+
+  /* Content shell — edulab caps the column at 1100px */
+  .shell { max-width: var(--shell); margin: 0 auto; width: 100%; }
+
+  /* Functional label: mono, uppercase, tracked */
+  .kicker {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .dot { color: var(--ink-mute); padding: 0 6px; }
+
+  /* ── Theme toggle — full pill, never a partial contour ──────────────── */
+  .theme-toggle {
+    position: fixed;
+    top: 14px; right: 20px;
+    z-index: 100;
+    appearance: none; cursor: pointer;
+    background: var(--bg-2);
+    border: none;
+    color: var(--ink-soft);
+    padding: 9px 16px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: .02em;
+    transition: background .15s, color .15s;
+  }
+  .theme-toggle:hover { background: var(--yellow); color: var(--yellow-ink); }
+  .theme-toggle:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .theme-toggle .th-mark {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: -1px;
+    background: var(--ink);
+  }
+  .theme-toggle:hover .th-mark { background: var(--yellow-ink); }
+  .theme-toggle .lbl-jasny { display: inline; }
+  .theme-toggle .lbl-ciemny { display: none; }
+  html[data-theme="light"] .theme-toggle .lbl-jasny { display: none; }
+  html[data-theme="light"] .theme-toggle .lbl-ciemny { display: inline; }
+
+  /* ── edulab brand bar (required chrome) ─────────────────────────────── */
+  .masthead {
+    position: sticky; top: 0; z-index: 50; width: 100%;
+    background: var(--overlay);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .masthead .row {
+    max-width: var(--shell); margin: 0 auto;
+    padding: 8px var(--pad-x);
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .masthead .brand { display: flex; align-items: center; gap: 2px; cursor: pointer; }
+  .masthead .edu-logo {
+    width: 64px; height: 64px; display: block; margin-right: -6px;
+    filter: var(--logo-filter);
+  }
+  .masthead .brand .wordmark {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 22px; letter-spacing: -.02em; color: var(--ink);
+  }
+  .masthead .topnav { display: flex; gap: 4px; padding-right: 132px; }
+  .masthead .topnav a {
+    font-family: var(--font-sans); font-weight: 600; font-size: 14px;
+    color: var(--ink-soft);
+    padding: 8px 14px; border-radius: var(--r-pill);
+    transition: background .15s, color .15s;
+  }
+  .masthead .topnav a:hover { background: var(--bg-2); color: var(--ink); }
+  .masthead .topnav a.active { background: var(--yellow); color: var(--yellow-ink); }
+
+  /* ── Detail page frame ──────────────────────────────────────────────── */
+  .detail {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 48px var(--pad-x) calc(var(--pad-y) * 1.2);
+  }
+  .detail-back {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-mute); margin-bottom: 48px;
+  }
+  .detail-back a { transition: color .15s; }
+  .detail-back a:hover { color: var(--accent); }
+
+  .detail-head { max-width: 760px; margin: 0 auto; text-align: left; }
+  .detail-meta {
+    display: flex; align-items: center;
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: .06em; text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .detail-head h1 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: clamp(40px, 5vw, 72px); line-height: 1.05;
+    letter-spacing: -.02em;
+    margin: 0 0 24px; text-wrap: balance;
+  }
+  .detail-dek {
+    font-family: var(--font-sans); font-style: italic;
+    font-size: clamp(20px, 1.6vw, 24px);
+    line-height: 1.45; color: var(--ink-soft); margin: 0 0 32px;
+    max-width: 50ch;
+  }
+  .detail-byline {
+    display: flex; align-items: center;
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: .06em; text-transform: uppercase;
+  }
+
+  .detail-rule {
+    height: 1px; background: var(--rule); opacity: .5;
+    margin: 56px auto;
+    max-width: 760px;
+    border: none;
+  }
+
+  .detail-prose { max-width: 660px; margin: 0 auto 48px; }
+  .detail-prose p {
+    font-family: var(--font-sans); font-size: 19px; line-height: 1.6;
+    color: var(--ink); margin: 0 0 24px; text-wrap: pretty;
+  }
+  .detail-prose p em { font-style: italic; color: var(--accent-2); }
+  .detail-prose p code,
+  .detail-prose code {
+    font-family: var(--font-mono); font-size: 15px;
+    background: var(--bg-2); padding: 1px 6px; border-radius: 3px;
+    color: var(--accent);
+  }
+  .detail-prose h3 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 28px; margin: 48px 0 16px;
+    letter-spacing: -.005em;
+  }
+  .detail-prose .dropcap .dc {
+    font-family: var(--font-sans); font-style: italic;
+    font-size: 80px; line-height: .8;
+    float: left; padding: 6px 14px 0 0;
+    color: var(--accent);
+  }
+
+  /* ── Demo container ─────────────────────────────────────────────────── */
+  .detail-demo {
+    max-width: 1240px; margin: 64px auto;
+    padding: 40px;
+    background: var(--bg-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 4px;
+  }
+  .detail-demo .demo-head { margin-bottom: 32px; max-width: 70ch; }
+  .detail-demo .demo-head h2 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 32px; margin: 8px 0 8px; letter-spacing: -.01em;
+  }
+  .detail-demo .demo-head p {
+    font-family: var(--font-sans); font-size: 16px; color: var(--ink-soft); margin: 0;
+  }
+
+  /* ── Compare grid (compiler vs interpreter) ─────────────────────────── */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  .compare-side {
+    background: var(--bg);
+    border: 1px solid var(--rule-soft);
+    border-radius: 3px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .compare-side h3 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 24px; line-height: 1.15; margin: 0;
+    letter-spacing: -.01em;
+  }
+  .compare-side .compare-sub {
+    font-family: var(--font-sans); font-style: italic;
+    font-size: 15px; color: var(--ink-soft);
+    margin: -10px 0 0; line-height: 1.5;
+  }
+  .compare-side h4 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 500;
+    margin: 4px 0 -4px;
+  }
+
+  /* ── Code areas ─────────────────────────────────────────────────────── */
+  .code-area {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--bg-2);
+    color: var(--ink);
+    border: 1px solid var(--rule-soft);
+    border-radius: 2px;
+    padding: 16px 18px;
+    width: 100%;
+    outline: none;
+    resize: vertical;
+    min-height: 180px;
+    line-height: 1.6;
+    letter-spacing: 0;
+    transition: border-color .15s;
+  }
+  .code-area:focus { border-color: var(--accent); }
+  textarea.code-area { display: block; }
+  div.code-area { overflow: auto; min-height: 60px; }
+
+  div.code-area .line {
+    display: block;
+    padding: 0 6px;
+    margin: 0 -6px;
+    border-radius: 2px;
+    white-space: pre;
+    min-height: 1.6em;
+    transition: background-color .3s;
+  }
+  div.code-area .line.line-highlight {
+    background-color: var(--accent-tint-strong);
+  }
+
+  html[data-theme="light"] .code-area { background: var(--bg-3); }
+
+  /* ── Buttons ────────────────────────────────────────────────────────── */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .btn {
+    appearance: none; cursor: pointer;
+    background: transparent;
+    border: 1px solid var(--rule-soft);
+    color: var(--ink-soft);
+    padding: 8px 14px;
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    transition: border-color .15s, color .15s, background .15s;
+  }
+  .btn:hover { border-color: var(--ink-soft); color: var(--ink); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.primary {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    transition: transform .15s ease, background .15s ease, opacity .15s;
+  }
+  .btn.primary:hover:not(:disabled) { background: var(--accent); transform: translateY(-1px); }
+  .btn.accent {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    transition: transform .15s ease, opacity .15s;
+  }
+  .btn.accent:hover:not(:disabled) { transform: translateY(-1px); }
+
+  /* ── Steps list ─────────────────────────────────────────────────────── */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .step {
+    display: flex; align-items: baseline; gap: 14px;
+    padding: 10px 14px;
+    border-left: 3px solid var(--rule-soft);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: .04em;
+    color: var(--ink-mute);
+    opacity: .5;
+    transition: all .35s ease;
+  }
+  .step .step-no {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-mute);
+    letter-spacing: .12em;
+    min-width: 24px;
+  }
+  .step.active {
+    opacity: 1;
+    color: var(--accent);
+    background: var(--accent-tint);
+  }
+  .step.active .step-no { color: var(--accent); }
+  .step.completed {
+    opacity: 1;
+    color: var(--ink-soft);
+    background: transparent;
+  }
+  .step.completed .step-no { color: var(--ink-soft); }
+
+  /* ── Output box ─────────────────────────────────────────────────────── */
+  .output-box {
+    background: var(--bg-2);
+    color: var(--ink-soft);
+    border: 1px solid var(--rule-soft);
+    border-radius: 2px;
+    padding: 14px 18px;
+    min-height: 92px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .output-box .out-comment {
+    color: var(--ink-mute);
+    font-size: 11px;
+    margin: 0 0 8px;
+    display: block;
+  }
+  .output-box .out-ok { color: var(--accent); }
+  html[data-theme="light"] .output-box { background: var(--bg-3); }
+
+  /* Assembly highlighting */
+  .asm-section { color: var(--accent); }
+  .asm-data    { color: var(--ink); }
+  .asm-label   { color: var(--ink); font-weight: 500; }
+  .asm-op      { color: var(--accent-2); }
+  .asm-cmt     { color: var(--ink-mute); font-style: italic; }
+
+  /* ── Timing badge ───────────────────────────────────────────────────── */
+  .timing {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  /* ── File card (executable) ─────────────────────────────────────────── */
+  .file-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 18px;
+    background: var(--bg-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 2px;
+  }
+  html[data-theme="light"] .file-card { background: var(--bg-3); }
+  .file-icon {
+    width: 48px; height: 48px;
+    border: 1px solid var(--ink-soft);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    color: var(--ink-soft);
+    flex-shrink: 0;
+  }
+  .file-name {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    color: var(--ink);
+    margin: 0 0 2px;
+    letter-spacing: -.005em;
+  }
+  .file-sub {
+    font-family: var(--font-sans);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* ── Status line (interpreter) ──────────────────────────────────────── */
+  .status-line {
+    font-family: var(--font-sans);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin: 0;
+    min-height: 22px;
+    line-height: 1.45;
+  }
+  .status-line .ok { color: var(--accent); font-style: normal; font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+
+  .hidden { display: none !important; }
+
+  /* ── Aside ──────────────────────────────────────────────────────────── */
+  .detail-aside {
+    max-width: 660px; margin: 48px auto;
+    padding: 24px 28px;
+    background: var(--bg-2);
+    border-radius: 0 3px 3px 0;
+  }
+  .detail-aside h6 {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--ink-mute);
+    margin: 0 0 12px;
+  }
+  .detail-aside ul { margin: 0; padding: 0; list-style: none; }
+  .detail-aside li { padding: 6px 0; }
+  .detail-aside a {
+    font-family: var(--font-sans); font-size: 16px; color: var(--ink);
+    border-bottom: 1px solid var(--rule-soft);
+    transition: color .15s, border-color .15s;
+  }
+  .detail-aside a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── Footer ─────────────────────────────────────────────────────────── */
+  .footer { padding: 60px var(--pad-x) 32px; max-width: var(--shell); margin: 0 auto; }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px;
+    padding-bottom: 32px;
+    border-top: 1px solid var(--rule);
+    padding-top: 32px;
+  }
+  .footer .col h6 {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-mute); margin: 0 0 14px;
+  }
+  .footer .col p {
+    font-family: var(--font-sans); font-size: 14px; color: var(--ink-soft);
+    line-height: 1.5; margin: 0;
+  }
+  .footer .col a {
+    display: block; font-family: var(--font-sans); font-size: 14px;
+    color: var(--ink); padding: 3px 0;
+  }
+  .footer .col a:hover { color: var(--accent); }
+
+  /* ── Scrollbars ─────────────────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--rule-soft); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ink-mute); }
+
+  /* ── Responsive ─────────────────────────────────────────────────────── */
+  @media (max-width: 1100px) {
+    .compare-grid { grid-template-columns: 1fr; gap: 20px; }
+    .masthead .topnav { padding-right: 90px; }
+  }
+  @media (max-width: 760px) {
+    :root { --pad-x: 28px; --pad-y: 64px; }
+    .detail-demo { padding: 24px; }
+    .compare-side { padding: 20px; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .masthead .topnav { display: none; }
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     edulab component layer — flat fills, full contours, soft shadows.
+     Overrides the editorial idiom above; every value is an edulab token.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /* Display font has no true italic — drop synthesised obliques */
+  .hero-dek, .detail-dek, .masthead .brand .tag,
+  .row-author, .detail-prose .dropcap .dc, .toc .ttl { font-style: normal; }
+
+  /* ── Buttons: primary = solid yellow pill, secondary = sand pill ────── */
+  .btn {
+    background: var(--bg-2);
+    border: none;
+    color: var(--ink-soft);
+    padding: 9px 18px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0;
+    text-transform: none;
+    transition: background .15s, color .15s;
+  }
+  .btn:hover { background: var(--bg-3); color: var(--ink); border: none; }
+  .btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .btn.primary, .btn.accent {
+    background: var(--yellow);
+    border: none;
+    color: var(--yellow-ink);
+    padding: 11px 22px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0;
+    text-transform: none;
+    box-shadow: var(--shadow-primary);
+  }
+  .btn.primary:hover, .btn.primary:hover:not(:disabled), .btn.accent:hover {
+    background: var(--yellow-600); color: var(--yellow-ink); transform: none;
+  }
+  .btn.active {
+    background: var(--yellow); color: var(--yellow-ink); border: none;
+  }
+  .btn:disabled, .btn.primary:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+
+  /* ── Chip / tag: solid colour, white text (dark on yellow) ──────────── */
+  .pill {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .08em; text-transform: uppercase;
+    background: var(--blue-soft); color: var(--blue-ink);
+    border: none;
+    padding: 4px 10px; border-radius: var(--r-pill);
+  }
+
+  /* ── Full contours only: no coloured edge on one side ───────────────── */
+  .detail-aside {
+    border-left: none;
+    background: var(--bg-2);
+    border-radius: var(--r-lg);
+    padding: 22px 26px;
+  }
+  .tab.active, .file-tab.active {
+    border-bottom-color: transparent;
+    background: var(--yellow);
+    color: var(--yellow-ink);
+    border-radius: var(--r-pill);
+  }
+
+  /* ── Section eyebrow: functional label, no leading dash ─────────────── */
+  .section-head .kicker, .demo-head .kicker { color: var(--ink-mute); }
+
+  /* ── Cards & wells: generous radii, soft low shadow ─────────────────── */
+  .demo-frame, .demo-card, .card, .panel {
+    border-radius: var(--r-lg);
+  }
+
+  /* ── Page header scheme: solid ink title → full-width lead ──────────── */
+  .detail { max-width: var(--shell); }
+  .detail-head { max-width: 760px; }
+  .detail-head h1 {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(2.1rem, 4.6vw, 3rem);
+    letter-spacing: -.025em; line-height: 1.05;
+    color: var(--ink); margin: 0 0 20px;
+  }
+  .detail-dek {
+    font-family: var(--font-sans); font-style: normal; font-weight: 400;
+    font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6;
+    color: var(--ink-soft); max-width: none; margin: 0 0 24px;
+  }
+  /* meta + byline sit under the lead, never above the title */
+  .detail-meta, .detail-byline {
+    display: block; line-height: 2;
+    font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-mute); margin: 0;
+  }
+  /* Functional label chip inside panels: solid colour, white text */
+  .pane-label, .vp-label {
+    background: var(--blue-soft); color: var(--blue-ink);
+    border: none; border-radius: var(--r-pill); padding: 3px 10px;
+  }
+  .detail-prose p {
+    font-family: var(--font-sans); font-size: 18px; line-height: 1.68;
+    color: var(--ink);
+  }
+  .detail-prose h3 {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 25px; letter-spacing: -.01em;
+  }
+  .detail-prose p code, .detail-prose code {
+    font-family: var(--font-mono); font-size: 15px;
+    background: var(--bg-3); color: var(--ink);
+    padding: .12em .4em; border-radius: var(--r-xs);
+  }
+  .detail-prose .dropcap .dc {
+    font-family: var(--font-display); font-style: normal; font-weight: 700;
+    color: var(--yellow-ink);
+  }
+  .detail-rule { max-width: 760px; background: var(--rule-soft); opacity: 1; }
+
+  /* ── Compilation: pipeline steps are full blocks, not left rules ────── */
+  .step.active {
+    border-left-color: transparent;
+    border: 1px solid var(--yellow);
+    background: color-mix(in srgb, var(--yellow) 18%, transparent);
+  }
+  .step.completed {
+    border-left-color: transparent;
+    border: 1px solid var(--rule-soft);
+  }
+
+
+  /* Outfit has no true italic — italic text falls back to IBM Plex Sans */
+  .compare-sub, .compare-side .compare-sub, .status-line, .file-sub,
+  .calculation .empty, .cart-empty, .asm-cmt, .up-mark, .nb-mark,
+  .m-body p:first-child::first-letter { font-family: var(--font-sans); }
+
+  /* ── Dark hero band (matches the index) ─────────────────────────────── */
+  .detail-hero {
+    background: var(--hero-bg);
+    padding: 26px var(--pad-x) 60px;
+    margin-bottom: 0;
+  }
+  .detail-hero-inner { max-width: var(--shell); margin: 0 auto; }
+  .detail-hero .detail-back {
+    font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--hero-ink-2); margin-bottom: 44px;
+  }
+  .detail-hero .detail-back a { color: var(--hero-ink-2); transition: color .15s; }
+  .detail-hero .detail-back a:hover { color: var(--yellow); }
+  .detail-hero h1 {
+    max-width: 900px; margin: 0 0 20px;
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(2.1rem, 4.6vw, 3rem);
+    letter-spacing: -.025em; line-height: 1.05;
+    color: var(--hero-ink); text-wrap: balance;
+  }
+  .detail-hero .detail-dek {
+    max-width: 720px; margin: 0;
+    font-family: var(--font-sans); font-style: normal;
+    font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6;
+    color: var(--hero-ink-2);
+  }
+  /* the band already separates hero from prose */
+  .detail-hero + .detail .detail-rule,
+  .detail-hero + main .detail-rule { display: none; }
+  .detail { padding-top: 56px; }
+
+  .footer .col .foot-copy {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em;
+    color: var(--ink-mute); margin-top: 14px;
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" aria-label="Przełącz motyw">
+  <span class="th-mark"></span>
+  <span class="lbl-jasny">Jasny</span>
+  <span class="lbl-ciemny">Ciemny</span>
+</button>
+
+<header class="masthead">
+  <div class="row">
+    <a href="index.html" class="brand">
+      <img class="edu-logo" src="edulab-mark-ink.png" alt="edulab" />
+      <span class="wordmark">edulab</span>
+    </a>
+    <nav class="topnav">
+      <a href="index.html">Indeks</a>
+      <a href="#">Sieci</a>
+      <a href="#">Krzem</a>
+      <a href="#" class="active">Metody</a>
+      <a href="#">O piśmie</a>
+    </nav>
+  </div>
+</header>
+
+<header class="detail-hero">
+  <div class="detail-hero-inner">
+    <div class="detail-back"><a href="index.html">← Powrót do indeksu</a></div>
+    <h1>Kompilator i interpreter</h1>
+    <p class="detail-dek">Dwa sposoby na to, by tekst, który napisałeś, zaczął coś robić: skompilować raz i wypuścić na wolność albo czytać linijka po linijce i od razu odpowiadać za wynik.</p>
+  </div>
+</header>
+
+<article class="detail">
+
+  <hr class="detail-rule" />
+
+  <section class="detail-prose dropcap">
+    <p><span class="dc">K</span>od źródłowy nie jest jeszcze programem. Jest opisem programu, tekstem w języku, który ludzie umieją czytać, a procesor nie. Żeby cokolwiek się wydarzyło, ten opis trzeba <em>zamienić</em> na liczby, które procesor potrafi wykonać. Ta zamiana, czyli tłumaczenie z języka wysokopoziomowego na maszynowy, może nastąpić w dwóch zupełnie różnych momentach.</p>
+    <p>Można ją zrobić raz, długo i dokładnie, dostając w rezultacie samodzielny plik gotowy do błyskawicznego uruchomienia. Albo raz po raz, na bieżąco, czytając kod linia po linii i wykonując go natychmiast. Pierwszy sposób to <em>kompilator</em>. Drugi - <em>interpreter</em>. Niżej dwie symulacje pokazują różnicę krok po kroku.</p>
+  </section>
+
+  <section class="detail-demo">
+    <header class="demo-head">
+      <h2>Dwie ścieżki wykonania</h2>
+      <p>Po lewej kompilator C++ zamienia kod na plik wykonywalny w pięciu fazach. Po prawej interpreter Pythona czyta kod linia po linii i wykonuje go w locie. Uruchom obie i porównaj czasy.</p>
+    </header>
+
+    <div class="compare-grid">
+
+      <!-- COMPILER SIDE -->
+      <div class="compare-side" id="compiler-sim">
+        <h3>Kompilator</h3>
+        <p class="compare-sub">Tłumaczy cały program na plik maszynowy przed pierwszym uruchomieniem.</p>
+
+        <h4>1. Kod źródłowy (C++)</h4>
+        <textarea id="compiler-code" class="code-area" spellcheck="false">#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "Hello, World!" &lt;&lt; std::endl;
+    return 0;
+}</textarea>
+
+        <div class="controls">
+          <button id="compile-btn" class="btn primary">Kompiluj</button>
+          <button id="compiler-reset-btn" class="btn">Reset</button>
+        </div>
+
+        <h4>2. Proces kompilacji</h4>
+        <div id="compiler-timing"></div>
+        <div id="compiler-steps" class="steps">
+          <div class="step" data-step="lexical"><span class="step-no">01</span><span>Analiza leksykalna</span></div>
+          <div class="step" data-step="parsing"><span class="step-no">02</span><span>Parsowanie</span></div>
+          <div class="step" data-step="semantic"><span class="step-no">03</span><span>Analiza semantyczna</span></div>
+          <div class="step" data-step="optimization"><span class="step-no">04</span><span>Optymalizacja</span></div>
+          <div class="step" data-step="generation"><span class="step-no">05</span><span>Generowanie kodu</span></div>
+        </div>
+
+        <div id="compiler-binary-view" class="hidden">
+          <h4>3. Kod maszynowy (uproszczony)</h4>
+          <div class="output-box">
+            <span class="out-comment">// Kompilator zamienia twój kod na niskopoziomowe instrukcje maszynowe.</span>
+            <code id="compiler-binary-code"></code>
+          </div>
+        </div>
+
+        <div id="compiler-result" class="hidden">
+          <h4>4. Plik wykonywalny</h4>
+          <div class="file-card">
+            <div class="file-icon">EXE</div>
+            <div>
+              <p class="file-name">program.exe</p>
+              <p class="file-sub">Gotowy do uruchomienia bezpośrednio przez procesor.</p>
+            </div>
+          </div>
+          <div class="controls" style="margin-top: 14px;">
+            <button id="run-btn" class="btn accent">▸ Uruchom plik</button>
+          </div>
+        </div>
+
+        <h4>5. Wyjście wykonania</h4>
+        <div id="compiler-exec-timing"></div>
+        <div id="compiler-output" class="output-box"></div>
+      </div>
+
+      <!-- INTERPRETER SIDE -->
+      <div class="compare-side" id="interpreter-sim">
+        <h3>Interpreter</h3>
+        <p class="compare-sub">Czyta i wykonuje kod źródłowy linia po linii, bezpośrednio.</p>
+
+        <h4>1. Kod źródłowy (Python)</h4>
+        <div id="interpreter-code-display" class="code-area" spellcheck="false"></div>
+        <textarea id="interpreter-code-source" class="hidden">print("Hello, World!")
+</textarea>
+
+        <div class="controls">
+          <button id="interpret-btn" class="btn primary">Uruchom z interpreterem</button>
+          <button id="interpreter-reset-btn" class="btn">Reset</button>
+        </div>
+
+        <h4>2. Interpretacja i wykonanie</h4>
+        <p id="interpreter-status" class="status-line">Interpreter w stanie spoczynku.</p>
+
+        <h4>3. Wyjście wykonania</h4>
+        <div id="interpreter-timing"></div>
+        <div id="interpreter-output" class="output-box"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="detail-prose">
+    <h3>Skąd ta różnica</h3>
+    <p>Kompilator i interpreter robią to samo: zamieniają abstrakcyjny tekst kodu na czyny, czyli liczby zapisywane do pamięci, instrukcje wykonywane przez procesor i znaki rysowane na ekranie. Różnią się momentem, w którym to robią, i tym, ile pracy wykonują na zapas.</p>
+    <p>Kompilator robi tłumaczenie raz, długo i porządnie. Może sobie pozwolić na <em>optymalizacje</em>, bo wynik jego pracy będzie używany wielokrotnie. Interpreter tłumaczy w biegu, krócej i pobieżniej, bo nie wie, czy ten sam kawałek kodu zaraz nie zostanie zastąpiony przez inny.</p>
+
+    <h3>Co z tego wynika dla nas</h3>
+    <p>Programy skompilowane (C, C++, Rust, Go) uruchamiają się błyskawicznie, bo cała praca tłumaczeniowa jest już wykonana, a procesor dostaje gotowe rozkazy. Programy interpretowane (Python, Ruby, JavaScript w starszych przeglądarkach) uruchamiają się wolniej, bo równolegle dzieją się dwie rzeczy: tłumaczenie i wykonanie. W zamian programista dostaje swobodę: może zmieniać kod między kolejnymi uruchomieniami bez ponownej kompilacji.</p>
+    <p>Granica nie jest jednak tak ostra, jak ją tu narysowaliśmy. Współczesne <em>silniki JIT</em> kompilują interpretowane programy w trakcie ich działania, tylko te fragmenty, które są wykonywane wystarczająco często, by się to opłacało. To jednak temat na osobny artykuł.</p>
+  </section>
+
+  <aside class="detail-aside">
+    <h6>Dalsza lektura</h6>
+    <ul>
+      <li><a href="binary.html">System dwójkowy - czym są bajty, na które kompilator zamienia kod</a></li>
+      <li><a href="image.html">Anatomia obrazu - inny przykład tego, jak tekst zamienia się w liczby</a></li>
+      <li><a href="#">JIT - kompilacja tuż przed wykonaniem</a></li>
+      <li><a href="#">Bytecode - cienka warstwa pomiędzy kompilacją a interpretacją</a></li>
+    </ul>
+  </aside>
+
+</article>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="col">
+      <h6>edulab</h6>
+      <p>Interaktywne demonstracje tego, co dzieje się między naciśnięciem klawisza a pikselem na ekranie.</p>
+    </div>
+    <div class="col">
+      <h6>Artykuły</h6>
+      <a href="binary.html">System dwójkowy</a>
+      <a href="image.html">Anatomia obrazu</a>
+      <a href="compilation.html">Kompilator i interpreter</a>
+      <a href="website.html">Anatomia strony WWW</a>
+      <a href="api.html">Czym jest API</a>
+    </div>
+    <div class="col">
+      <h6>Autor</h6>
+      <p>Andrzej Jankowski</p>
+      <a href="https://andrzej.ai">andrzej.ai</a>
+      <p class="foot-copy">© 2026</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  // ── Compiler simulation ─────────────────────────────────────────────
+  const compilerSim = document.getElementById('compiler-sim');
+  const compileBtn = document.getElementById('compile-btn');
+  const compilerResetBtn = document.getElementById('compiler-reset-btn');
+  const compilerCodeEl = document.getElementById('compiler-code');
+  const compilerSteps = compilerSim.querySelectorAll('.step');
+  const compilerTiming = document.getElementById('compiler-timing');
+  const compilerExecTiming = document.getElementById('compiler-exec-timing');
+  const compilerBinaryView = document.getElementById('compiler-binary-view');
+  const compilerBinaryCode = document.getElementById('compiler-binary-code');
+  const compilerResult = document.getElementById('compiler-result');
+  const runBtn = document.getElementById('run-btn');
+  const compilerOutput = document.getElementById('compiler-output');
+
+  const initialCompilerCode = compilerCodeEl.value;
+  const simplifiedBinary =
+`<span class="asm-section">.section .data</span>
+<span class="asm-data">msg: .asciz "Hello, World!"</span>
+
+<span class="asm-section">.section .text</span>
+<span class="asm-label">_start:</span>
+    <span class="asm-op">mov</span>     rax, 1     <span class="asm-cmt">; syscall write</span>
+    <span class="asm-op">mov</span>     rdi, 1     <span class="asm-cmt">; deskryptor stdout</span>
+    <span class="asm-op">lea</span>     rsi, [rip + msg]  <span class="asm-cmt">; wskaźnik na tekst</span>
+    <span class="asm-op">mov</span>     rdx, 13    <span class="asm-cmt">; długość komunikatu</span>
+    <span class="asm-op">syscall</span>            <span class="asm-cmt">; wywołanie jądra</span>
+    <span class="asm-op">mov</span>     rax, 60    <span class="asm-cmt">; syscall exit</span>
+    <span class="asm-op">xor</span>     rdi, rdi   <span class="asm-cmt">; kod wyjścia 0</span>
+    <span class="asm-op">syscall</span>            <span class="asm-cmt">; wywołanie jądra</span>`;
+
+  function resetCompiler() {
+    compilerCodeEl.value = initialCompilerCode;
+    compilerCodeEl.disabled = false;
+    compileBtn.disabled = false;
+    compilerSteps.forEach(s => s.className = 'step');
+    compilerBinaryView.classList.add('hidden');
+    compilerResult.classList.add('hidden');
+    runBtn.disabled = false;
+    compilerOutput.textContent = '';
+    compilerTiming.innerHTML = '';
+    compilerExecTiming.innerHTML = '';
+  }
+
+  compileBtn.addEventListener('click', async () => {
+    compileBtn.disabled = true;
+    compilerCodeEl.disabled = true;
+    compilerOutput.textContent = '';
+    compilerBinaryView.classList.add('hidden');
+    compilerResult.classList.add('hidden');
+    compilerSteps.forEach(s => s.className = 'step');
+    compilerTiming.innerHTML = '';
+    compilerExecTiming.innerHTML = '';
+
+    const start = performance.now();
+    for (const step of compilerSteps) {
+      const noEl = step.querySelector('.step-no');
+      step.classList.add('active');
+      await sleep(500);
+      step.classList.remove('active');
+      step.classList.add('completed');
+    }
+    const duration = (performance.now() - start).toFixed(1);
+    compilerTiming.innerHTML = `<span class="timing">Czas kompilacji · ${duration} ms</span>`;
+
+    compilerOutput.textContent = 'Kompilacja zakończona pomyślnie. Wygenerowano kod maszynowy.';
+    compilerBinaryCode.innerHTML = simplifiedBinary;
+    compilerBinaryView.classList.remove('hidden');
+    compilerResult.classList.remove('hidden');
+  });
+
+  runBtn.addEventListener('click', async () => {
+    runBtn.disabled = true;
+    compilerOutput.textContent = 'Wykonuję program...\n';
+    const start = performance.now();
+    await sleep(40);
+    const duration = (performance.now() - start).toFixed(1);
+    compilerExecTiming.innerHTML = `<span class="timing">Czas wykonania · ${duration} ms</span>`;
+    compilerOutput.innerHTML += 'Hello, World!\n\n';
+    compilerOutput.innerHTML += '<span class="out-ok">Program zakończony.</span>';
+  });
+
+  compilerResetBtn.addEventListener('click', resetCompiler);
+
+  // ── Interpreter simulation ──────────────────────────────────────────
+  const interpretBtn = document.getElementById('interpret-btn');
+  const interpreterResetBtn = document.getElementById('interpreter-reset-btn');
+  const interpreterCodeSource = document.getElementById('interpreter-code-source');
+  const interpreterCodeDisplay = document.getElementById('interpreter-code-display');
+  const interpreterOutput = document.getElementById('interpreter-output');
+  const interpreterTiming = document.getElementById('interpreter-timing');
+  const interpreterStatus = document.getElementById('interpreter-status');
+
+  let initialInterpreterCode = interpreterCodeSource.value;
+
+  function setupInterpreterCodeDisplay() {
+    initialInterpreterCode = interpreterCodeSource.value;
+    const lines = initialInterpreterCode.split('\n');
+    interpreterCodeDisplay.innerHTML = '';
+    lines.forEach((lineText, index) => {
+      const lineDiv = document.createElement('div');
+      lineDiv.classList.add('line');
+      lineDiv.dataset.line = index;
+      lineDiv.textContent = lineText || ' ';
+      interpreterCodeDisplay.appendChild(lineDiv);
+    });
+  }
+
+  function resetInterpreter() {
+    interpretBtn.disabled = false;
+    interpreterOutput.textContent = '';
+    interpreterTiming.innerHTML = '';
+    interpreterStatus.textContent = 'Interpreter w stanie spoczynku.';
+    setupInterpreterCodeDisplay();
+  }
+
+  interpretBtn.addEventListener('click', async () => {
+    interpretBtn.disabled = true;
+    interpreterOutput.textContent = '';
+    interpreterTiming.innerHTML = '';
+    setupInterpreterCodeDisplay();
+
+    const start = performance.now();
+    const lines = initialInterpreterCode.split('\n');
+
+    for (let i = 0; i < lines.length; i++) {
+      const lineEl = interpreterCodeDisplay.querySelector(`[data-line="${i}"]`);
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      lineEl.classList.add('line-highlight');
+      interpreterStatus.textContent = `Wykonuję linię ${i + 1}...`;
+      await sleep(800);
+
+      if (line.startsWith('print(')) {
+        const m = line.match(/print\((.*)\)/);
+        if (m) interpreterOutput.textContent += m[1].replace(/['"]/g, '') + '\n';
+      }
+
+      lineEl.classList.remove('line-highlight');
+    }
+
+    const duration = (performance.now() - start).toFixed(1);
+    interpreterTiming.innerHTML = `<span class="timing">Łączny czas interpretacji i wykonania · ${duration} ms</span>`;
+    interpreterStatus.innerHTML = `<span class="ok">Skrypt zakończony pomyślnie</span>`;
+  });
+
+  interpreterResetBtn.addEventListener('click', resetInterpreter);
+
+  // Initial setup
+  resetCompiler();
+  resetInterpreter();
+
+  // ── Theme toggle ────────────────────────────────────────────────────
+  document.getElementById('themeToggle').addEventListener('click', function(){
+    var current = document.documentElement.dataset.theme;
+    var next = current === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('substrate-theme', next); } catch (_) {}
+    document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+  });
+});
+</script>
+
+</body>
+</html>

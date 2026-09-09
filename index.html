@@ -1,0 +1,1615 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Substrate - interaktywne demonstracje</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script>
+  (function(){
+    try {
+      var saved = localStorage.getItem('substrate-theme');
+      document.documentElement.dataset.theme = saved || 'light';
+    } catch (_) {
+      document.documentElement.dataset.theme = 'light';
+    }
+  })();
+</script>
+<style>
+  /* ── edulab design system — Editorial Color ──────────────────────────
+     Fonts: Outfit (display) · IBM Plex Sans (sans) · Roboto Mono (mono)
+     Paper white page, warm ink, yellow primary, blue + green secondary,
+     red for danger. Every colour below is an edulab token.
+     ─────────────────────────────────────────────────────────────────── */
+  :root {
+    /* ── edulab brand fonts ── */
+    --font-display: 'Outfit', 'IBM Plex Sans', system-ui, sans-serif;
+    --font-sans:    'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    --font-mono:    'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    /* ── edulab raw palette ── */
+    --paper:   #FFFFFF;  --paper-2: #FBF7E6;  --paper-3: #F5EDCB;
+    --surface: #FFFFFF;
+    --edu-ink: #1C1917;  --edu-ink-2: #57534E;  --edu-ink-3: #948C82;
+    --line:    #EDE7D2;  --line-2:  #DDD4B6;
+
+    --yellow: #FFD500;  --yellow-600: #F0C800;  --yellow-soft: #FFD500;  --yellow-ink: #1C1917;
+    --blue:   #1E8FC2;  --blue-600:   #177AA8;  --blue-soft:   #1E8FC2;  --blue-ink:   #FFFFFF;
+    --green:  #00A651;  --green-600:  #009444;  --green-soft:  #00A651;  --green-ink:  #FFFFFF;
+    --red:    #E5322D;  --red-600:    #C92823;  --red-soft:    #E5322D;  --red-ink:    #FFFFFF;
+    --grape:  #7A5AC2;
+
+    --primary: var(--yellow);  --on-primary: var(--yellow-ink);
+    --focus-ring: 0 0 0 3px color-mix(in srgb, var(--yellow) 45%, transparent);
+
+    /* ── radii & elevation ── */
+    --r-xs: 6px; --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+    --shadow-sm: 0 1px 2px rgba(33,30,26,.06), 0 1px 1px rgba(33,30,26,.04);
+    --shadow-md: 0 4px 16px rgba(33,30,26,.08), 0 1px 3px rgba(33,30,26,.05);
+    --shadow-lg: 0 16px 40px rgba(33,30,26,.12), 0 3px 8px rgba(33,30,26,.06);
+    --shadow-primary: 0 8px 22px color-mix(in srgb, var(--yellow) 30%, transparent);
+
+    /* ── layout ── */
+    --pad-x: 30px;
+    --pad-y: 72px;
+    --gap: 28px;
+    --shell: 1100px;
+  }
+
+  /* ── Light (default): edulab paper ──────────────────────────────────── */
+  html[data-theme="light"] {
+    --bg:        var(--paper);
+    --bg-2:      var(--paper-2);
+    --bg-3:      var(--paper-3);
+    --ink:       var(--edu-ink);
+    --ink-soft:  var(--edu-ink-2);
+    --ink-mute:  var(--edu-ink-3);
+    --rule:      var(--line-2);
+    --rule-soft: var(--line);
+    --accent:    var(--blue);
+    --accent-2:  var(--blue-600);
+    --accent-tint:        var(--paper-2);
+    --accent-tint-soft:   var(--paper-2);
+    --accent-tint-strong: var(--paper-3);
+    --overlay:   rgba(255,255,255,.94);
+    --card:      var(--surface);
+    --logo-filter: none;
+    --hero-bg:    #24211E;
+    --hero-ink:   #FFFFFF;
+    --hero-ink-2: rgba(255,255,255,.74);
+  }
+
+  /* ── Dark: edulab ink surfaces (yellow reads as text on black) ──────── */
+  html[data-theme="dark"] {
+    --bg:        #1C1917;
+    --bg-2:      #262220;
+    --bg-3:      #322D29;
+    --ink:       #FFFFFF;
+    --ink-soft:  rgba(255,255,255,.74);
+    --ink-mute:  rgba(255,255,255,.52);
+    --rule:      rgba(255,255,255,.30);
+    --rule-soft: rgba(255,255,255,.14);
+    --accent:    var(--yellow);
+    --accent-2:  var(--yellow-600);
+    --accent-tint:        rgba(255,255,255,.06);
+    --accent-tint-soft:   rgba(255,255,255,.04);
+    --accent-tint-strong: rgba(255,213,0,.22);
+    --overlay:   rgba(28,25,23,.94);
+    --card:      #262220;
+    --logo-filter: invert(1);
+    --hero-bg:    #24211E;
+    --hero-ink:   #FFFFFF;
+    --hero-ink-2: rgba(255,255,255,.74);
+  }
+
+  /* ── Reset ──────────────────────────────────────────────────────────── */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background .25s ease, color .25s ease;
+  }
+  a { color: inherit; text-decoration: none; cursor: pointer; }
+  button { font-family: inherit; }
+
+  /* Content shell — edulab caps the column at 1100px */
+  .shell { max-width: var(--shell); margin: 0 auto; width: 100%; }
+
+  /* Functional label: mono, uppercase, tracked */
+  .kicker {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .dot { color: var(--ink-mute); padding: 0 6px; }
+
+  /* ── Theme toggle — full pill, never a partial contour ──────────────── */
+  .theme-toggle {
+    position: fixed;
+    top: 14px; right: 20px;
+    z-index: 100;
+    appearance: none; cursor: pointer;
+    background: var(--bg-2);
+    border: none;
+    color: var(--ink-soft);
+    padding: 9px 16px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: .02em;
+    transition: background .15s, color .15s;
+  }
+  .theme-toggle:hover { background: var(--yellow); color: var(--yellow-ink); }
+  .theme-toggle:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .theme-toggle .th-mark {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: -1px;
+    background: var(--ink);
+  }
+  .theme-toggle:hover .th-mark { background: var(--yellow-ink); }
+  .theme-toggle .lbl-jasny { display: inline; }
+  .theme-toggle .lbl-ciemny { display: none; }
+  html[data-theme="light"] .theme-toggle .lbl-jasny { display: none; }
+  html[data-theme="light"] .theme-toggle .lbl-ciemny { display: inline; }
+
+  /* ── edulab brand bar (required chrome) ─────────────────────────────── */
+  .masthead {
+    position: sticky; top: 0; z-index: 50; width: 100%;
+    background: var(--overlay);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .masthead .row {
+    max-width: var(--shell); margin: 0 auto;
+    padding: 8px var(--pad-x);
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .masthead .brand { display: flex; align-items: center; gap: 2px; cursor: pointer; }
+  .masthead .edu-logo {
+    width: 64px; height: 64px; display: block; margin-right: -6px;
+    filter: var(--logo-filter);
+  }
+  .masthead .brand .wordmark {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 22px; letter-spacing: -.02em; color: var(--ink);
+  }
+  .masthead .topnav { display: flex; gap: 4px; padding-right: 132px; }
+  .masthead .topnav a {
+    font-family: var(--font-sans); font-weight: 600; font-size: 14px;
+    color: var(--ink-soft);
+    padding: 8px 14px; border-radius: var(--r-pill);
+    transition: background .15s, color .15s;
+  }
+  .masthead .topnav a:hover { background: var(--bg-2); color: var(--ink); }
+  .masthead .topnav a.active { background: var(--yellow); color: var(--yellow-ink); }
+
+  /* ── Hero ───────────────────────────────────────────────────────────── */
+  .hero {
+    padding: calc(var(--pad-y) * 1.1) var(--pad-x);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(80px, 11vw, 168px);
+    line-height: 1.0;
+    letter-spacing: -.035em;
+    margin: 0 0 40px;
+    color: var(--ink);
+  }
+  .hero-dek {
+    font-family: var(--font-sans); font-size: 20px;
+    font-style: italic;
+    line-height: 1.45; color: var(--ink-soft);
+    max-width: 36ch; margin: 0;
+  }
+  /* ── Article list ───────────────────────────────────────────────────── */
+  .indexsec {
+    padding: var(--pad-y) var(--pad-x);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .section-head { margin-bottom: 40px; }
+  .article-list { list-style: none; padding: 0; margin: 0; }
+  .article-row {
+    display: grid;
+    grid-template-columns: 60px 140px 1fr 200px 120px;
+    gap: 32px;
+    padding: 36px 0;
+    border-top: 1px solid var(--rule-soft);
+    align-items: start;
+    cursor: pointer;
+    transition: padding-left .15s, padding-right .15s;
+  }
+  .article-row:last-child { border-bottom: 1px solid var(--rule-soft); }
+  .article-row:hover { padding-left: 16px; padding-right: 16px; }
+  .article-row:hover h3 { color: var(--accent); }
+  .article-row a { display: contents; }
+  .row-no {
+    font-family: var(--font-display); font-size: 28px; font-style: italic;
+    color: var(--ink-mute);
+  }
+  .row-meta { display: flex; flex-direction: column; gap: 6px; }
+  .row-meta .row-author {
+    font-family: var(--font-sans); font-style: italic; font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .row-title h3 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 28px; line-height: 1.15; letter-spacing: -.005em;
+    margin: 0 0 8px; color: var(--ink); text-wrap: pretty;
+    transition: color .15s;
+  }
+  .row-title p {
+    font-family: var(--font-sans); font-size: 15px; line-height: 1.5;
+    color: var(--ink-soft); margin: 0; max-width: 50ch;
+  }
+  .row-thumb {
+    background: var(--bg-2); aspect-ratio: 16/10;
+    border: 1px solid var(--rule-soft); border-radius: 2px; overflow: hidden;
+    color: var(--ink);
+  }
+  .row-thumb svg { width: 100%; height: 100%; display: block; }
+  .row-read {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+  .pill {
+    font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+    border: 1px solid var(--accent); color: var(--accent);
+    padding: 3px 8px; border-radius: 2px;
+  }
+
+  /* ── Manifesto ──────────────────────────────────────────────────────── */
+  .manifesto {
+    padding: var(--pad-y) var(--pad-x);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .m-grid {
+    display: grid; grid-template-columns: 200px 1fr; gap: 60px;
+    max-width: 1100px;
+  }
+  .m-label {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-mute);
+    padding-top: 12px; border-top: 1px solid var(--rule-soft);
+  }
+  .m-body p {
+    font-family: var(--font-sans); font-size: clamp(20px, 2vw, 26px);
+    line-height: 1.45; margin: 0 0 24px;
+    color: var(--ink-soft);
+  }
+  .m-body p em { font-style: italic; color: var(--accent); }
+  .m-body p:first-child::first-letter {
+    font-family: var(--font-display); font-size: 64px;
+    font-style: italic;
+    float: left; line-height: .8; padding: 6px 12px 0 0;
+    color: var(--accent);
+  }
+  .m-sig {
+    font-family: var(--font-sans); font-style: italic; font-size: 16px;
+    color: var(--ink-mute); margin-top: 16px;
+  }
+
+  /* ── Departments ────────────────────────────────────────────────────── */
+  /* ── Footer ─────────────────────────────────────────────────────────── */
+  .footer { padding: 60px var(--pad-x) 32px; max-width: var(--shell); margin: 0 auto; }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px;
+    padding-bottom: 32px;
+    border-top: 1px solid var(--rule);
+    padding-top: 32px;
+  }
+  .footer .col h6 {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-mute); margin: 0 0 14px;
+  }
+  .footer .col p {
+    font-family: var(--font-sans); font-size: 14px; color: var(--ink-soft);
+    line-height: 1.5; margin: 0;
+  }
+  .footer .col a {
+    display: block; font-family: var(--font-sans); font-size: 14px;
+    color: var(--ink); padding: 3px 0;
+  }
+  .footer .col a:hover { color: var(--accent); }
+
+  /* ── Responsive ─────────────────────────────────────────────────────── */
+  @media (max-width: 1100px) {
+    .hero .hero-grid { gap: 36px; }
+    .article-row { grid-template-columns: 40px 100px 1fr 140px; gap: 24px; }
+    .row-thumb { display: none; }
+    .t-cell:nth-child(2) { border-right: none; }
+    .t-cell:nth-child(1), .t-cell:nth-child(2) { border-bottom: 1px solid var(--rule-soft); }
+    .masthead .topnav { padding-right: 90px; }
+  }
+  @media (max-width: 760px) {
+    :root { --pad-x: 28px; --pad-y: 64px; }
+    .hero-title { font-size: clamp(60px, 14vw, 100px); }
+    .article-row { grid-template-columns: 32px 1fr; }
+    .article-row .row-meta, .article-row .row-read { grid-column: 2; }
+    .t-cell { border-right: none; border-bottom: 1px solid var(--rule-soft); padding: 24px 0; }
+    .t-cell:last-child { border-bottom: none; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .masthead .topnav { display: none; }
+    .masthead .topnav { padding-right: 0; }
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     edulab component layer — flat fills, full contours, soft shadows.
+     Overrides the editorial idiom above; every value is an edulab token.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /* Display font has no true italic — drop synthesised obliques */
+  .hero-dek, .detail-dek, .masthead .brand .tag,
+  .row-author, .detail-prose .dropcap .dc { font-style: normal; }
+
+  /* ── Buttons: primary = solid yellow pill, secondary = sand pill ────── */
+  .btn {
+    background: var(--bg-2);
+    border: none;
+    color: var(--ink-soft);
+    padding: 9px 18px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0;
+    text-transform: none;
+    transition: background .15s, color .15s;
+  }
+  .btn:hover { background: var(--bg-3); color: var(--ink); border: none; }
+  .btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .btn.primary, .btn.accent {
+    background: var(--yellow);
+    border: none;
+    color: var(--yellow-ink);
+    padding: 11px 22px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0;
+    text-transform: none;
+    box-shadow: var(--shadow-primary);
+  }
+  .btn.primary:hover, .btn.primary:hover:not(:disabled), .btn.accent:hover {
+    background: var(--yellow-600); color: var(--yellow-ink); transform: none;
+  }
+  .btn.active {
+    background: var(--yellow); color: var(--yellow-ink); border: none;
+  }
+  .btn:disabled, .btn.primary:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+
+  /* ── Chip / tag: solid colour, white text (dark on yellow) ──────────── */
+  .pill {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .08em; text-transform: uppercase;
+    background: var(--blue-soft); color: var(--blue-ink);
+    border: none;
+    padding: 4px 10px; border-radius: var(--r-pill);
+  }
+
+  /* ── Full contours only: no coloured edge on one side ───────────────── */
+  .detail-aside {
+    border-left: none;
+    background: var(--bg-2);
+    border-radius: var(--r-lg);
+    padding: 22px 26px;
+  }
+  .tab.active, .file-tab.active {
+    border-bottom-color: transparent;
+    background: var(--yellow);
+    color: var(--yellow-ink);
+    border-radius: var(--r-pill);
+  }
+
+  /* ── Section eyebrow: functional label, no leading dash ─────────────── */
+  .section-head .kicker, .demo-head .kicker { color: var(--ink-mute); }
+
+  /* ── Cards & wells: generous radii, soft low shadow ─────────────────── */
+  .demo-frame, .demo-card, .card, .panel {
+    border-radius: var(--r-lg);
+  }
+
+  /* ── Index: hero + list ─────────────────────────────────────────────── */
+  .masthead .row, .indexsec, .manifesto, .section-head {
+    max-width: var(--shell); margin-left: auto; margin-right: auto;
+  }
+
+  /* ── Hero: full-bleed sand band, capped content, pixel art ──────────── */
+  .hero {
+    background: var(--hero-bg);
+    border-bottom: none;
+    padding: 76px var(--pad-x) 84px;
+  }
+  .hero .hero-title { color: var(--hero-ink); }
+  .hero .hero-dek   { color: var(--hero-ink-2); }
+  .hero .hero-grid {
+    max-width: var(--shell); margin: 0 auto;
+    grid-template-columns: 1.15fr .85fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .hero-art { display: flex; justify-content: center; align-items: center; }
+  .hero-pixels {
+    width: 100%; max-width: 380px; height: auto;
+    /* pixel palette — SVG fill needs values that resolve on the element */
+    --px-body:   #FFFFFF;
+    --px-shade:  #948C82;
+    --px-well:   #1C1917;
+    --px-screen: #100E0D;
+    --px-yellow: #FFD500;
+    --px-blue:   #1E8FC2;
+    --px-green:  #00A651;
+    --px-red:    #E5322D;
+  }
+  @media (max-width: 768px) {
+    .hero .hero-grid { grid-template-columns: 1fr; gap: 36px; }
+    .hero-art { order: -1; }
+  }
+  .hero-title {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(56px, 8vw, 104px); letter-spacing: -.035em;
+    color: var(--ink);
+  }
+  .hero-center, .hero-title { text-align: left; }
+  .hero-dek {
+    font-family: var(--font-sans); font-style: normal;
+    font-size: 18px; line-height: 1.6; color: var(--ink-soft);
+    border-left: none; padding-left: 0; max-width: 46ch; text-align: left;
+  }
+  .row-author { font-family: var(--font-mono); font-style: normal; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); }
+  .row-title h3 { font-family: var(--font-display); font-weight: 600; }
+  .row-title p  { font-family: var(--font-sans); color: var(--ink-soft); }
+  .row-thumb { border-radius: var(--r-lg); }
+
+  /* Outfit has no true italic — italic text falls back to IBM Plex Sans */
+  .compare-sub, .compare-side .compare-sub, .status-line, .file-sub,
+  .calculation .empty, .cart-empty, .asm-cmt, .up-mark, .nb-mark,
+  .m-body p:first-child::first-letter { font-family: var(--font-sans); }
+
+  .footer .col .foot-copy {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em;
+    color: var(--ink-mute); margin-top: 14px;
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" aria-label="Przełącz motyw">
+  <span class="th-mark"></span>
+  <span class="lbl-jasny">Jasny</span>
+  <span class="lbl-ciemny">Ciemny</span>
+</button>
+
+<header class="masthead">
+  <div class="row">
+    <a href="index.html" class="brand">
+      <img class="edu-logo" src="edulab-mark-ink.png" alt="edulab" />
+      <span class="wordmark">edulab</span>
+    </a>
+    <nav class="topnav">
+      <a href="index.html" class="active">Indeks</a>
+      <a href="#">Sieci</a>
+      <a href="#">Krzem</a>
+      <a href="#">Metody</a>
+      <a href="#">O piśmie</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-grid">
+    <div class="hero-center">
+      <h1 class="hero-title">Co<br/>robi<br/>komputer?</h1>
+      <p class="hero-dek">Pięć interaktywnych artykułów o tym, co dzieje się między naciśnięciem klawisza a pikselem na ekranie.</p>
+    </div>
+    <div class="hero-art">
+      <svg class="hero-pixels" viewBox="0 0 46 44" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="Pikselowy laptop w rzucie izometrycznym">
+        <rect x="22" y="1" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="2" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="2" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="2" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="3" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="3" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="3" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="25" y="3" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="26" y="3" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="4" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="4" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="4" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="4" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="26" y="4" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="27" y="4" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="28" y="4" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="5" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="5" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="5" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="5" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="26" y="5" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="27" y="5" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="28" y="5" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="29" y="5" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="30" y="5" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="6" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="6" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="6" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="6" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="26" y="6" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="27" y="6" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="28" y="6" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="29" y="6" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="30" y="6" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="31" y="6" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="32" y="6" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="7" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="7" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="7" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="7" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="26" y="7" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="27" y="7" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="28" y="7" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="29" y="7" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="30" y="7" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="31" y="7" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="32" y="7" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="33" y="7" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="34" y="7" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="8" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="8" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="8" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="8" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="26" y="8" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="27" y="8" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="28" y="8" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="29" y="8" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="30" y="8" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="31" y="8" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="32" y="8" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="33" y="8" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="34" y="8" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="35" y="8" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="36" y="8" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="9" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="9" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="9" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="9" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="26" y="9" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="27" y="9" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="28" y="9" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="29" y="9" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="30" y="9" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="31" y="9" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="32" y="9" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="33" y="9" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="34" y="9" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="35" y="9" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="9" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="37" y="9" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="38" y="9" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="10" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="10" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="10" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="10" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="26" y="10" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="27" y="10" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="28" y="10" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="29" y="10" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="30" y="10" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="31" y="10" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="32" y="10" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="33" y="10" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="34" y="10" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="35" y="10" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="10" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="37" y="10" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="10" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="39" y="10" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="40" y="10" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="11" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="11" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="11" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="11" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="26" y="11" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="27" y="11" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="28" y="11" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="29" y="11" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="30" y="11" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="31" y="11" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="32" y="11" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="33" y="11" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="34" y="11" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="35" y="11" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="36" y="11" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="37" y="11" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="11" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="11" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="11" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="11" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="12" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="12" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="12" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="12" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="26" y="12" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="27" y="12" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="28" y="12" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="29" y="12" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="30" y="12" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="31" y="12" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="32" y="12" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="33" y="12" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="34" y="12" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="35" y="12" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="12" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="37" y="12" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="38" y="12" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="39" y="12" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="12" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="12" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="13" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="13" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="13" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="13" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="26" y="13" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="27" y="13" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="28" y="13" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="29" y="13" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="30" y="13" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="31" y="13" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="32" y="13" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="33" y="13" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="34" y="13" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="35" y="13" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="13" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="37" y="13" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="13" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="13" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="13" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="13" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="14" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="14" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="14" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="14" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="26" y="14" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="27" y="14" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="28" y="14" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="29" y="14" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="30" y="14" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="31" y="14" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="32" y="14" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="33" y="14" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="34" y="14" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="35" y="14" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="36" y="14" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="37" y="14" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="14" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="14" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="14" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="14" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="15" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="15" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="15" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="15" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="26" y="15" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="27" y="15" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="28" y="15" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="29" y="15" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="30" y="15" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="31" y="15" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="32" y="15" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="33" y="15" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="34" y="15" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="35" y="15" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="36" y="15" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="37" y="15" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="15" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="15" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="15" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="15" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="16" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="16" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="16" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="16" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="26" y="16" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="27" y="16" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="28" y="16" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="29" y="16" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="30" y="16" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="31" y="16" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="32" y="16" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="33" y="16" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="34" y="16" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="35" y="16" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="16" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="37" y="16" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="16" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="16" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="16" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="16" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="17" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="17" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="17" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="17" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="26" y="17" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="27" y="17" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="28" y="17" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="29" y="17" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="30" y="17" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="31" y="17" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="32" y="17" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="33" y="17" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="34" y="17" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="35" y="17" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="17" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="37" y="17" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="17" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="17" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="17" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="17" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="18" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="18" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="18" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="18" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="26" y="18" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="27" y="18" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="28" y="18" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="29" y="18" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="30" y="18" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="31" y="18" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="32" y="18" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="33" y="18" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="34" y="18" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="35" y="18" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="36" y="18" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="37" y="18" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="18" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="18" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="18" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="18" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="19" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="19" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="19" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="19" width="1" height="1" fill="var(--px-red)"/>
+        <rect x="26" y="19" width="1" height="1" fill="var(--px-red)"/>
+        <rect x="27" y="19" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="28" y="19" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="29" y="19" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="30" y="19" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="31" y="19" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="32" y="19" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="33" y="19" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="34" y="19" width="1" height="1" fill="var(--px-green)"/>
+        <rect x="35" y="19" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="19" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="37" y="19" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="38" y="19" width="1" height="1" fill="var(--px-blue)"/>
+        <rect x="39" y="19" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="19" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="19" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="20" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="20" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="20" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="20" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="26" y="20" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="27" y="20" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="28" y="20" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="29" y="20" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="30" y="20" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="31" y="20" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="32" y="20" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="33" y="20" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="34" y="20" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="35" y="20" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="20" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="37" y="20" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="20" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="20" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="20" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="20" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="21" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="21" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="25" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="26" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="27" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="28" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="29" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="30" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="31" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="32" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="33" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="34" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="35" y="21" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="36" y="21" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="37" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="21" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="21" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="21" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="21" y="22" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="22" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="22" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="22" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="25" y="22" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="26" y="22" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="27" y="22" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="28" y="22" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="29" y="22" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="30" y="22" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="31" y="22" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="32" y="22" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="33" y="22" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="34" y="22" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="35" y="22" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="22" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="37" y="22" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="38" y="22" width="1" height="1" fill="var(--px-yellow)"/>
+        <rect x="39" y="22" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="22" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="22" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="19" y="23" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="20" y="23" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="21" y="23" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="23" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="23" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="23" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="25" y="23" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="26" y="23" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="27" y="23" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="28" y="23" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="29" y="23" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="30" y="23" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="31" y="23" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="32" y="23" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="33" y="23" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="34" y="23" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="35" y="23" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="23" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="37" y="23" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="23" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="23" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="23" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="23" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="17" y="24" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="18" y="24" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="19" y="24" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="20" y="24" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="21" y="24" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="22" y="24" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="23" y="24" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="24" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="25" y="24" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="26" y="24" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="27" y="24" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="28" y="24" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="29" y="24" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="30" y="24" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="31" y="24" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="32" y="24" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="33" y="24" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="34" y="24" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="35" y="24" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="24" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="37" y="24" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="24" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="24" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="24" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="24" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="15" y="25" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="16" y="25" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="17" y="25" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="18" y="25" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="19" y="25" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="20" y="25" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="21" y="25" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="22" y="25" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="23" y="25" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="24" y="25" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="25" y="25" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="26" y="25" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="27" y="25" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="28" y="25" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="29" y="25" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="30" y="25" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="31" y="25" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="32" y="25" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="33" y="25" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="34" y="25" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="35" y="25" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="25" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="37" y="25" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="25" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="25" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="25" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="25" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="13" y="26" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="14" y="26" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="15" y="26" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="16" y="26" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="17" y="26" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="18" y="26" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="19" y="26" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="20" y="26" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="21" y="26" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="22" y="26" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="23" y="26" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="24" y="26" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="25" y="26" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="26" y="26" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="27" y="26" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="28" y="26" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="29" y="26" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="30" y="26" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="31" y="26" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="32" y="26" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="33" y="26" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="34" y="26" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="35" y="26" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="26" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="37" y="26" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="26" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="26" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="26" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="26" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="11" y="27" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="12" y="27" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="13" y="27" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="14" y="27" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="15" y="27" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="16" y="27" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="17" y="27" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="18" y="27" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="19" y="27" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="20" y="27" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="21" y="27" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="22" y="27" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="23" y="27" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="24" y="27" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="25" y="27" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="26" y="27" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="27" y="27" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="28" y="27" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="29" y="27" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="30" y="27" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="31" y="27" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="32" y="27" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="33" y="27" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="34" y="27" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="35" y="27" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="36" y="27" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="37" y="27" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="27" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="27" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="27" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="27" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="9" y="28" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="10" y="28" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="11" y="28" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="12" y="28" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="13" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="14" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="15" y="28" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="16" y="28" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="17" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="18" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="19" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="20" y="28" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="21" y="28" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="22" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="23" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="24" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="25" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="26" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="27" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="28" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="29" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="30" y="28" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="31" y="28" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="32" y="28" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="33" y="28" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="34" y="28" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="35" y="28" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="36" y="28" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="37" y="28" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="38" y="28" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="39" y="28" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="28" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="28" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="7" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="8" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="9" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="10" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="11" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="12" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="13" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="14" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="15" y="29" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="16" y="29" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="17" y="29" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="18" y="29" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="19" y="29" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="20" y="29" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="21" y="29" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="22" y="29" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="23" y="29" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="24" y="29" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="25" y="29" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="26" y="29" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="27" y="29" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="28" y="29" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="29" y="29" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="30" y="29" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="31" y="29" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="32" y="29" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="33" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="34" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="35" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="36" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="37" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="38" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="39" y="29" width="1" height="1" fill="var(--px-screen)"/>
+        <rect x="40" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="29" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="6" y="30" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="7" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="8" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="9" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="10" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="11" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="12" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="13" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="14" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="15" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="16" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="17" y="30" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="18" y="30" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="19" y="30" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="20" y="30" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="21" y="30" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="22" y="30" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="23" y="30" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="24" y="30" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="25" y="30" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="26" y="30" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="27" y="30" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="28" y="30" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="29" y="30" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="30" y="30" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="31" y="30" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="32" y="30" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="33" y="30" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="34" y="30" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="35" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="36" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="37" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="38" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="39" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="40" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="30" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="6" y="31" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="7" y="31" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="8" y="31" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="9" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="10" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="11" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="12" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="13" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="14" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="15" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="16" y="31" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="17" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="18" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="19" y="31" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="20" y="31" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="21" y="31" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="22" y="31" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="23" y="31" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="24" y="31" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="25" y="31" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="26" y="31" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="27" y="31" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="28" y="31" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="29" y="31" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="30" y="31" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="31" y="31" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="32" y="31" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="33" y="31" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="34" y="31" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="35" y="31" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="36" y="31" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="37" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="38" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="39" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="40" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="31" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="7" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="8" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="9" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="10" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="11" y="32" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="12" y="32" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="13" y="32" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="14" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="15" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="16" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="17" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="18" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="19" y="32" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="20" y="32" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="21" y="32" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="22" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="23" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="24" y="32" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="25" y="32" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="26" y="32" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="27" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="28" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="29" y="32" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="30" y="32" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="31" y="32" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="32" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="33" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="34" y="32" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="35" y="32" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="36" y="32" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="37" y="32" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="38" y="32" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="39" y="32" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="40" y="32" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="41" y="32" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="9" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="10" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="11" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="12" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="13" y="33" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="14" y="33" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="15" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="16" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="17" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="18" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="19" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="20" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="21" y="33" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="33" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="33" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="24" y="33" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="25" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="26" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="27" y="33" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="28" y="33" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="29" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="30" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="31" y="33" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="32" y="33" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="33" y="33" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="34" y="33" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="35" y="33" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="36" y="33" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="37" y="33" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="38" y="33" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="39" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="40" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="41" y="33" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="11" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="12" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="13" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="14" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="15" y="34" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="16" y="34" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="17" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="18" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="19" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="20" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="21" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="22" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="23" y="34" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="34" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="25" y="34" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="26" y="34" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="27" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="28" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="29" y="34" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="30" y="34" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="31" y="34" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="32" y="34" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="33" y="34" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="34" y="34" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="35" y="34" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="36" y="34" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="37" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="38" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="39" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="40" y="34" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="13" y="35" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="14" y="35" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="15" y="35" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="16" y="35" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="17" y="35" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="18" y="35" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="19" y="35" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="20" y="35" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="21" y="35" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="22" y="35" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="35" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="35" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="25" y="35" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="26" y="35" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="27" y="35" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="28" y="35" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="29" y="35" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="30" y="35" width="1" height="1" fill="var(--px-well)"/>
+        <rect x="31" y="35" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="32" y="35" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="33" y="35" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="34" y="35" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="35" y="35" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="36" y="35" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="37" y="35" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="38" y="35" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="15" y="36" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="16" y="36" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="17" y="36" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="18" y="36" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="19" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="20" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="21" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="25" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="26" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="27" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="28" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="29" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="30" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="31" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="32" y="36" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="33" y="36" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="34" y="36" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="35" y="36" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="36" y="36" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="17" y="37" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="18" y="37" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="19" y="37" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="20" y="37" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="21" y="37" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="22" y="37" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="23" y="37" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="37" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="25" y="37" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="26" y="37" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="27" y="37" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="28" y="37" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="29" y="37" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="30" y="37" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="31" y="37" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="32" y="37" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="33" y="37" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="34" y="37" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="19" y="38" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="20" y="38" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="21" y="38" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="22" y="38" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="23" y="38" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="24" y="38" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="25" y="38" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="26" y="38" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="27" y="38" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="28" y="38" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="29" y="38" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="30" y="38" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="31" y="38" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="32" y="38" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="21" y="39" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="22" y="39" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="23" y="39" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="24" y="39" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="25" y="39" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="26" y="39" width="1" height="1" fill="var(--px-body)"/>
+        <rect x="27" y="39" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="28" y="39" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="29" y="39" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="30" y="39" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="23" y="40" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="24" y="40" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="25" y="40" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="26" y="40" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="27" y="40" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="28" y="40" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="25" y="41" width="1" height="1" fill="var(--px-shade)"/>
+        <rect x="26" y="41" width="1" height="1" fill="var(--px-shade)"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="indexsec">
+  <div class="section-head">
+    <span class="kicker">Spis demonstracji</span>
+  </div>
+  <ul class="article-list">
+    <li class="article-row">
+      <a href="binary.html">
+        <div class="row-no">01</div>
+        <div class="row-meta">
+          <span class="kicker">Krzem</span>
+          <span class="row-author">I. Chen</span>
+        </div>
+        <div class="row-title">
+          <h3>System dwójkowy</h3>
+          <p>Komputer ma do dyspozycji dwa stany, włączony i wyłączony. Buduje z nich liczby, znaki i kolory, czyli wszystko, co widzisz na ekranie.</p>
+        </div>
+        <div class="row-thumb">
+          <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.55">
+              <rect x="14"  y="34" width="18" height="32" fill="currentColor" />
+              <rect x="36"  y="34" width="18" height="32" />
+              <rect x="58"  y="34" width="18" height="32" fill="currentColor" />
+              <rect x="80"  y="34" width="18" height="32" />
+              <rect x="102" y="34" width="18" height="32" />
+              <rect x="124" y="34" width="18" height="32" fill="currentColor" />
+              <rect x="146" y="34" width="18" height="32" />
+              <rect x="168" y="34" width="18" height="32" fill="currentColor" />
+            </g>
+          </svg>
+        </div>
+        <div class="row-read">
+          <span class="pill">Interaktywne</span>
+          <span>14 min</span>
+        </div>
+      </a>
+    </li>
+    <li class="article-row">
+      <a href="image.html">
+        <div class="row-no">02</div>
+        <div class="row-meta">
+          <span class="kicker">Przeglądarka</span>
+          <span class="row-author">R. Okafor</span>
+        </div>
+        <div class="row-title">
+          <h3>Anatomia obrazu</h3>
+          <p>Każdy obraz to tabela liczb. Otwierając plik graficzny, otwieramy długą listę trójek wartości; każda z nich opisuje kolor jednego punktu na ekranie.</p>
+        </div>
+        <div class="row-thumb">
+          <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <g fill="currentColor">
+              <rect x="34" y="14" width="11" height="11" opacity="0.18" />
+              <rect x="46" y="14" width="11" height="11" opacity="0.45" />
+              <rect x="58" y="14" width="11" height="11" opacity="0.62" />
+              <rect x="70" y="14" width="11" height="11" opacity="0.32" />
+              <rect x="82" y="14" width="11" height="11" opacity="0.55" />
+              <rect x="94" y="14" width="11" height="11" opacity="0.78" />
+              <rect x="106" y="14" width="11" height="11" opacity="0.42" />
+              <rect x="118" y="14" width="11" height="11" opacity="0.22" />
+              <rect x="130" y="14" width="11" height="11" opacity="0.5" />
+              <rect x="142" y="14" width="11" height="11" opacity="0.72" />
+              <rect x="34" y="26" width="11" height="11" opacity="0.4" />
+              <rect x="46" y="26" width="11" height="11" opacity="0.66" />
+              <rect x="58" y="26" width="11" height="11" opacity="0.8" />
+              <rect x="70" y="26" width="11" height="11" opacity="0.55" />
+              <rect x="82" y="26" width="11" height="11" opacity="0.35" />
+              <rect x="94" y="26" width="11" height="11" opacity="0.6" />
+              <rect x="106" y="26" width="11" height="11" opacity="0.7" />
+              <rect x="118" y="26" width="11" height="11" opacity="0.5" />
+              <rect x="130" y="26" width="11" height="11" opacity="0.28" />
+              <rect x="142" y="26" width="11" height="11" opacity="0.45" />
+              <rect x="34" y="38" width="11" height="11" opacity="0.6" />
+              <rect x="46" y="38" width="11" height="11" opacity="0.85" />
+              <rect x="58" y="38" width="11" height="11" opacity="0.55" />
+              <rect x="70" y="38" width="11" height="11" opacity="0.35" />
+              <rect x="82" y="38" width="11" height="11" opacity="0.7" />
+              <rect x="94" y="38" width="11" height="11" opacity="0.42" />
+              <rect x="106" y="38" width="11" height="11" opacity="0.6" />
+              <rect x="118" y="38" width="11" height="11" opacity="0.78" />
+              <rect x="130" y="38" width="11" height="11" opacity="0.5" />
+              <rect x="142" y="38" width="11" height="11" opacity="0.33" />
+              <rect x="34" y="50" width="11" height="11" opacity="0.25" />
+              <rect x="46" y="50" width="11" height="11" opacity="0.5" />
+              <rect x="58" y="50" width="11" height="11" opacity="0.7" />
+              <rect x="70" y="50" width="11" height="11" opacity="0.85" />
+              <rect x="82" y="50" width="11" height="11" opacity="0.6" />
+              <rect x="94" y="50" width="11" height="11" opacity="0.4" />
+              <rect x="106" y="50" width="11" height="11" opacity="0.55" />
+              <rect x="118" y="50" width="11" height="11" opacity="0.32" />
+              <rect x="130" y="50" width="11" height="11" opacity="0.66" />
+              <rect x="142" y="50" width="11" height="11" opacity="0.78" />
+              <rect x="34" y="62" width="11" height="11" opacity="0.45" />
+              <rect x="46" y="62" width="11" height="11" opacity="0.7" />
+              <rect x="58" y="62" width="11" height="11" opacity="0.32" />
+              <rect x="70" y="62" width="11" height="11" opacity="0.6" />
+              <rect x="82" y="62" width="11" height="11" opacity="0.5" />
+              <rect x="94" y="62" width="11" height="11" opacity="0.78" />
+              <rect x="106" y="62" width="11" height="11" opacity="0.4" />
+              <rect x="118" y="62" width="11" height="11" opacity="0.55" />
+              <rect x="130" y="62" width="11" height="11" opacity="0.7" />
+              <rect x="142" y="62" width="11" height="11" opacity="0.22" />
+            </g>
+          </svg>
+        </div>
+        <div class="row-read">
+          <span class="pill">Interaktywne</span>
+          <span>16 min</span>
+        </div>
+      </a>
+    </li>
+    <li class="article-row">
+      <a href="compilation.html">
+        <div class="row-no">03</div>
+        <div class="row-meta">
+          <span class="kicker">Metody</span>
+          <span class="row-author">S. Patel</span>
+        </div>
+        <div class="row-title">
+          <h3>Kompilator i interpreter</h3>
+          <p>Dwa sposoby na to, żeby tekst kodu zaczął coś robić: skompilować raz i wypuścić, albo czytać linijka po linijce. Symulacja pokazuje, ile to kosztuje.</p>
+        </div>
+        <div class="row-thumb">
+          <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.55">
+              <path d="M 22 22 L 90 22 L 90 78 L 22 78 Z" />
+              <line x1="22" y1="34" x2="90" y2="34" />
+              <line x1="32" y1="44" x2="80" y2="44" />
+              <line x1="32" y1="52" x2="70" y2="52" />
+              <line x1="32" y1="60" x2="78" y2="60" />
+              <path d="M 110 22 L 178 22 L 178 78 L 110 78 Z" />
+              <circle cx="120" cy="32" r="2.2" fill="currentColor" />
+              <circle cx="120" cy="42" r="2.2" fill="currentColor" />
+              <circle cx="120" cy="52" r="2.2" fill="currentColor" />
+              <circle cx="120" cy="62" r="2.2" fill="currentColor" />
+              <circle cx="120" cy="72" r="2.2" fill="currentColor" />
+              <line x1="130" y1="32" x2="170" y2="32" />
+              <line x1="130" y1="42" x2="166" y2="42" />
+              <line x1="130" y1="52" x2="172" y2="52" />
+              <line x1="130" y1="62" x2="160" y2="62" />
+              <line x1="130" y1="72" x2="170" y2="72" />
+              <path d="M 92 50 L 108 50" stroke-width="1.6" />
+              <path d="M 102 46 L 108 50 L 102 54" stroke-width="1.6" />
+            </g>
+          </svg>
+        </div>
+        <div class="row-read">
+          <span class="pill">Interaktywne</span>
+          <span>18 min</span>
+        </div>
+      </a>
+    </li>
+    <li class="article-row">
+      <a href="website.html">
+        <div class="row-no">04</div>
+        <div class="row-meta">
+          <span class="kicker">Przeglądarka</span>
+          <span class="row-author">R. Okafor</span>
+        </div>
+        <div class="row-title">
+          <h3>Anatomia strony WWW</h3>
+          <p>Tekst, HTML, CSS i JavaScript to cztery warstwy, z których składa się każda strona. Włącz je po kolei i zobacz, jak rośnie.</p>
+        </div>
+        <div class="row-thumb">
+          <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <g fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.55">
+              <rect x="20" y="22" width="160" height="56" />
+              <line x1="20" y1="36" x2="180" y2="36" />
+              <line x1="32" y1="48" x2="80" y2="48" />
+              <line x1="32" y1="56" x2="68" y2="56" />
+              <line x1="32" y1="64" x2="76" y2="64" />
+              <rect x="100" y="44" width="68" height="26" />
+              <circle cx="38" cy="29" r="2" fill="currentColor" />
+              <circle cx="46" cy="29" r="2" fill="currentColor" />
+              <circle cx="54" cy="29" r="2" fill="currentColor" />
+            </g>
+          </svg>
+        </div>
+        <div class="row-read">
+          <span class="pill">Interaktywne</span>
+          <span>22 min</span>
+        </div>
+      </a>
+    </li>
+    <li class="article-row">
+      <a href="api.html">
+        <div class="row-no">05</div>
+        <div class="row-meta">
+          <span class="kicker">Sieci</span>
+          <span class="row-author">M. Kowalska</span>
+        </div>
+        <div class="row-title">
+          <h3>Czym jest API</h3>
+          <p>Aplikacje rzadko działają same, bo pobierają dane od innych programów. Pokazujemy tę rozmowę krok po kroku, na przykładzie portalu pobierającego pogodę.</p>
+        </div>
+        <div class="row-thumb">
+          <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <g fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.55">
+              <rect x="18" y="28" width="56" height="44" />
+              <line x1="18" y1="40" x2="74" y2="40" />
+              <line x1="26" y1="50" x2="66" y2="50" />
+              <line x1="26" y1="58" x2="60" y2="58" />
+              <line x1="26" y1="66" x2="64" y2="66" />
+              <rect x="126" y="28" width="56" height="44" />
+              <line x1="126" y1="40" x2="182" y2="40" />
+              <rect x="134" y="48" width="14" height="18" fill="currentColor" opacity="0.5" />
+              <rect x="152" y="48" width="14" height="18" fill="currentColor" opacity="0.5" />
+              <rect x="170" y="48" width="8" height="18" fill="currentColor" opacity="0.5" />
+              <line x1="76" y1="44" x2="124" y2="44" stroke-width="1.4" />
+              <path d="M 118 40 L 124 44 L 118 48" stroke-width="1.4" />
+              <line x1="124" y1="58" x2="76" y2="58" stroke-width="1.4" />
+              <path d="M 82 54 L 76 58 L 82 62" stroke-width="1.4" />
+            </g>
+          </svg>
+        </div>
+        <div class="row-read">
+          <span class="pill">Interaktywne</span>
+          <span>14 min</span>
+        </div>
+      </a>
+    </li>
+  </ul>
+</section>
+
+<section class="manifesto">
+  <div class="m-grid">
+    <div class="m-label">Redakcja</div>
+    <div class="m-body">
+      <p>Na co dzień korzystamy z komputerów, nie zastanawiając się specjalnie nad tym, co dzieje się pod spodem. <em>Pliki</em>, <em>okna</em> czy <em>chmura</em> pomagają nam z nich korzystać, ale nie zawsze dobrze pokazują, jak technologia naprawdę działa.</p>
+      <p>Interaktywne demonstracje pozwalają zobaczyć procesy, które trudno wyjaśnić samym tekstem.</p>
+      <div class="m-sig">- Redakcja</div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="col">
+      <h6>edulab</h6>
+      <p>Interaktywne demonstracje tego, co dzieje się między naciśnięciem klawisza a pikselem na ekranie.</p>
+    </div>
+    <div class="col">
+      <h6>Artykuły</h6>
+      <a href="binary.html">System dwójkowy</a>
+      <a href="image.html">Anatomia obrazu</a>
+      <a href="compilation.html">Kompilator i interpreter</a>
+      <a href="website.html">Anatomia strony WWW</a>
+      <a href="api.html">Czym jest API</a>
+    </div>
+    <div class="col">
+      <h6>Autor</h6>
+      <p>Andrzej Jankowski</p>
+      <a href="https://andrzej.ai">andrzej.ai</a>
+      <p class="foot-copy">© 2026</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('themeToggle').addEventListener('click', function(){
+    var current = document.documentElement.dataset.theme;
+    var next = current === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('substrate-theme', next); } catch (_) {}
+    document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+  });
+</script>
+
+</body>
+</html>

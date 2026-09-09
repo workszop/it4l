@@ -1,0 +1,1744 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Anatomia strony WWW - Substrate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script>
+  (function(){
+    try {
+      var saved = localStorage.getItem('substrate-theme');
+      document.documentElement.dataset.theme = saved || 'light';
+    } catch (_) {
+      document.documentElement.dataset.theme = 'light';
+    }
+  })();
+</script>
+<style>
+  /* ── edulab design system — Editorial Color ──────────────────────────
+     Fonts: Outfit (display) · IBM Plex Sans (sans) · Roboto Mono (mono)
+     Paper white page, warm ink, yellow primary, blue + green secondary,
+     red for danger. Every colour below is an edulab token.
+     ─────────────────────────────────────────────────────────────────── */
+  :root {
+    /* ── edulab brand fonts ── */
+    --font-display: 'Outfit', 'IBM Plex Sans', system-ui, sans-serif;
+    --font-sans:    'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    --font-mono:    'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    /* ── edulab raw palette ── */
+    --paper:   #FFFFFF;  --paper-2: #FBF7E6;  --paper-3: #F5EDCB;
+    --surface: #FFFFFF;
+    --edu-ink: #1C1917;  --edu-ink-2: #57534E;  --edu-ink-3: #948C82;
+    --line:    #EDE7D2;  --line-2:  #DDD4B6;
+
+    --yellow: #FFD500;  --yellow-600: #F0C800;  --yellow-soft: #FFD500;  --yellow-ink: #1C1917;
+    --blue:   #1E8FC2;  --blue-600:   #177AA8;  --blue-soft:   #1E8FC2;  --blue-ink:   #FFFFFF;
+    --green:  #00A651;  --green-600:  #009444;  --green-soft:  #00A651;  --green-ink:  #FFFFFF;
+    --red:    #E5322D;  --red-600:    #C92823;  --red-soft:    #E5322D;  --red-ink:    #FFFFFF;
+    --grape:  #7A5AC2;
+
+    --primary: var(--yellow);  --on-primary: var(--yellow-ink);
+    --focus-ring: 0 0 0 3px color-mix(in srgb, var(--yellow) 45%, transparent);
+
+    /* ── radii & elevation ── */
+    --r-xs: 6px; --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+    --shadow-sm: 0 1px 2px rgba(33,30,26,.06), 0 1px 1px rgba(33,30,26,.04);
+    --shadow-md: 0 4px 16px rgba(33,30,26,.08), 0 1px 3px rgba(33,30,26,.05);
+    --shadow-lg: 0 16px 40px rgba(33,30,26,.12), 0 3px 8px rgba(33,30,26,.06);
+    --shadow-primary: 0 8px 22px color-mix(in srgb, var(--yellow) 30%, transparent);
+
+    /* ── layout ── */
+    --pad-x: 30px;
+    --pad-y: 72px;
+    --gap: 28px;
+    --shell: 1100px;
+  }
+
+  /* ── Light (default): edulab paper ──────────────────────────────────── */
+  html[data-theme="light"] {
+    --bg:        var(--paper);
+    --bg-2:      var(--paper-2);
+    --bg-3:      var(--paper-3);
+    --ink:       var(--edu-ink);
+    --ink-soft:  var(--edu-ink-2);
+    --ink-mute:  var(--edu-ink-3);
+    --rule:      var(--line-2);
+    --rule-soft: var(--line);
+    --accent:    var(--blue);
+    --accent-2:  var(--blue-600);
+    --accent-tint:        var(--paper-2);
+    --accent-tint-soft:   var(--paper-2);
+    --accent-tint-strong: var(--paper-3);
+    --overlay:   rgba(255,255,255,.94);
+    --card:      var(--surface);
+    --logo-filter: none;
+    --hero-bg:    #24211E;
+    --hero-ink:   #FFFFFF;
+    --hero-ink-2: rgba(255,255,255,.74);
+    --layer-text: var(--edu-ink-3);
+    --layer-text-bg: var(--paper-3);
+    --layer-html: var(--blue);
+    --layer-css: var(--grape);
+    --layer-js: var(--yellow);
+  }
+
+  /* ── Dark: edulab ink surfaces (yellow reads as text on black) ──────── */
+  html[data-theme="dark"] {
+    --bg:        #1C1917;
+    --bg-2:      #262220;
+    --bg-3:      #322D29;
+    --ink:       #FFFFFF;
+    --ink-soft:  rgba(255,255,255,.74);
+    --ink-mute:  rgba(255,255,255,.52);
+    --rule:      rgba(255,255,255,.30);
+    --rule-soft: rgba(255,255,255,.14);
+    --accent:    var(--yellow);
+    --accent-2:  var(--yellow-600);
+    --accent-tint:        rgba(255,255,255,.06);
+    --accent-tint-soft:   rgba(255,255,255,.04);
+    --accent-tint-strong: rgba(255,213,0,.22);
+    --overlay:   rgba(28,25,23,.94);
+    --card:      #262220;
+    --logo-filter: invert(1);
+    --hero-bg:    #24211E;
+    --hero-ink:   #FFFFFF;
+    --hero-ink-2: rgba(255,255,255,.74);
+    --layer-text: rgba(255,255,255,.52);
+    --layer-text-bg: rgba(255,255,255,.12);
+    --layer-html: var(--blue);
+    --layer-css: var(--grape);
+    --layer-js: var(--yellow);
+  }
+
+  /* ── Reset ──────────────────────────────────────────────────────────── */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background .25s ease, color .25s ease;
+  }
+  a { color: inherit; text-decoration: none; cursor: pointer; }
+  button { font-family: inherit; }
+
+  /* Content shell — edulab caps the column at 1100px */
+  .shell { max-width: var(--shell); margin: 0 auto; width: 100%; }
+
+  /* Functional label: mono, uppercase, tracked */
+  .kicker {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .dot { color: var(--ink-mute); padding: 0 6px; }
+
+  /* ── Theme toggle — full pill, never a partial contour ──────────────── */
+  .theme-toggle {
+    position: fixed;
+    top: 14px; right: 20px;
+    z-index: 100;
+    appearance: none; cursor: pointer;
+    background: var(--bg-2);
+    border: none;
+    color: var(--ink-soft);
+    padding: 9px 16px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: .02em;
+    transition: background .15s, color .15s;
+  }
+  .theme-toggle:hover { background: var(--yellow); color: var(--yellow-ink); }
+  .theme-toggle:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .theme-toggle .th-mark {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: -1px;
+    background: var(--ink);
+  }
+  .theme-toggle:hover .th-mark { background: var(--yellow-ink); }
+  .theme-toggle .lbl-jasny { display: inline; }
+  .theme-toggle .lbl-ciemny { display: none; }
+  html[data-theme="light"] .theme-toggle .lbl-jasny { display: none; }
+  html[data-theme="light"] .theme-toggle .lbl-ciemny { display: inline; }
+
+  /* ── edulab brand bar (required chrome) ─────────────────────────────── */
+  .masthead {
+    position: sticky; top: 0; z-index: 50; width: 100%;
+    background: var(--overlay);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .masthead .row {
+    max-width: var(--shell); margin: 0 auto;
+    padding: 8px var(--pad-x);
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .masthead .brand { display: flex; align-items: center; gap: 2px; cursor: pointer; }
+  .masthead .edu-logo {
+    width: 64px; height: 64px; display: block; margin-right: -6px;
+    filter: var(--logo-filter);
+  }
+  .masthead .brand .wordmark {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 22px; letter-spacing: -.02em; color: var(--ink);
+  }
+  .masthead .topnav { display: flex; gap: 4px; padding-right: 132px; }
+  .masthead .topnav a {
+    font-family: var(--font-sans); font-weight: 600; font-size: 14px;
+    color: var(--ink-soft);
+    padding: 8px 14px; border-radius: var(--r-pill);
+    transition: background .15s, color .15s;
+  }
+  .masthead .topnav a:hover { background: var(--bg-2); color: var(--ink); }
+  .masthead .topnav a.active { background: var(--yellow); color: var(--yellow-ink); }
+
+  /* ── Detail page frame ──────────────────────────────────────────────── */
+  .detail {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 48px var(--pad-x) calc(var(--pad-y) * 1.2);
+  }
+  .detail-back {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-mute); margin-bottom: 48px;
+  }
+  .detail-back a { transition: color .15s; }
+  .detail-back a:hover { color: var(--accent); }
+
+  .detail-head { max-width: 760px; margin: 0 auto; text-align: left; }
+  .detail-meta {
+    display: flex; align-items: center;
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: .06em; text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .detail-head h1 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: clamp(40px, 5vw, 72px); line-height: 1.05;
+    letter-spacing: -.02em;
+    margin: 0 0 24px; text-wrap: balance;
+  }
+  .detail-dek {
+    font-family: var(--font-sans); font-style: italic;
+    font-size: clamp(20px, 1.6vw, 24px);
+    line-height: 1.45; color: var(--ink-soft); margin: 0 0 32px;
+    max-width: 50ch;
+  }
+  .detail-byline {
+    display: flex; align-items: center;
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: .06em; text-transform: uppercase;
+  }
+
+  .detail-rule {
+    height: 1px; background: var(--rule); opacity: .5;
+    margin: 56px auto;
+    max-width: 760px;
+    border: none;
+  }
+
+  .detail-prose { max-width: 660px; margin: 0 auto 48px; }
+  .detail-prose p {
+    font-family: var(--font-sans); font-size: 19px; line-height: 1.6;
+    color: var(--ink); margin: 0 0 24px; text-wrap: pretty;
+  }
+  .detail-prose p em { font-style: italic; color: var(--accent-2); }
+  .detail-prose p code,
+  .detail-prose code {
+    font-family: var(--font-mono); font-size: 15px;
+    background: var(--bg-2); padding: 1px 6px; border-radius: 3px;
+    color: var(--accent);
+  }
+  .detail-prose h3 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 28px; margin: 48px 0 16px;
+    letter-spacing: -.005em;
+  }
+  .detail-prose .dropcap .dc {
+    font-family: var(--font-sans); font-style: italic;
+    font-size: 80px; line-height: .8;
+    float: left; padding: 6px 14px 0 0;
+    color: var(--accent);
+  }
+
+  /* ── Demo container ─────────────────────────────────────────────────── */
+  .detail-demo {
+    max-width: 1240px; margin: 64px auto;
+    padding: 40px;
+    background: var(--bg-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 4px;
+  }
+  .detail-demo .demo-head { margin-bottom: 32px; max-width: 70ch; }
+  .detail-demo .demo-head h2 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 32px; margin: 8px 0 8px; letter-spacing: -.01em;
+  }
+  .detail-demo .demo-head p {
+    font-family: var(--font-sans); font-size: 16px; color: var(--ink-soft); margin: 0;
+  }
+
+  /* ── Layer intro grid ───────────────────────────────────────────────── */
+  .layer-intro {
+    margin-bottom: 32px;
+  }
+  .layer-intro h3 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 0 0 16px;
+    font-weight: 500;
+  }
+  .layer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .layer-card {
+    background: var(--bg);
+    border: 1px solid var(--rule-soft);
+    border-radius: 2px;
+    padding: 18px 18px 16px;
+    border-top: 3px solid;
+    transition: transform .15s, border-color .15s;
+  }
+  .layer-card:hover { transform: translateY(-2px); }
+  .layer-card .lbadge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 2px;
+    margin-bottom: 10px;
+  }
+  .layer-card[data-l="text"] .lbadge { color: var(--layer-text); border: 1px solid var(--layer-text); }
+  .layer-card[data-l="html"] .lbadge { color: var(--layer-html); border: 1px solid var(--layer-html); }
+  .layer-card[data-l="css"]  .lbadge { color: var(--layer-css);  border: 1px solid var(--layer-css); }
+  .layer-card[data-l="js"]   .lbadge { color: var(--layer-js);   border: 1px solid var(--layer-js); }
+  .layer-card h4 {
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 20px; line-height: 1.2; margin: 0 0 6px;
+    color: var(--ink); letter-spacing: -.005em;
+  }
+  .layer-card .l-desc {
+    font-family: var(--font-sans); font-size: 14px; line-height: 1.5;
+    color: var(--ink-soft); margin: 0 0 12px;
+  }
+  .layer-card .analogy {
+    font-family: var(--font-sans); font-size: 13px; line-height: 1.45;
+    color: var(--ink-soft);
+    padding: 4px 0 4px 10px;
+    background: var(--accent-tint-soft);
+    border-radius: 0 2px 2px 0;
+  }
+  .layer-card .analogy strong {
+    font-family: var(--font-mono); font-weight: 500;
+    font-size: 10px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-mute);
+    display: block; margin-bottom: 2px;
+  }
+
+  /* ── Term tooltips ──────────────────────────────────────────────────── */
+  .term {
+    border-bottom: 1px dashed currentColor;
+    cursor: help; position: relative;
+  }
+  .term .tip {
+    visibility: hidden; opacity: 0;
+    position: absolute;
+    bottom: calc(100% + 10px); left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    color: var(--ink);
+    padding: 10px 14px;
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .02em;
+    line-height: 1.5;
+    white-space: normal;
+    width: 240px;
+    text-align: left;
+    pointer-events: none;
+    transition: opacity .15s;
+    z-index: 100;
+    text-transform: none;
+    font-weight: 400;
+  }
+  .term:hover .tip { visibility: visible; opacity: 1; }
+
+  /* ── Steps track ────────────────────────────────────────────────────── */
+  .steps-track {
+    display: flex; gap: 4px;
+    margin-bottom: 16px;
+  }
+  .step-dot {
+    flex: 1; height: 3px; border-radius: 1px;
+    background: var(--rule-soft);
+    transition: background .25s;
+  }
+  .step-dot.done { background: var(--accent); }
+
+  /* ── Layer strip (toggle buttons) ───────────────────────────────────── */
+  .layer-strip {
+    display: flex; gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .layer-btn {
+    appearance: none; cursor: pointer;
+    display: inline-flex;
+    align-items: center; gap: 8px;
+    padding: 9px 16px;
+    background: var(--bg);
+    border: 1px solid var(--rule-soft);
+    border-radius: 2px;
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    transition: border-color .15s, color .15s, background .15s;
+  }
+  .layer-btn:hover { border-color: var(--ink-soft); color: var(--ink); }
+  .layer-btn .ldot {
+    width: 8px; height: 8px; border-radius: 50%;
+    opacity: .35;
+    transition: opacity .2s;
+  }
+  .layer-btn[data-layer="text"] .ldot { background: var(--layer-text); }
+  .layer-btn[data-layer="html"] .ldot { background: var(--layer-html); }
+  .layer-btn[data-layer="css"]  .ldot { background: var(--layer-css); }
+  .layer-btn[data-layer="js"]   .ldot { background: var(--layer-js); }
+  .layer-btn.active .ldot { opacity: 1; }
+  .layer-btn[data-layer="text"].active { color: var(--ink); border-color: var(--layer-text); }
+  .layer-btn[data-layer="html"].active { color: var(--layer-html); border-color: var(--layer-html); }
+  .layer-btn[data-layer="css"].active  { color: var(--layer-css);  border-color: var(--layer-css); }
+  .layer-btn[data-layer="js"].active   { color: var(--layer-js);   border-color: var(--layer-js); }
+
+  /* ── Status bar ─────────────────────────────────────────────────────── */
+  .status-bar {
+    display: flex; gap: 18px;
+    padding: 10px 16px;
+    background: var(--bg);
+    border: 1px solid var(--rule-soft);
+    border-radius: 2px;
+    margin-bottom: 20px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .04em;
+    color: var(--ink-mute);
+    flex-wrap: wrap;
+  }
+  .status-item { display: flex; align-items: center; gap: 8px; }
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    opacity: .25;
+    transition: opacity .25s;
+  }
+  .status-dot.on { opacity: 1; }
+  .status-dot[data-l="text"] { background: var(--layer-text); }
+  .status-dot[data-l="html"] { background: var(--layer-html); }
+  .status-dot[data-l="css"]  { background: var(--layer-css); }
+  .status-dot[data-l="js"]   { background: var(--layer-js); }
+
+  /* ── Workspace (editor + preview) ───────────────────────────────────── */
+  .workspace {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .pane {
+    background: var(--bg);
+    border: 1px solid var(--rule-soft);
+    border-radius: 3px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 540px;
+  }
+  .pane-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .pane-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .pane-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 2px 7px;
+    border-radius: 2px;
+  }
+  .pane-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* ── File tabs ──────────────────────────────────────────────────────── */
+  .file-tabs {
+    display: flex;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--rule-soft);
+    overflow-x: auto;
+  }
+  .file-tab {
+    appearance: none; cursor: pointer;
+    display: inline-flex;
+    align-items: center; gap: 7px;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--ink-mute);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .04em;
+    transition: color .15s, background .15s, border-color .15s;
+    white-space: nowrap;
+  }
+  .file-tab:hover { color: var(--ink); }
+  .file-tab.active {
+    color: var(--ink);
+    background: var(--bg);
+  }
+  .file-tab .tab-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Code editor ────────────────────────────────────────────────────── */
+  .code-editor { flex: 1; display: flex; }
+  .code-editor textarea {
+    width: 100%;
+    min-height: 460px;
+    flex: 1;
+    padding: 16px 18px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.7;
+    border: none;
+    outline: none;
+    resize: none;
+    background: var(--bg);
+    color: var(--ink);
+    tab-size: 2;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow-x: auto;
+  }
+
+  /* ── Preview iframe ─────────────────────────────────────────────────── */
+  .preview-frame {
+    width: 100%;
+    flex: 1;
+    min-height: 460px;
+    border: none;
+    background: white;
+    display: block;
+  }
+
+  /* ── Aside ──────────────────────────────────────────────────────────── */
+  .detail-aside {
+    max-width: 660px; margin: 48px auto;
+    padding: 24px 28px;
+    background: var(--bg-2);
+    border-radius: 0 3px 3px 0;
+  }
+  .detail-aside h6 {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--ink-mute);
+    margin: 0 0 12px;
+  }
+  .detail-aside ul { margin: 0; padding: 0; list-style: none; }
+  .detail-aside li { padding: 6px 0; }
+  .detail-aside a {
+    font-family: var(--font-sans); font-size: 16px; color: var(--ink);
+    border-bottom: 1px solid var(--rule-soft);
+    transition: color .15s, border-color .15s;
+  }
+  .detail-aside a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── Footer ─────────────────────────────────────────────────────────── */
+  .footer { padding: 60px var(--pad-x) 32px; max-width: var(--shell); margin: 0 auto; }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px;
+    padding-bottom: 32px;
+    border-top: 1px solid var(--rule);
+    padding-top: 32px;
+  }
+  .footer .col h6 {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-mute); margin: 0 0 14px;
+  }
+  .footer .col p {
+    font-family: var(--font-sans); font-size: 14px; color: var(--ink-soft);
+    line-height: 1.5; margin: 0;
+  }
+  .footer .col a {
+    display: block; font-family: var(--font-sans); font-size: 14px;
+    color: var(--ink); padding: 3px 0;
+  }
+  .footer .col a:hover { color: var(--accent); }
+
+  /* ── Cart panel (parent) ────────────────────────────────────────────── */
+  .cart-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 99;
+  }
+  .cart-overlay.open { display: block; }
+  .cart-panel {
+    position: fixed; top: 0; right: -380px;
+    width: 360px; height: 100%;
+    background: var(--bg);
+    border-left: 1px solid var(--rule);
+    z-index: 110;
+    display: flex; flex-direction: column;
+    transition: right .3s ease;
+    font-family: var(--font-sans);
+  }
+  .cart-panel.open { right: 0; }
+  .cart-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .cart-head .title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .cart-close {
+    appearance: none; cursor: pointer;
+    background: transparent; border: 1px solid var(--rule-soft);
+    color: var(--ink-soft);
+    width: 28px; height: 28px;
+    border-radius: 999px;
+    line-height: 1;
+    transition: all .15s;
+  }
+  .cart-close:hover { color: var(--accent); border-color: var(--accent); }
+  .cart-items {
+    flex: 1; overflow-y: auto;
+    padding: 14px 22px;
+  }
+  .cart-empty {
+    font-family: var(--font-sans); font-style: italic;
+    font-size: 14px; color: var(--ink-mute);
+    text-align: center; padding: 40px 0;
+  }
+  .cart-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .cart-row .price {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    margin-right: 10px;
+  }
+  .cart-row .rm {
+    appearance: none; cursor: pointer;
+    background: transparent; border: none;
+    color: var(--ink-mute); font-family: var(--font-mono); font-size: 11px;
+    transition: color .15s;
+  }
+  .cart-row .rm:hover { color: var(--accent); }
+  .cart-foot {
+    padding: 18px 22px;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .cart-foot .total-row {
+    display: flex; justify-content: space-between;
+    margin-bottom: 14px;
+    font-family: var(--font-mono); font-size: 12px;
+    color: var(--ink-mute); letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .cart-foot .total-row strong {
+    font-family: var(--font-display); font-style: normal;
+    font-size: 18px; color: var(--ink);
+    letter-spacing: 0; text-transform: none;
+  }
+  .cart-foot .place-btn {
+    width: 100%;
+    appearance: none; cursor: pointer;
+    background: var(--ink); border: 1px solid var(--ink);
+    color: var(--bg);
+    padding: 12px 18px;
+    border-radius: 999px;
+    font-family: var(--font-sans);
+    font-size: 13px; font-weight: 500;
+    transition: background .15s;
+  }
+  .cart-foot .place-btn:hover { background: var(--accent); border-color: var(--accent); }
+
+  .toast {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ink); color: var(--bg);
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: all .3s ease;
+    z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── Scrollbars ─────────────────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--rule-soft); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ink-mute); }
+
+  /* ── Responsive ─────────────────────────────────────────────────────── */
+  @media (max-width: 1100px) {
+    .layer-grid { grid-template-columns: repeat(2, 1fr); }
+    .workspace { grid-template-columns: 1fr; }
+    .masthead .topnav { padding-right: 90px; }
+  }
+  @media (max-width: 760px) {
+    :root { --pad-x: 28px; --pad-y: 64px; }
+    .detail-demo { padding: 24px; }
+    .layer-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .masthead .topnav { display: none; }
+    .cart-panel { width: 100%; right: -100%; }
+  }
+  /* ══════════════════════════════════════════════════════════════════════
+     edulab component layer — flat fills, full contours, soft shadows.
+     Overrides the editorial idiom above; every value is an edulab token.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /* Display font has no true italic — drop synthesised obliques */
+  .hero-dek, .detail-dek, .masthead .brand .tag,
+  .row-author, .detail-prose .dropcap .dc, .toc .ttl { font-style: normal; }
+
+  /* ── Buttons: primary = solid yellow pill, secondary = sand pill ────── */
+  .btn {
+    background: var(--bg-2);
+    border: none;
+    color: var(--ink-soft);
+    padding: 9px 18px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0;
+    text-transform: none;
+    transition: background .15s, color .15s;
+  }
+  .btn:hover { background: var(--bg-3); color: var(--ink); border: none; }
+  .btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .btn.primary, .btn.accent {
+    background: var(--yellow);
+    border: none;
+    color: var(--yellow-ink);
+    padding: 11px 22px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0;
+    text-transform: none;
+    box-shadow: var(--shadow-primary);
+  }
+  .btn.primary:hover, .btn.primary:hover:not(:disabled), .btn.accent:hover {
+    background: var(--yellow-600); color: var(--yellow-ink); transform: none;
+  }
+  .btn.active {
+    background: var(--yellow); color: var(--yellow-ink); border: none;
+  }
+  .btn:disabled, .btn.primary:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+
+  /* ── Chip / tag: solid colour, white text (dark on yellow) ──────────── */
+  .pill {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .08em; text-transform: uppercase;
+    background: var(--blue-soft); color: var(--blue-ink);
+    border: none;
+    padding: 4px 10px; border-radius: var(--r-pill);
+  }
+
+  /* ── Full contours only: no coloured edge on one side ───────────────── */
+  .detail-aside {
+    border-left: none;
+    background: var(--bg-2);
+    border-radius: var(--r-lg);
+    padding: 22px 26px;
+  }
+  .tab.active, .file-tab.active {
+    border-bottom-color: transparent;
+    background: var(--yellow);
+    color: var(--yellow-ink);
+    border-radius: var(--r-pill);
+  }
+
+  /* ── Section eyebrow: functional label, no leading dash ─────────────── */
+  .section-head .kicker, .demo-head .kicker { color: var(--ink-mute); }
+
+  /* ── Cards & wells: generous radii, soft low shadow ─────────────────── */
+  .demo-frame, .demo-card, .card, .panel {
+    border-radius: var(--r-lg);
+  }
+
+  /* ── Page header scheme: solid ink title → full-width lead ──────────── */
+  .detail { max-width: var(--shell); }
+  .detail-head { max-width: 760px; }
+  .detail-head h1 {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(2.1rem, 4.6vw, 3rem);
+    letter-spacing: -.025em; line-height: 1.05;
+    color: var(--ink); margin: 0 0 20px;
+  }
+  .detail-dek {
+    font-family: var(--font-sans); font-style: normal; font-weight: 400;
+    font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6;
+    color: var(--ink-soft); max-width: none; margin: 0 0 24px;
+  }
+  /* meta + byline sit under the lead, never above the title */
+  .detail-meta, .detail-byline {
+    display: block; line-height: 2;
+    font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-mute); margin: 0;
+  }
+  /* Functional label chip inside panels: solid colour, white text */
+  .pane-label, .vp-label {
+    background: var(--blue-soft); color: var(--blue-ink);
+    border: none; border-radius: var(--r-pill); padding: 3px 10px;
+  }
+  .detail-prose p {
+    font-family: var(--font-sans); font-size: 18px; line-height: 1.68;
+    color: var(--ink);
+  }
+  .detail-prose h3 {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 25px; letter-spacing: -.01em;
+  }
+  .detail-prose p code, .detail-prose code {
+    font-family: var(--font-mono); font-size: 15px;
+    background: var(--bg-3); color: var(--ink);
+    padding: .12em .4em; border-radius: var(--r-xs);
+  }
+  .detail-prose .dropcap .dc {
+    font-family: var(--font-display); font-style: normal; font-weight: 700;
+    color: var(--yellow-ink);
+  }
+  .detail-rule { max-width: 760px; background: var(--rule-soft); opacity: 1; }
+
+  /* ── Website: layer cards — full contour, no coloured top stripe ────── */
+  .layer-card {
+    border: 1px solid var(--rule-soft); border-top: 1px solid var(--rule-soft);
+    border-radius: var(--r-lg); padding: 20px 20px 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .layer-card:hover { transform: none; box-shadow: var(--shadow-md); }
+  .layer-card h4  { font-family: var(--font-display); font-weight: 600; font-size: 20px; }
+  .layer-card .l-desc { font-family: var(--font-sans); color: var(--ink-soft); }
+
+  /* Layer badge: solid colour chip, white text (dark on yellow) */
+  .layer-card .lbadge {
+    font-family: var(--font-mono); font-size: 10px;
+    border: none; border-radius: var(--r-pill); padding: 4px 10px;
+  }
+  .layer-card[data-l="text"] .lbadge { background: var(--edu-ink-3); color: #FFFFFF; border: none; }
+  .layer-card[data-l="html"] .lbadge { background: var(--layer-html); color: var(--blue-ink); border: none; }
+  .layer-card[data-l="css"]  .lbadge { background: var(--layer-css);  color: #FFFFFF; border: none; }
+  .layer-card[data-l="js"]   .lbadge { background: var(--layer-js);   color: var(--yellow-ink); border: none; }
+
+  /* Analogy note: full solid block, never a coloured left rule */
+  .layer-card .analogy {
+    font-family: var(--font-sans); color: var(--ink);
+    background: var(--bg-2);
+    border-radius: var(--r-md); padding: 12px 16px;
+  }
+  .layer-card .analogy strong { font-family: var(--font-mono); color: var(--ink-mute); }
+
+  /* ── Layer switch: borderless sand track, each option a full pill ───── */
+  .layer-toggle, .layer-switch { background: transparent; }
+  .layer-btn {
+    background: var(--bg-2); border: none;
+    border-radius: var(--r-pill); padding: 9px 16px;
+    font-family: var(--font-sans); font-weight: 600; font-size: 13px;
+    letter-spacing: 0; text-transform: none; color: var(--ink-soft);
+    transition: background .15s, color .15s;
+  }
+  .layer-btn:hover { background: var(--bg-3); color: var(--ink); border: none; }
+  .layer-btn.active,
+  .layer-btn[data-layer="text"].active,
+  .layer-btn[data-layer="html"].active,
+  .layer-btn[data-layer="css"].active,
+  .layer-btn[data-layer="js"].active {
+    background: var(--yellow); color: var(--yellow-ink); border: none;
+  }
+  .layer-btn.active .ldot { opacity: 1; }
+
+  /* ── Progress track: yellow is the primary, blue is not ─────────────── */
+  .steps-track .step-dot { background: var(--rule-soft); border-radius: var(--r-pill); }
+  .steps-track .step-dot.done { background: var(--yellow); }
+
+  /* ── Editor / preview panes ─────────────────────────────────────────── */
+  .file-tab { border-bottom: none; font-family: var(--font-mono); }
+  .status-bar, .code-editor textarea, .pane { border-radius: var(--r-md); }
+
+
+
+  /* Outfit has no true italic — italic text falls back to IBM Plex Sans */
+  .compare-sub, .compare-side .compare-sub, .status-line, .file-sub,
+  .calculation .empty, .cart-empty, .asm-cmt, .up-mark, .nb-mark,
+  .m-body p:first-child::first-letter { font-family: var(--font-sans); }
+
+  /* ── Dark hero band (matches the index) ─────────────────────────────── */
+  .detail-hero {
+    background: var(--hero-bg);
+    padding: 26px var(--pad-x) 60px;
+    margin-bottom: 0;
+  }
+  .detail-hero-inner { max-width: var(--shell); margin: 0 auto; }
+  .detail-hero .detail-back {
+    font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--hero-ink-2); margin-bottom: 44px;
+  }
+  .detail-hero .detail-back a { color: var(--hero-ink-2); transition: color .15s; }
+  .detail-hero .detail-back a:hover { color: var(--yellow); }
+  .detail-hero h1 {
+    max-width: 900px; margin: 0 0 20px;
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(2.1rem, 4.6vw, 3rem);
+    letter-spacing: -.025em; line-height: 1.05;
+    color: var(--hero-ink); text-wrap: balance;
+  }
+  .detail-hero .detail-dek {
+    max-width: 720px; margin: 0;
+    font-family: var(--font-sans); font-style: normal;
+    font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6;
+    color: var(--hero-ink-2);
+  }
+  /* the band already separates hero from prose */
+  .detail-hero + .detail .detail-rule,
+  .detail-hero + main .detail-rule { display: none; }
+  .detail { padding-top: 56px; }
+
+  .footer .col .foot-copy {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em;
+    color: var(--ink-mute); margin-top: 14px;
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" aria-label="Przełącz motyw">
+  <span class="th-mark"></span>
+  <span class="lbl-jasny">Jasny</span>
+  <span class="lbl-ciemny">Ciemny</span>
+</button>
+
+<header class="masthead">
+  <div class="row">
+    <a href="index.html" class="brand">
+      <img class="edu-logo" src="edulab-mark-ink.png" alt="edulab" />
+      <span class="wordmark">edulab</span>
+    </a>
+    <nav class="topnav">
+      <a href="index.html">Indeks</a>
+      <a href="#">Sieci</a>
+      <a href="binary.html">Krzem</a>
+      <a href="compilation.html">Metody</a>
+      <a href="#">O piśmie</a>
+    </nav>
+  </div>
+</header>
+
+<header class="detail-hero">
+  <div class="detail-hero-inner">
+    <div class="detail-back"><a href="index.html">← Powrót do indeksu</a></div>
+    <h1>Anatomia strony WWW</h1>
+    <p class="detail-dek">Tekst, HTML, CSS i JavaScript to cztery warstwy, z których składa się każda strona, jaką kiedykolwiek otworzyłeś w przeglądarce.</p>
+  </div>
+</header>
+
+<article class="detail">
+
+  <hr class="detail-rule" />
+
+  <section class="detail-prose dropcap">
+    <p><span class="dc">S</span>trona internetowa nie jest jednym dokumentem. Jest <em>kilkoma</em> dokumentami, czytanymi jednocześnie przez przeglądarkę i w precyzyjnej kolejności składanymi w to, co widzisz na ekranie. Każdy z nich ma własny język, własną odpowiedzialność i własny moment, w którym wchodzi do akcji. Kiedy te warstwy się rozdzieli, łatwiej zobaczyć, czym każda z nich naprawdę jest.</p>
+    <p>Po lewej tekst, po prawej widok strony taki, jaki zobaczyłby użytkownik. Włączaj kolejne warstwy i obserwuj, jak ten sam plik staje się gazetą, plakatem, w końcu narzędziem.</p>
+  </section>
+
+  <section class="detail-demo">
+    <header class="demo-head">
+      <h2>Cztery warstwy, jedna strona</h2>
+      <p>Włącz po kolei tekst, HTML, CSS i JavaScript. Każda warstwa dodaje konkretną odpowiedzialność: treść, strukturę, styl, zachowanie. Możesz edytować kod po lewej i obserwować zmiany po prawej w czasie rzeczywistym.</p>
+    </header>
+
+    <div class="layer-intro">
+      <h3>Krótki przewodnik</h3>
+      <div class="layer-grid">
+        <article class="layer-card" data-l="text">
+          <span class="lbadge">Warstwa I</span>
+          <h4>Zwykły tekst</h4>
+          <p class="l-desc">Surowa treść - słowa i dane, bez formatowania.</p>
+          <div class="analogy"><strong>Analogia</strong>Składniki na blacie - nikt jeszcze nie zaczął gotować.</div>
+        </article>
+        <article class="layer-card" data-l="html">
+          <span class="lbadge">Warstwa II</span>
+          <h4><span class="term">HTML<span class="tip">HyperText Markup Language - szkielet, który nadaje strukturę treści: nagłówki, akapity, listy, obrazy.</span></span></h4>
+          <p class="l-desc">Dodaje strukturę: nagłówki, akapity, listy, obrazy.</p>
+          <div class="analogy"><strong>Analogia</strong>Sortowanie składników do opisanych miseczek, żeby dało się gotować przepis.</div>
+        </article>
+        <article class="layer-card" data-l="css">
+          <span class="lbadge">Warstwa III</span>
+          <h4><span class="term">CSS<span class="tip">Cascading Style Sheets - opisuje wygląd: kolory, czcionki, odstępy, układ. Farba i meble strony.</span></span></h4>
+          <p class="l-desc">Dodaje styl: kolory, czcionki, odstępy, układ.</p>
+          <div class="analogy"><strong>Analogia</strong>Dekorowanie tortu - polewa, zdobienia, układ na talerzu.</div>
+        </article>
+        <article class="layer-card" data-l="js">
+          <span class="lbadge">Warstwa IV</span>
+          <h4><span class="term">JavaScript<span class="tip">Język programowania, który nadaje stronie zachowanie: kliknięcia, koszyk, walidacja formularza, animacje.</span></span></h4>
+          <p class="l-desc">Dodaje zachowanie: kliknięcia, koszyk, interakcje.</p>
+          <div class="analogy"><strong>Analogia</strong>Zatrudnienie kelnera, który przyjmuje zamówienia i wystawia rachunek.</div>
+        </article>
+      </div>
+    </div>
+
+    <div class="steps-track">
+      <div class="step-dot done" id="step-text"></div>
+      <div class="step-dot" id="step-html"></div>
+      <div class="step-dot" id="step-css"></div>
+      <div class="step-dot" id="step-js"></div>
+    </div>
+
+    <div class="layer-strip">
+      <button class="layer-btn active" data-layer="text"><span class="ldot"></span><span>Tekst</span></button>
+      <button class="layer-btn" data-layer="html"><span class="ldot"></span><span>+ HTML</span></button>
+      <button class="layer-btn" data-layer="css"><span class="ldot"></span><span>+ CSS</span></button>
+      <button class="layer-btn" data-layer="js"><span class="ldot"></span><span>+ JavaScript</span></button>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-item"><span class="status-dot on" data-l="text" id="sd-text"></span><span>Tekst · treść</span></div>
+      <div class="status-item"><span class="status-dot" data-l="html" id="sd-html"></span><span>HTML · struktura</span></div>
+      <div class="status-item"><span class="status-dot" data-l="css" id="sd-css"></span><span>CSS · styl</span></div>
+      <div class="status-item"><span class="status-dot" data-l="js" id="sd-js"></span><span>JS · zachowanie</span></div>
+    </div>
+
+    <div class="workspace">
+      <div class="pane">
+        <div class="pane-header">
+          <span class="pane-title">Edytor kodu</span>
+          <span class="pane-label" id="editor-lang-label">TXT</span>
+        </div>
+        <div class="pane-body">
+          <div class="file-tabs" id="file-tabs"></div>
+          <div class="code-editor"><textarea id="code-editor" spellcheck="false"></textarea></div>
+        </div>
+      </div>
+      <div class="pane">
+        <div class="pane-header">
+          <span class="pane-title">Podgląd na żywo</span>
+          <span class="pane-label">Desktop</span>
+        </div>
+        <div class="pane-body">
+          <iframe id="live-preview" class="preview-frame" title="Podgląd"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="detail-prose">
+    <h3>Po co dzielić to na warstwy</h3>
+    <p>Można było zaprojektować jeden język, który robi wszystko naraz. Tak właśnie zaczynało się WWW: HTML zawierał atrybuty wpływające na wygląd: <code>&lt;font color="red"&gt;</code>, <code>&lt;center&gt;</code>, <code>&lt;b&gt;</code>. Szybko okazało się jednak, że <em>strona w jednym pliku</em> jest nie do utrzymania: każda zmiana koloru wymagała przeszukania całego dokumentu, a programista nie wiedział, czy edytuje treść, układ czy formatowanie.</p>
+    <p>Warstwy rozdzielono z powodów całkiem praktycznych. Treść (tekst, HTML) zmienia się przy każdym artykule. Styl (CSS) - przy każdym redesignie. Zachowanie (JavaScript) - przy każdej nowej funkcjonalności. Trzymanie ich osobno pozwala każdą warstwę modyfikować bez ruszania pozostałych.</p>
+
+    <h3>Kolejność ma znaczenie</h3>
+    <p>Przeglądarka czyta plik HTML od góry do dołu. Kiedy napotka znacznik <code>&lt;link rel="stylesheet"&gt;</code>, ściąga arkusz CSS. Kiedy znajdzie <code>&lt;script&gt;</code>, pobiera i uruchamia JavaScript. Kolejność tych zdarzeń decyduje o tym, czy strona pojawia się płynnie, czy „migocze": najpierw goły tekst, potem nagle styl, potem nagle interakcje. Dlatego CSS umieszcza się zwykle wysoko (w nagłówku), a skrypty - na końcu, żeby nie blokowały rysowania.</p>
+
+    <h3>Czego nie widać w demonstracji</h3>
+    <p>Pomijamy tu trzy rzeczy, które w prawdziwej stronie są nieuniknione: <em>obrazy i czcionki</em> (przeglądarka pobiera je równolegle), <em>żądania sieciowe</em> (każdy zewnętrzny zasób to osobne zapytanie do serwera) oraz <em>cache przeglądarki</em> (w drugim załadowaniu większość plików nie jest pobierana ponownie). Każdy z tych tematów to osobny artykuł.</p>
+  </section>
+
+  <aside class="detail-aside">
+    <h6>Dalsza lektura</h6>
+    <ul>
+      <li><a href="image.html">Anatomia obrazu - to, co przeglądarka czyta jako CSS „background-image"</a></li>
+      <li><a href="compilation.html">Kompilator i interpreter - jak JavaScript jest wykonywany</a></li>
+      <li><a href="binary.html">System dwójkowy - czym są bajty, w jakich strona przyjeżdża z serwera</a></li>
+      <li><a href="#">DOM - jak HTML zamienia się w drzewo obiektów w pamięci przeglądarki</a></li>
+    </ul>
+  </aside>
+
+</article>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="col">
+      <h6>edulab</h6>
+      <p>Interaktywne demonstracje tego, co dzieje się między naciśnięciem klawisza a pikselem na ekranie.</p>
+    </div>
+    <div class="col">
+      <h6>Artykuły</h6>
+      <a href="binary.html">System dwójkowy</a>
+      <a href="image.html">Anatomia obrazu</a>
+      <a href="compilation.html">Kompilator i interpreter</a>
+      <a href="website.html">Anatomia strony WWW</a>
+      <a href="api.html">Czym jest API</a>
+    </div>
+    <div class="col">
+      <h6>Autor</h6>
+      <p>Andrzej Jankowski</p>
+      <a href="https://andrzej.ai">andrzej.ai</a>
+      <p class="foot-copy">© 2026</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Cart panel (parent window) -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<aside class="cart-panel" id="cartPanel">
+  <div class="cart-head">
+    <span class="title">Twoje zamówienie</span>
+    <button class="cart-close" onclick="toggleCart()" aria-label="Zamknij">×</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot">
+    <div class="total-row">
+      <span>Razem</span><strong id="cartTotal">0 zł</strong>
+    </div>
+    <button class="place-btn" onclick="placeOrder()">Złóż zamówienie</button>
+  </div>
+</aside>
+
+<script>
+/* ============================================================
+   Theme toggle
+   ============================================================ */
+document.getElementById('themeToggle').addEventListener('click', function(){
+  var current = document.documentElement.dataset.theme;
+  var next = current === 'light' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem('substrate-theme', next); } catch (_) {}
+  document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+});
+
+/* ============================================================
+   Demo state
+   ============================================================ */
+const state = { layers: { text: true, html: false, css: false, js: false }, activeTab: 'tresc.txt' };
+
+/* ── Bakery CSS (live in iframe) ─────────────────────────── */
+const BAKERY_CSS = `@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #4a3f35;
+  background: #fffcf8;
+  line-height: 1.6;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px;
+  height: 60px;
+  background: white;
+  border-bottom: 1px solid #f0ebe4;
+}
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #2d2015;
+  text-decoration: none;
+}
+.nav-links { display: flex; gap: 28px; align-items: center; }
+.nav-links a {
+  text-decoration: none;
+  color: #8b7355;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: #2d2015; }
+
+.hero {
+  text-align: center;
+  padding: 80px 24px 72px;
+  background: linear-gradient(180deg, #f7f0e6 0%, #fffcf8 100%);
+}
+.hero-tag {
+  display: inline-block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #b08c5a;
+  font-weight: 600;
+  border: 1px solid #e0d5c4;
+  border-radius: 20px;
+  padding: 5px 16px;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem;
+  color: #2d2015;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+.hero-sub {
+  color: #8b7355;
+  font-size: 1.05rem;
+  max-width: 420px;
+  margin: 0 auto 32px;
+  line-height: 1.7;
+}
+.hero-btn {
+  display: inline-block;
+  padding: 15px 36px;
+  background: #2d2015;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+}
+.hero-btn:hover { background: #1a1208; transform: translateY(-1px); }
+
+.section { max-width: 960px; margin: 0 auto; padding: 64px 24px; }
+h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #2d2015;
+  text-align: center;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.section-sub {
+  text-align: center;
+  color: #8b7355;
+  margin-bottom: 40px;
+  font-size: 15px;
+}
+
+.menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.menu-card {
+  background: white;
+  border: 1px solid #f0ebe4;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: transform 0.25s;
+}
+.menu-card:hover { transform: translateY(-4px); }
+.card-img {
+  height: 160px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.8rem;
+}
+.card-body { padding: 18px 20px 20px; }
+.card-body h3 {
+  font-size: 1rem; color: #2d2015; margin-bottom: 4px; font-weight: 600;
+}
+.desc {
+  font-size: 12.5px; color: #8b7355; margin-bottom: 10px; line-height: 1.5;
+}
+.card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.price { font-weight: 700; color: #2d2015; font-size: 1.1rem; }
+.category-tag {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #b08c5a;
+  background: #faf3e8;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+footer {
+  background: #2d2015; color: #c4b49e;
+  padding: 56px 24px 28px;
+}
+.footer-grid {
+  display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px;
+  max-width: 960px; margin: 0 auto 36px;
+}
+.footer-grid strong {
+  color: #f5ede0; display: block; margin-bottom: 8px; font-size: 14px;
+}
+.footer-grid p { font-size: 13px; margin: 3px 0; line-height: 1.6; }
+.footer-tagline {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem; color: #f5ede0; margin-bottom: 4px;
+}
+.copyright {
+  text-align: center; font-size: 11px; color: #6b5d4e;
+  border-top: 1px solid #4a3829;
+  padding-top: 20px; max-width: 960px; margin: 0 auto;
+}`;
+
+const JS_EXTRA_CSS = `
+.cart-btn {
+  background: #2d2015; color: white; border: none;
+  border-radius: 8px; padding: 8px 14px;
+  font-size: 13px; cursor: pointer;
+  transition: opacity 0.2s; position: relative;
+  font-family: inherit; font-weight: 600;
+}
+.cart-btn:hover { opacity: 0.85; }
+.cart-badge {
+  background: #c0392b; color: white;
+  border-radius: 50%; font-size: 11px;
+  font-weight: 700; min-width: 18px; height: 18px;
+  display: inline-flex; align-items: center;
+  justify-content: center; margin-left: 6px;
+}
+.add-btn {
+  display: block; width: 100%; padding: 10px;
+  margin-top: 14px;
+  background: #faf3e8; border: 1px solid #e8dfd3;
+  border-radius: 8px; font-size: 13px;
+  font-weight: 600; color: #2d2015;
+  cursor: pointer; transition: all 0.2s;
+  font-family: inherit;
+}
+.add-btn:hover {
+  background: #2d2015; color: white;
+  border-color: #2d2015;
+  transform: translateY(-1px);
+}`;
+
+const MENU_ITEMS = [
+  { emoji:'🍞', name:'Bochenek na zakwasie', desc:'Fermentowany 72 godziny, chrupiąca skórka', price:18, cat:'chleb',   bg:'linear-gradient(135deg,#f5e6d3,#e8d5bc)' },
+  { emoji:'🥖', name:'Wiejska bagietka',     desc:'W stylu francuskim, złotobrązowa',         price:12, cat:'chleb',   bg:'linear-gradient(135deg,#f0dfc8,#e5cfaf)' },
+  { emoji:'🌾', name:'Pełnoziarnisty bochenek', desc:'Sycący, orzechowy, pożywny',             price:16, cat:'chleb',   bg:'linear-gradient(135deg,#e8dcc8,#d9c9aa)' },
+  { emoji:'🥐', name:'Croissant czekoladowy', desc:'Maślane warstwy, gorzka czekolada',        price:14, cat:'wypieki', bg:'linear-gradient(135deg,#e6d5c3,#d4bfa8)' },
+  { emoji:'🍩', name:'Drożdżówka migdałowa',  desc:'Kruche ciasto, migdałowy krem',            price:15, cat:'wypieki', bg:'linear-gradient(135deg,#f2e4d0,#e8d4b8)' },
+  { emoji:'🧁', name:'Rolada cynamonowa',     desc:'Ciepła, lepka, z polewą serową',           price:13, cat:'wypieki', bg:'linear-gradient(135deg,#ecdcc8,#dfcaad)' },
+  { emoji:'🥕', name:'Ciasto marchewkowe',    desc:'Korzenne ciasto, frosting serowy',         price:22, cat:'ciasto',  bg:'linear-gradient(135deg,#f0dcc4,#e2c9a6)' },
+  { emoji:'🍋', name:'Tarta cytrynowa',       desc:'Cytrynowy krem, maślany spód',             price:20, cat:'ciasto',  bg:'linear-gradient(135deg,#f5ead3,#ebe0c0)' },
+  { emoji:'☕', name:'Tiramisu',               desc:'Nasączane espresso, warstwy mascarpone',   price:25, cat:'ciasto',  bg:'linear-gradient(135deg,#e0d0be,#d2bea5)' },
+];
+
+function makeCardHTML(item, withButton) {
+  const btnHTML = withButton
+    ? `<button class="add-btn" onclick="parent.addToCart('${item.name}',${item.price})">+ Dodaj do zamówienia</button>`
+    : '';
+  return `<div class="menu-card">
+        <div class="card-img" style="background:${item.bg}"><span>${item.emoji}</span></div>
+        <div class="card-body">
+          <h3>${item.name}</h3>
+          <p class="desc">${item.desc}</p>
+          <div class="card-footer">
+            <span class="price">${item.price} zł</span>
+            <span class="category-tag">${item.cat}</span>
+          </div>${btnHTML}
+        </div>
+      </div>`;
+}
+
+function makePageHTML(withJS) {
+  const cards = MENU_ITEMS.map(i => makeCardHTML(i, withJS)).join('\n      ');
+  const navExtra = withJS
+    ? `<button class="cart-btn" onclick="parent.toggleCart()">Koszyk <span class="cart-badge" id="cart-badge">0</span></button>`
+    : '';
+  return `<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Złoty Bochenek - piekarnia rzemieślnicza</title>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="logo">Złoty Bochenek</a>
+    <div class="nav-links">
+      <a href="#menu">Menu</a>
+      <a href="#about">O nas</a>
+      <a href="#contact">Kontakt</a>
+      ${navExtra}
+    </div>
+  </nav>
+
+  <section class="hero">
+    <p class="hero-tag">Piekarnia &amp; cukiernia</p>
+    <h1>Prosto z naszego pieca<br>na Twój stół.</h1>
+    <p class="hero-sub">Rzemieślniczy chleb, ciasta i ciastka, wypiekane w Warszawie od 2019 roku.</p>
+    <a href="#menu" class="hero-btn">Zobacz menu</a>
+  </section>
+
+  <section id="menu" class="section">
+    <h2>Nasze menu</h2>
+    <p class="section-sub">Codziennie świeżo, w małych partiach</p>
+    <div class="menu-grid" id="menu-grid">
+      ${cards}
+    </div>
+  </section>
+
+  <footer id="contact">
+    <div class="footer-grid">
+      <div>
+        <p class="footer-tagline">Złoty Bochenek</p>
+        <p>Wypiekane codziennie w naszej warszawskiej piekarni.</p>
+      </div>
+      <div>
+        <strong>Godziny</strong>
+        <p>Pon–Sob: 7:00 – 18:00</p>
+        <p>Niedziela: 8:00 – 14:00</p>
+      </div>
+      <div>
+        <strong>Kontakt</strong>
+        <p>ul. Marszałkowska 12, Warszawa</p>
+        <p>+48 22 555 12 34</p>
+        <p>kontakt@zlotybochenek.pl</p>
+      </div>
+    </div>
+    <p class="copyright">© 2026 Złoty Bochenek. Wszystkie prawa zastrzeżone.</p>
+  </footer>
+
+</body>
+</html>`;
+}
+
+const TEXT_CONTENT = `ZŁOTY BOCHENEK
+=================
+
+Nawigacja: Główna | Menu | O nas | Kontakt
+
+---
+
+SEKCJA POWITALNA
+Prosto z naszego pieca na Twój stół.
+Rzemieślniczy chleb, ciasta i ciastka, wypiekane w Warszawie od 2019 roku.
+[przycisk: Zobacz menu]
+
+---
+
+NASZE MENU - codziennie świeżo, w małych partiach
+
+Chleb:
+- Bochenek na zakwasie ........... 18 zł
+  Fermentowany 72 godziny, chrupiąca skórka
+- Wiejska bagietka ............... 12 zł
+  W stylu francuskim, złotobrązowa
+- Pełnoziarnisty bochenek ........ 16 zł
+  Sycący, orzechowy, pożywny
+
+Wypieki:
+- Croissant czekoladowy .......... 14 zł
+  Maślane warstwy, gorzka czekolada
+- Drożdżówka migdałowa ........... 15 zł
+  Kruche ciasto, migdałowy krem
+- Rolada cynamonowa .............. 13 zł
+  Ciepła, lepka, z polewą serową
+
+Ciasto:
+- Ciasto marchewkowe (porcja) .... 22 zł
+  Korzenne ciasto, frosting serowy
+- Tarta cytrynowa ................ 20 zł
+  Cytrynowy krem, maślany spód
+- Tiramisu ....................... 25 zł
+  Nasączane espresso, warstwy mascarpone
+
+---
+
+STOPKA
+Złoty Bochenek
+ul. Marszałkowska 12, Warszawa
+Pon-Sob: 7:00 - 18:00 | Niedziela: 8:00 - 14:00
++48 22 555 12 34 | kontakt@zlotybochenek.pl
+© 2026 Złoty Bochenek`;
+
+const FILES = {
+  text: { 'tresc.txt': TEXT_CONTENT },
+  html: { 'index.html': makePageHTML(false) },
+  css:  { 'index.html': makePageHTML(false), 'style.css': BAKERY_CSS },
+  js:   { 'index.html': makePageHTML(true),  'style.css': BAKERY_CSS + JS_EXTRA_CSS, 'script.js':
+`/* ===== script.js =====
+   Funkcjonalnosc koszyka.
+
+   Stan koszyka jest utrzymywany w oknie nadrzednym
+   (poza iframe), zeby przetrwal przeladowania
+   podgladu przy zmianie warstwy.
+   ========================== */
+
+// Przyciski "Dodaj do zamowienia" i "Koszyk" w naglowku
+// wywoluja parent.addToCart(...) oraz parent.toggleCart().
+// Caly stan -- zobacz strone Substrate, panel po prawej.
+` }
+};
+
+/* ── Helpers ────────────────────────────────────────────── */
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function activeLayer(){
+  if (state.layers.js)   return 'js';
+  if (state.layers.css)  return 'css';
+  if (state.layers.html) return 'html';
+  return 'text';
+}
+
+const tabsEl    = document.getElementById('file-tabs');
+const editorEl  = document.getElementById('code-editor');
+const previewEl = document.getElementById('live-preview');
+const langLabel = document.getElementById('editor-lang-label');
+
+const DOT_COLORS = {
+  'tresc.txt':  'var(--layer-text)',
+  'index.html': 'var(--layer-html)',
+  'style.css':  'var(--layer-css)',
+  'script.js':  'var(--layer-js)',
+};
+const EXT_LABELS = {
+  'tresc.txt':  'TXT',
+  'index.html': 'HTML',
+  'style.css':  'CSS',
+  'script.js':  'JS',
+};
+
+function rebuildFileTabs() {
+  const layer = activeLayer();
+  const files = FILES[layer];
+  const names = Object.keys(files);
+  tabsEl.innerHTML = '';
+  if (!files[state.activeTab]) state.activeTab = names[0];
+  names.forEach(name => {
+    const b = document.createElement('button');
+    b.className = 'file-tab' + (name === state.activeTab ? ' active' : '');
+    b.innerHTML = `<span class="tab-dot" style="background:${DOT_COLORS[name] || 'var(--ink-mute)'}"></span>${name}`;
+    b.onclick = () => selectTab(name);
+    tabsEl.appendChild(b);
+  });
+  syncEditor();
+}
+
+function selectTab(name) {
+  FILES[activeLayer()][state.activeTab] = editorEl.value;
+  state.activeTab = name;
+  tabsEl.querySelectorAll('.file-tab').forEach(t => {
+    const txt = (t.textContent || '').trim();
+    t.classList.toggle('active', txt === name);
+  });
+  syncEditor();
+}
+
+function syncEditor() {
+  const files = FILES[activeLayer()];
+  editorEl.value = files[state.activeTab] || '';
+  langLabel.textContent = EXT_LABELS[state.activeTab] || '';
+}
+
+function renderPreview() {
+  const layer = activeLayer();
+  const files = FILES[layer];
+  const doc = previewEl.contentDocument || previewEl.contentWindow.document;
+
+  if (layer === 'text') {
+    doc.open();
+    doc.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:13px;padding:24px;white-space:pre-wrap;color:#4a3f35;background:#fffcf8;margin:0;line-height:1.7;}</style></head><body>${escapeHtml(files['tresc.txt'] || '')}</body></html>`);
+    doc.close();
+    return;
+  }
+
+  if (layer === 'html') {
+    doc.open();
+    doc.write(files['index.html'] || '');
+    doc.close();
+    return;
+  }
+
+  if (layer === 'css') {
+    let html = files['index.html'] || '';
+    const css = files['style.css'] || '';
+    html = html.replace('</head>', `<style>\n${css}\n</style>\n</head>`);
+    doc.open();
+    doc.write(html);
+    doc.close();
+    return;
+  }
+
+  if (layer === 'js') {
+    let html = files['index.html'] || '';
+    const css = files['style.css'] || '';
+    html = html.replace('</head>', `<style>\n${css}\n</style>\n</head>`);
+    doc.open();
+    doc.write(html);
+    doc.close();
+    setTimeout(syncCartBadge, 80);
+  }
+}
+
+function toggleLayer(name) {
+  const order = ['text', 'html', 'css', 'js'];
+  const idx = order.indexOf(name);
+  if (state.layers[name] && activeLayer() === name && idx > 0) {
+    state.layers[name] = false;
+  } else {
+    order.forEach((l, i) => { state.layers[l] = i <= idx; });
+  }
+  state.activeTab = Object.keys(FILES[activeLayer()])[0];
+  updateUI();
+}
+
+function updateUI() {
+  const order = ['text', 'html', 'css', 'js'];
+  document.querySelectorAll('.layer-btn').forEach(b => {
+    b.classList.toggle('active', !!state.layers[b.dataset.layer]);
+  });
+  order.forEach(l => {
+    document.getElementById('sd-' + l).classList.toggle('on', !!state.layers[l]);
+    document.getElementById('step-' + l).classList.toggle('done', !!state.layers[l]);
+  });
+  rebuildFileTabs();
+  renderPreview();
+}
+
+document.querySelectorAll('.layer-btn').forEach(btn => {
+  btn.addEventListener('click', () => toggleLayer(btn.dataset.layer));
+});
+
+editorEl.addEventListener('input', function () {
+  FILES[activeLayer()][state.activeTab] = editorEl.value;
+  renderPreview();
+});
+
+/* ============================================================
+   Shopping cart (parent window, persists across iframe reloads)
+   ============================================================ */
+let cart = [];
+const cartPanel    = document.getElementById('cartPanel');
+const cartOverlay  = document.getElementById('cartOverlay');
+const cartItemsEl  = document.getElementById('cartItems');
+const cartTotalEl  = document.getElementById('cartTotal');
+
+function addToCart(name, price) {
+  cart.push({ name: name, price: Number(price) });
+  renderCart();
+  showToast('Dodano: ' + name);
+}
+
+function removeFromCart(i) {
+  cart.splice(i, 1);
+  renderCart();
+}
+
+function renderCart() {
+  syncCartBadge();
+  if (cart.length === 0) {
+    cartItemsEl.innerHTML = '<p class="cart-empty">Koszyk jest pusty</p>';
+    cartTotalEl.textContent = '0 zł';
+    return;
+  }
+  let sum = 0;
+  cartItemsEl.innerHTML = cart.map((item, i) => {
+    sum += item.price;
+    return `<div class="cart-row">
+      <span>${item.name}</span>
+      <span><span class="price">${item.price} zł</span><button class="rm" onclick="removeFromCart(${i})" aria-label="Usuń">×</button></span>
+    </div>`;
+  }).join('');
+  cartTotalEl.textContent = sum + ' zł';
+}
+
+function syncCartBadge() {
+  try {
+    const ifrDoc = previewEl.contentDocument || previewEl.contentWindow.document;
+    const badge = ifrDoc.getElementById('cart-badge');
+    if (badge) badge.textContent = cart.length;
+  } catch (_) {}
+}
+
+function toggleCart() {
+  const isOpen = cartPanel.classList.contains('open');
+  cartPanel.classList.toggle('open', !isOpen);
+  cartOverlay.classList.toggle('open', !isOpen);
+}
+
+function placeOrder() {
+  if (cart.length === 0) return;
+  const n = cart.length;
+  const sum = cart.reduce((a, b) => a + b.price, 0);
+  showToast('Zamówienie złożone · pozycji: ' + n + ' · razem: ' + sum + ' zł');
+  cart = [];
+  renderCart();
+  toggleCart();
+}
+
+function showToast(msg) {
+  const old = document.querySelector('.toast');
+  if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => {
+    t.classList.remove('show');
+    setTimeout(() => t.remove(), 320);
+  }, 2400);
+}
+
+// expose for iframe inline handlers
+window.addToCart = addToCart;
+window.removeFromCart = removeFromCart;
+window.toggleCart = toggleCart;
+window.placeOrder = placeOrder;
+
+renderCart();
+updateUI();
+</script>
+
+</body>
+</html>
