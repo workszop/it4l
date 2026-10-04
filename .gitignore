@@ -1,7 +1,7 @@
 # Local Claude Code settings
 .claude/settings.local.json
 
-# Intermediate working artifacts — never committed
+# Intermediate working artifacts - never committed
 mockups/
 plans/
 superpowers/
@@ -10,6 +10,7 @@ review*.md
 *.plan.md
 *.draft.*
 scratch/
+design_handoff_substrate/
 
 # Screenshots and scratch renders
 check.png

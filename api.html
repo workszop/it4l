@@ -399,18 +399,6 @@
      its response, yellow = "look here now".
      ════════════════════════════════════════════════════════════ */
 
-  /* ── legend under the demo lead ─────────────────────────────── */
-  .demo-legend {
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px; margin-top: 24px;
-  }
-  .legend-item {
-    background: var(--card); border: 1px solid var(--rule-soft);
-    border-radius: var(--r-md); padding: 14px 16px;
-    display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
-  }
-  .legend-item p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-soft); }
-
   /* ── solid chips: actor + message labels ────────────────────── */
   .chip {
     display: inline-flex; align-items: center; gap: 6px;
@@ -743,9 +731,8 @@
   }
   @media (max-width: 768px) {
     .demo-fullwide { padding: 0 12px; }
-    .detail.detail-intro { padding-left: 12px; padding-right: 12px; }
+    .detail.detail-intro, .detail.detail-after { padding-left: 12px; padding-right: 12px; }
     .detail-demo { padding: 22px 14px; }
-    .demo-legend { grid-template-columns: minmax(0, 1fr); }
     .site-grid { grid-template-columns: minmax(0, 1fr); }
     .site { padding: 0 14px 16px; }
     .http { grid-template-columns: minmax(0, 1fr); }
@@ -909,12 +896,13 @@
   .calculation .empty, .cart-empty, .asm-cmt, .up-mark, .nb-mark,
   .m-body p:first-child::first-letter { font-family: var(--font-sans); }
 
-  /* ── Intro prose spans the same width as the demo box below ───────── */
-  .detail.detail-intro {
-    max-width: calc(1480px + 2 * var(--pad-x));
-    padding-bottom: 0;
-  }
+  /* ── Prose before and after the demo spans the demo box width ──────── */
+  .detail.detail-intro, .detail.detail-after { max-width: calc(1480px + 2 * var(--pad-x)); }
+  .detail.detail-intro { padding-bottom: 0; }
   .detail-intro .detail-prose { max-width: none; margin: 0; }
+  .detail-after .detail-prose { max-width: none; margin: 0 0 48px; }
+  .detail-after .detail-aside { max-width: none; margin: 48px 0; }
+  .detail-after .detail-related { max-width: none; }
 
   /* ── Dark hero band (matches the index) ─────────────────────────────── */
   .detail-hero {
@@ -1014,20 +1002,6 @@
     <div class="demo-head">
       <h2>Jak strona internetowa pobiera pogodę z serwera</h2>
       <p>W pierwszym panelu jest strona portalu Daily News otwarta w przeglądarce. Nie ma własnych pomiarów, więc musi o nie poprosić; w języku API nazywamy ją <em>klientem</em>. W ostatnim pracuje serwer pogodowy: program bez ekranu dla ludzi, który trzyma bazę pomiarów i odpowiada innym programom. Między nimi widać dwie wiadomości, które przelatują przez internet: niebieskie <em>zapytanie</em> od strony do serwera i zieloną <em>odpowiedź</em> od serwera do strony. Wybierz miasto w widżecie pogody na stronie albo kliknij <em>Wyślij zapytanie</em> i obserwuj, jak liczba z bazy serwera trafia na ekran.</p>
-      <div class="demo-legend">
-        <div class="legend-item">
-          <span class="chip client">Klient · strona</span>
-          <p>Strona w przeglądarce. Wysyła zapytanie i pokazuje dane, które dostała.</p>
-        </div>
-        <div class="legend-item">
-          <span class="chip net">Internet · HTTP</span>
-          <p>Dwie wiadomości tekstowe: zapytanie <b>→</b> do serwera i odpowiedź <b>←</b> do strony.</p>
-        </div>
-        <div class="legend-item">
-          <span class="chip server">Serwer · API</span>
-          <p>Program z bazą pomiarów. Czyta zapytanie, szuka danych i odsyła je jako JSON.</p>
-        </div>
-      </div>
     </div>
 
     <div class="api-start">
