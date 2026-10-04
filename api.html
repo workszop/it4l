@@ -82,6 +82,12 @@
     --green-tint: color-mix(in srgb, var(--green) 12%, transparent);
     --amber: var(--yellow);
     --amber-tint: color-mix(in srgb, var(--yellow) 22%, transparent);
+    /* API demo: browser chrome + server console */
+    --chrome-bg:   var(--paper-3);
+    --chrome-bg-2: var(--paper-2);
+    --srv-bg:   #24211E;  --srv-bg-2: #322D29;
+    --srv-ink:  #FFFFFF;  --srv-ink-2: rgba(255,255,255,.76);  --srv-ink-3: rgba(255,255,255,.52);
+    --srv-line: rgba(255,255,255,.14);
   }
 
   /* ── Dark: edulab ink surfaces (yellow reads as text on black) ──────── */
@@ -108,6 +114,11 @@
     --green-tint: color-mix(in srgb, var(--green) 22%, transparent);
     --amber: var(--yellow);
     --amber-tint: color-mix(in srgb, var(--yellow) 22%, transparent);
+    --chrome-bg:   #322D29;
+    --chrome-bg-2: #262220;
+    --srv-bg:   #0F0D0C;  --srv-bg-2: #24211E;
+    --srv-ink:  #FFFFFF;  --srv-ink-2: rgba(255,255,255,.76);  --srv-ink-3: rgba(255,255,255,.52);
+    --srv-line: rgba(255,255,255,.16);
   }
 
   /* ── Reset ──────────────────────────────────────────────────────────── */
@@ -284,20 +295,20 @@
     padding: 40px;
     background: var(--bg-2);
     border: 1px solid var(--rule-soft);
-    border-radius: 4px;
+    border-radius: var(--r-xl);
   }
   .detail.detail-after {
     padding-top: 0;
   }
-  .detail-demo .demo-head { margin-bottom: 32px; max-width: 70ch; }
+  .detail-demo .demo-head { margin-bottom: 24px; max-width: none; }
   .detail-demo .demo-head h2 {
     font-family: var(--font-display); font-weight: 400;
     font-size: 32px; margin: 8px 0 8px; letter-spacing: -.01em;
   }
-  .detail-demo .demo-head p {
-    font-family: var(--font-sans); font-size: 16px; color: var(--ink-soft); margin: 0;
+  .detail-demo .demo-head > p {
+    font-family: var(--font-sans); font-size: 17px; line-height: 1.6; color: var(--ink-soft); margin: 0;
   }
-  .detail-demo .demo-head p em { font-style: italic; color: var(--accent-2); }
+  .detail-demo .demo-head p em { font-style: normal; font-weight: 600; color: var(--ink); }
 
   /* ── Buttons ────────────────────────────────────────────────────────── */
   .btn {
@@ -383,624 +394,371 @@
   }
 
   /* ════════════════════════════════════════════════════════════
-     API DEMO — SCENE: server + client side-by-side
+     API DEMO - website (client) · HTTP messages · weather server
+     Blue = the website and its request, green = the server and
+     its response, yellow = "look here now".
      ════════════════════════════════════════════════════════════ */
 
-  .api-scene {
-    background: var(--bg);
-    border: 1px solid var(--rule-soft);
-    border-radius: 3px;
-    overflow: hidden;
+  /* ── legend under the demo lead ─────────────────────────────── */
+  .demo-legend {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px; margin-top: 24px;
   }
+  .legend-item {
+    background: var(--card); border: 1px solid var(--rule-soft);
+    border-radius: var(--r-md); padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
+  }
+  .legend-item p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-soft); }
 
-  /* ── city selector row ──────────────────────────────────────── */
-  .api-city-row {
-    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--rule-soft);
+  /* ── solid chips: actor + message labels ────────────────────── */
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    letter-spacing: .1em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: var(--r-pill); white-space: nowrap;
   }
-  .api-city-row label {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
-    text-transform: uppercase; color: var(--ink-mute);
-  }
-  .city-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-  .city-chip {
-    appearance: none; cursor: pointer;
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em;
-    padding: 6px 14px; border: 1px solid var(--rule-soft); border-radius: 2px;
-    background: transparent; color: var(--ink-soft);
-    transition: all .15s;
-  }
-  .city-chip:hover { border-color: var(--ink-soft); color: var(--ink); }
-  .city-chip.active {
-    border-color: var(--accent); color: var(--accent);
-    background: var(--accent-tint);
-  }
+  .chip.client { background: var(--blue);   color: var(--blue-ink); }
+  .chip.server { background: var(--green);  color: var(--green-ink); }
+  .chip.net    { background: var(--yellow); color: var(--yellow-ink); }
+  .chip.error  { background: var(--red);    color: var(--red-ink); }
+  .chip.muted  { background: var(--bg-3);   color: var(--ink-soft); }
 
-  /* ── two-panel layout ───────────────────────────────────────── */
-  .api-panels {
+  /* ── start button ───────────────────────────────────────── */
+  .api-start { margin-bottom: 22px; }
+
+  /* ── stage: website | messages | server ─────────────────────── */
+  .api-stage {
     display: grid;
-    grid-template-columns: 1fr 80px 1fr;
-    min-height: 460px;
+    grid-template-columns: minmax(0, 1.3fr) minmax(300px, 1fr) minmax(0, 1fr);
+    gap: 22px; align-items: start;
   }
+  .actor { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .actor-label { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+  .actor-label strong {
+    font-family: var(--font-display); font-weight: 600; font-size: 19px;
+    letter-spacing: -.01em; color: var(--ink);
+  }
+  .actor-note { flex-basis: 100%; font-size: 13.5px; line-height: 1.45; color: var(--ink-soft); }
+  .frame { transition: box-shadow .25s; }
+  .actor.is-active .frame,
+  .msg.is-active { box-shadow: 0 0 0 3px var(--yellow), var(--shadow-md); }
 
-  /* ── server panel ───────────────────────────────────────────── */
-  .panel-server {
-    border-right: 1px solid var(--rule-soft);
-    display: flex; flex-direction: column;
-    min-width: 0;
+  /* ── browser window around the website ──────────────────────── */
+  .browser {
+    background: var(--card); border: 1px solid var(--rule);
+    border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-md);
   }
-  .panel-header {
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--rule-soft);
-    display: flex; align-items: center; gap: 12px;
+  .br-tabs {
+    background: var(--chrome-bg); display: flex; align-items: flex-end;
+    gap: 12px; padding: 9px 12px 0;
   }
-  .panel-icon {
-    width: 32px; height: 32px; border-radius: 2px;
-    background: var(--bg-2); border: 1px solid var(--rule-soft);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
+  .br-dots { display: flex; gap: 6px; padding-bottom: 10px; }
+  .br-dots span { width: 11px; height: 11px; border-radius: 50%; }
+  .br-dots span:nth-child(1) { background: var(--red); }
+  .br-dots span:nth-child(2) { background: var(--yellow); }
+  .br-dots span:nth-child(3) { background: var(--green); }
+  .br-tab {
+    background: var(--card); border-radius: var(--r-sm) var(--r-sm) 0 0;
+    padding: 7px 16px 8px; display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-sans); font-size: 12px; font-weight: 500; color: var(--ink);
+    min-width: 0; max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .panel-icon svg { width: 18px; height: 18px; }
-  .panel-title {
-    font-family: var(--font-sans); font-size: 13px; font-weight: 500;
-    color: var(--ink);
+  .br-tab .fav {
+    width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0;
+    background: var(--red); color: var(--red-ink);
+    font-family: var(--font-display); font-weight: 800; font-size: 10px;
+    display: grid; place-items: center;
   }
-  .panel-sub {
-    font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em;
-    color: var(--ink-mute); text-transform: uppercase;
-  }
-
-  /* ── weather table ──────────────────────────────────────────── */
-  .weather-table {
-    flex: 1; padding: 20px 24px;
-    overflow: auto;
-  }
-  .weather-table table {
-    width: 100%; border-collapse: collapse;
-    font-family: var(--font-mono); font-size: 12px;
-  }
-  .weather-table th {
-    text-align: left; padding: 0 8px 10px;
-    font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
-    color: var(--ink-mute); font-weight: 500;
+  .br-toolbar {
+    display: flex; align-items: center; gap: 6px; padding: 8px 12px;
     border-bottom: 1px solid var(--rule-soft);
   }
-  .weather-table th:first-child { padding-left: 0; }
-  .weather-table td {
-    padding: 9px 8px;
-    border-bottom: 1px solid var(--rule-soft);
-    color: var(--ink-soft);
-    transition: background .2s, color .2s;
-  }
-  .weather-table td:first-child { padding-left: 0; color: var(--ink); }
-  .weather-table tr.highlighted td {
-    background: var(--accent-tint);
-    color: var(--ink);
-  }
-  .weather-table tr.highlighted td:first-child {
-    color: var(--accent);
-  }
-  .weather-table .condition-badge {
-    font-family: var(--font-mono); font-size: 10px;
-    padding: 2px 7px; border-radius: 2px;
-    border: 1px solid var(--rule-soft);
-    color: var(--ink-mute);
-  }
-  tr.highlighted .condition-badge {
-    border-color: var(--accent); color: var(--accent);
-  }
-
-  /* ── api docs panel (server side) ───────────────────────────── */
-  .api-docs {
-    border-top: 1px solid var(--rule-soft);
-    padding: 18px 24px 22px;
-    background: var(--bg-2);
-  }
-  .api-docs-head {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 14px;
-  }
-  .api-docs-head .docs-label {
-    font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em;
-    text-transform: uppercase; color: var(--ink-mute);
-  }
-  .api-docs-head .docs-version {
-    font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em;
-    color: var(--ink-mute);
-    border: 1px solid var(--rule-soft);
-    padding: 2px 6px; border-radius: 2px;
-  }
-  .api-docs h5 {
-    font-family: var(--font-display); font-weight: 400;
-    font-size: 14px; margin: 0 0 10px;
-    color: var(--ink); letter-spacing: -.005em;
-  }
-  .api-docs .endpoint-row {
-    display: flex; align-items: center; gap: 8px;
-    font-family: var(--font-mono); font-size: 11px;
-    padding: 6px 0; border-bottom: 1px solid var(--rule-soft);
-    margin-bottom: 12px;
-  }
-  .api-docs .ep-method {
-    color: var(--accent); font-weight: 500; letter-spacing: .04em;
-    font-size: 10px;
-    border: 1px solid var(--accent);
-    padding: 1px 6px; border-radius: 2px;
-    background: var(--accent-tint);
-  }
-  .api-docs .ep-path { color: var(--ink-soft); }
-  .api-docs .ep-path .ep-param { color: var(--accent); }
-
-  .api-docs dl {
-    margin: 0;
-    display: grid;
-    grid-template-columns: 90px 1fr;
-    gap: 6px 14px;
-    font-family: var(--font-mono); font-size: 10.5px;
-    line-height: 1.5;
-  }
-  .api-docs dt {
-    color: var(--ink-mute);
-    letter-spacing: .04em;
-  }
-  .api-docs dd {
-    margin: 0;
-    color: var(--ink-soft);
-  }
-  .api-docs dd .req-tag {
-    font-size: 9px; letter-spacing: .08em; text-transform: uppercase;
-    color: var(--ink-mute); margin-left: 6px;
-  }
-  .api-docs dd code {
-    font-family: var(--font-mono); font-size: 10.5px;
-    color: var(--accent);
-  }
-
-  .api-docs .docs-section + .docs-section {
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px dashed var(--rule-soft);
-  }
-  .api-docs .codes {
-    display: flex; flex-wrap: wrap; gap: 6px;
-  }
-  .api-docs .code-chip {
-    font-family: var(--font-mono); font-size: 10px;
-    padding: 3px 8px; border-radius: 2px;
-    border: 1px solid var(--rule-soft);
-    color: var(--ink-soft);
-    letter-spacing: .04em;
-  }
-  .api-docs .code-chip.ok   { border-color: var(--green); color: var(--green); }
-  .api-docs .code-chip.warn { border-color: var(--amber); color: var(--amber); }
-
-  /* ── arrow channel ──────────────────────────────────────────── */
-  .panel-channel {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 16px 0; gap: 12px;
-    position: relative;
-  }
-  .channel-line {
-    width: 1px; flex: 1;
-    background: repeating-linear-gradient(
-      to bottom,
-      var(--rule-soft) 0,
-      var(--rule-soft) 4px,
-      transparent 4px,
-      transparent 10px
-    );
-    position: absolute; top: 0; bottom: 0; left: 50%;
-  }
-
-  .channel-arrow {
-    position: relative; z-index: 2;
-    width: 36px; height: 36px; border-radius: 50%;
-    background: var(--bg-2); border: 1px solid var(--rule-soft);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-mono); font-size: 13px; color: var(--ink-mute);
-    transition: all .3s;
-  }
-  .channel-arrow.req-active {
-    border-color: var(--accent); color: var(--accent);
-    background: var(--accent-tint);
-    animation: pulse-req .6s ease-out;
-  }
-  .channel-arrow.res-active {
-    border-color: var(--green); color: var(--green);
-    background: var(--green-tint);
-    animation: pulse-res .6s ease-out;
-  }
-  @keyframes pulse-req {
-    0%   { transform: scale(1); box-shadow: 0 0 0 0 var(--accent-tint); }
-    50%  { transform: scale(1.15); box-shadow: 0 0 0 8px transparent; }
-    100% { transform: scale(1); }
-  }
-  @keyframes pulse-res {
-    0%   { transform: scale(1); box-shadow: 0 0 0 0 var(--green-tint); }
-    50%  { transform: scale(1.15); box-shadow: 0 0 0 8px transparent; }
-    100% { transform: scale(1); }
-  }
-
-  .channel-label {
-    font-family: var(--font-mono); font-size: 9px; letter-spacing: .10em;
-    text-transform: uppercase; color: var(--ink-mute);
-    writing-mode: vertical-rl;
-    position: relative; z-index: 2;
-  }
-
-  /* ── client panel ───────────────────────────────────────────── */
-  .panel-client {
-    border-left: 1px solid var(--rule-soft);
-    display: flex; flex-direction: column;
-    min-width: 0;
-  }
-
-  /* ── news site mock ─────────────────────────────────────────── */
-  .news-mock {
-    flex: 1; display: flex; flex-direction: column;
-  }
-
-  /* brand bar */
-  .news-brand-bar {
-    padding: 10px 20px;
-    background: var(--bg-2);
-    border-bottom: 1px solid var(--rule-soft);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .news-brand {
-    display: flex; align-items: center; gap: 8px;
-  }
-  .news-logo {
-    width: 22px; height: 22px;
-    color: var(--accent);
-  }
-  .news-brand-name {
-    font-family: var(--font-display); font-size: 16px; font-weight: 600;
-    letter-spacing: .02em; color: var(--ink);
-  }
-  .news-brand-name .nb-mark {
-    color: var(--accent); font-style: italic;
-  }
-  .news-live {
-    display: flex; align-items: center; gap: 6px;
-    font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--ink-mute);
-  }
-  .news-live-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--red);
-    box-shadow: 0 0 0 0 rgba(239,68,68,.55);
-    animation: live-pulse 1.6s ease-out infinite;
-  }
-  @keyframes live-pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(239,68,68,.55); }
-    70%  { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
-    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
-  }
-
-  /* nav */
-  .news-nav {
-    padding: 8px 20px;
-    border-bottom: 1px solid var(--rule-soft);
-    display: flex; gap: 14px; flex-wrap: wrap;
-    overflow: hidden;
-  }
-  .news-nav a {
-    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .10em;
-    text-transform: uppercase; color: var(--ink-mute);
-    padding: 4px 0;
-    cursor: default;
-    border-bottom: 1px solid transparent;
-  }
-  .news-nav a.active {
-    color: var(--ink);
-  }
-
-  /* date strip */
-  .news-date-strip {
-    padding: 7px 20px;
-    background: var(--bg-2);
-    border-bottom: 1px solid var(--rule-soft);
-    display: flex; justify-content: space-between;
-    font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em;
-    text-transform: uppercase; color: var(--ink-mute);
-  }
-
-  /* weather widget */
-  .news-weather-strip {
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--rule-soft);
-  }
-  .news-weather-heading {
-    font-family: var(--font-mono); font-size: 10px; letter-spacing: .10em;
-    text-transform: uppercase; color: var(--ink-mute);
-    margin-bottom: 12px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .news-weather-heading::before {
-    content: ""; width: 12px; height: 1px; background: var(--accent);
-  }
-
-  .weather-widget-row {
-    display: grid;
-    grid-template-columns: 64px 1fr;
-    gap: 14px;
-    align-items: stretch;
-  }
-  .weather-icon-box {
-    background: var(--bg-2);
-    border: 1px solid var(--rule-soft);
-    border-radius: 2px;
-    display: flex; align-items: center; justify-content: center;
-    transition: border-color .3s;
-  }
-  .weather-icon-box.updated { border-color: var(--accent); }
-  .weather-icon-box svg {
-    width: 36px; height: 36px;
-    color: var(--ink-soft);
-    transition: color .3s;
-  }
-  .weather-icon-box.updated svg { color: var(--accent); }
-
-  .news-weather-cards {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-  }
-  .weather-stat {
-    background: var(--bg-2); border: 1px solid var(--rule-soft);
-    border-radius: 2px; padding: 8px 10px;
-    display: flex; flex-direction: column; gap: 2px;
-    transition: border-color .3s, background .3s;
-  }
-  .weather-stat.updated {
-    border-color: var(--accent);
-    background: var(--accent-tint-soft, rgba(127,212,216,.04));
-  }
-  html[data-theme="light"] .weather-stat.updated {
-    background: rgba(181,106,29,.04);
-  }
-  .weather-stat-label {
-    font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .10em;
-    text-transform: uppercase; color: var(--ink-mute);
-  }
-  .weather-stat-value {
-    font-family: var(--font-display); font-size: 18px; font-weight: 400;
-    color: var(--ink); line-height: 1.1;
-    transition: color .3s;
-  }
-  .weather-stat.updated .weather-stat-value { color: var(--accent); }
-  html[data-theme="light"] .weather-stat.updated .weather-stat-value { color: var(--accent); }
-  .weather-stat-sub {
-    font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute);
-  }
-
-  /* hero article */
-  .news-hero {
-    padding: 18px 20px 20px;
-    border-bottom: 1px solid var(--rule-soft);
-    display: flex; flex-direction: column; gap: 10px;
-    background: var(--bg-2);
-  }
-  .news-hero-tag {
-    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--accent);
-    font-weight: 500;
-  }
-  .news-hero-title {
-    font-family: var(--font-display); font-size: 22px; font-weight: 500;
-    line-height: 1.18; color: var(--ink); margin: 0;
-    letter-spacing: -.01em; text-wrap: balance;
-  }
-  .news-hero-dek {
-    font-family: var(--font-sans); font-size: 14px; line-height: 1.55;
-    color: var(--ink-soft); margin: 0;
-  }
-  .news-hero-meta {
-    font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em;
-    text-transform: uppercase; color: var(--ink-mute);
-    display: flex; gap: 8px; align-items: center;
-    flex-wrap: wrap;
-  }
-  .news-hero-meta .author-dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: var(--accent);
-  }
-
-  /* story list */
-  .news-stories {
-    flex: 1;
-    padding: 4px 20px;
-  }
-  .news-story {
-    padding: 12px 0;
-    border-bottom: 1px solid var(--rule-soft);
-    display: grid;
-    grid-template-columns: 56px 1fr;
-    gap: 12px;
-    align-items: start;
-  }
-  .news-story:last-child { border-bottom: none; }
-  .news-story-thumb {
-    width: 56px; height: 44px;
-    background: var(--bg-2);
-    border: 1px solid var(--rule-soft);
-    border-radius: 2px;
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-  }
-  .news-story-thumb svg {
-    width: 100%; height: 100%;
-    color: var(--ink-mute);
-  }
-  .news-story-body {
-    display: flex; flex-direction: column; gap: 2px;
-  }
-  .news-story-tag {
-    font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .12em;
-    text-transform: uppercase; color: var(--accent);
-  }
-  .news-story-title {
-    font-family: var(--font-display); font-size: 13px; font-weight: 500;
-    line-height: 1.3; color: var(--ink);
-  }
-  .news-story-meta {
-    font-family: var(--font-mono); font-size: 9px; letter-spacing: .04em;
-    color: var(--ink-mute);
-    margin-top: 2px;
-  }
-
-  /* market ticker */
-  .news-ticker {
-    padding: 8px 16px;
-    background: var(--bg-2);
-    border-top: 1px solid var(--rule-soft);
-    display: flex; align-items: center; gap: 14px;
-    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .04em;
-    overflow: hidden;
-    white-space: nowrap;
-  }
-  .news-ticker .ticker-tag {
-    color: var(--ink); border: 1px solid var(--rule-soft);
-    padding: 2px 6px; border-radius: 2px;
-    letter-spacing: .12em; text-transform: uppercase;
-    font-size: 8.5px;
-    flex-shrink: 0;
-  }
-  .ticker-strip {
-    display: flex; gap: 18px;
-    animation: ticker-scroll 28s linear infinite;
-  }
-  @keyframes ticker-scroll {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-  .ticker-item {
-    display: inline-flex; align-items: center; gap: 4px;
-    color: var(--ink-soft);
-  }
-  .ticker-item.up   { color: var(--green); }
-  .ticker-item.down { color: var(--red); }
-  html[data-theme="light"] .ticker-item.down { color: var(--red-600); }
-  .ticker-item .tick-arrow {
-    font-size: 10px; line-height: 1;
-  }
-  .ticker-item .tick-name {
-    color: var(--ink-mute); margin-right: 2px; letter-spacing: .04em;
-  }
-
-  /* ── bottom control strip ───────────────────────────────────── */
-  .api-controls {
-    padding: 20px 24px;
-    border-top: 1px solid var(--rule-soft);
-    display: flex; flex-direction: column; gap: 16px;
-  }
-
-  /* ── request/response panels ────────────────────────────────── */
-  .rr-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-  }
-  .rr-panel {
-    background: var(--bg-2); border: 1px solid var(--rule-soft);
-    border-radius: 2px; overflow: hidden;
-    min-width: 0;
-  }
-  .rr-header {
-    padding: 8px 14px;
-    border-bottom: 1px solid var(--rule-soft);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .rr-badge {
-    font-family: var(--font-mono); font-size: 9px; letter-spacing: .10em;
-    text-transform: uppercase; padding: 2px 7px; border-radius: 2px;
-    font-weight: 500;
-  }
-  .rr-badge.req { border: 1px solid var(--accent); color: var(--accent); }
-  .rr-badge.res { border: 1px solid var(--green); color: var(--green); }
-  .rr-title {
-    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
-  }
-  .rr-status {
-    margin-left: auto;
-    font-family: var(--font-mono); font-size: 10px;
-  }
-  .rr-status.ok { color: var(--green); }
-  .rr-status.idle { color: var(--ink-mute); }
-  .rr-body {
-    padding: 14px;
-    font-family: var(--font-mono); font-size: 11.5px;
-    line-height: 1.65; color: var(--ink-soft);
-    white-space: pre;
-    overflow: auto;
-    min-height: 140px;
-  }
-  .rr-body .json-key { color: var(--ink-mute); }
-  .rr-body .json-str { color: var(--accent-2); }
-  .rr-body .json-num { color: var(--accent); }
-  .rr-body .json-ok  { color: var(--green); }
-  .rr-body .json-ts  { color: var(--ink-mute); font-size: 10px; }
-
-  /* ── send button row ────────────────────────────────────────── */
-  .api-send-row {
-    display: flex; align-items: center; gap: 16px;
-  }
-  .api-send-row .method-badge {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em;
-    padding: 6px 10px; border: 1px solid var(--rule-soft); border-radius: 2px;
-    color: var(--accent); border-color: var(--accent);
-    background: var(--accent-tint);
-  }
-  .api-send-row .endpoint-path {
-    font-family: var(--font-mono); font-size: 13px; color: var(--ink-soft);
-    flex: 1;
-  }
-  .api-send-row .endpoint-path .path-accent { color: var(--accent); }
-
-  /* ── step explainer ─────────────────────────────────────────── */
-  .step-track {
-    display: flex; gap: 0;
-    border: 1px solid var(--rule-soft);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .step-block {
-    flex: 1; padding: 12px 16px;
-    border-right: 1px solid var(--rule-soft);
-    display: flex; flex-direction: column; gap: 4px;
-    transition: background .3s;
-    position: relative;
-  }
-  .step-block:last-child { border-right: none; }
-  .step-block.active {
-    background: var(--accent-tint);
-  }
-  .step-block.done {
-    background: var(--green-tint);
-  }
-  .step-num {
-    font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em;
-    text-transform: uppercase; color: var(--ink-mute);
-  }
-  .step-block.active .step-num { color: var(--accent); }
-  .step-block.done .step-num { color: var(--green); }
-  .step-name {
-    font-family: var(--font-sans); font-size: 12px; font-weight: 500;
-    color: var(--ink-soft);
-  }
-  .step-block.active .step-name { color: var(--accent); }
-  .step-block.done .step-name { color: var(--green); }
-  .step-desc {
+  .br-btn { width: 24px; height: 24px; display: grid; place-items: center; color: var(--ink-mute); flex-shrink: 0; }
+  .br-btn svg { width: 15px; height: 15px; }
+  .br-url {
+    flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px;
+    background: var(--bg-2); border-radius: var(--r-pill); padding: 6px 14px;
     font-family: var(--font-sans); font-size: 13px; color: var(--ink-mute);
-    line-height: 1.4;
+    white-space: nowrap; overflow: hidden;
   }
-  .step-indicator {
-    position: absolute; top: 10px; right: 10px;
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--rule-soft);
-    transition: background .3s;
+  .br-url svg { width: 12px; height: 12px; flex-shrink: 0; color: var(--ink-soft); }
+  .br-url .host { color: var(--ink); }
+  .br-status {
+    background: var(--chrome-bg-2); border-top: 1px solid var(--rule-soft);
+    padding: 5px 12px; min-height: 27px;
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .step-block.active .step-indicator { background: var(--accent); }
-  .step-block.done .step-indicator { background: var(--green); }
+
+  /* ── the news website itself ────────────────────────────────── */
+  .site { background: var(--bg); color: var(--ink); padding: 0 20px 20px; }
+  .site-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap; padding: 16px 0 12px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .site-logo {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-display); font-weight: 800; font-size: 26px;
+    letter-spacing: -.03em; line-height: 1;
+  }
+  .site-logo .mark {
+    width: 30px; height: 30px; border-radius: var(--r-xs);
+    background: var(--red); color: var(--red-ink);
+    display: grid; place-items: center; font-size: 19px;
+  }
+  .site-date { font-size: 12px; color: var(--ink-mute); }
+  .site-nav { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 0; border-bottom: 1px solid var(--rule-soft); }
+  .site-nav span {
+    font-family: var(--font-sans); font-weight: 600; font-size: 13px;
+    color: var(--ink-soft); padding: 5px 11px; border-radius: var(--r-pill);
+  }
+  .site-nav span.on { background: var(--ink); color: var(--bg); }
+
+  /* weather widget = the part of the website that talks to the API */
+  .wx {
+    margin: 16px 0 18px; padding: 16px;
+    background: var(--bg-2); border-radius: var(--r-lg);
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .wx-title { font-family: var(--font-display); font-weight: 700; font-size: 16px; margin: 0; }
+  .wx-hint { font-size: 12.5px; color: var(--ink-soft); margin: 2px 0 10px; }
+  .wx-cities { display: flex; flex-wrap: wrap; gap: 6px; }
+  .wx-city {
+    appearance: none; border: none; cursor: pointer;
+    background: var(--card); color: var(--ink); box-shadow: var(--shadow-sm);
+    font-family: var(--font-sans); font-weight: 600; font-size: 12.5px;
+    padding: 6px 12px; border-radius: var(--r-pill);
+    transition: background .15s, color .15s;
+  }
+  .wx-city:hover { background: var(--bg-3); }
+  .wx-city:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .wx-city[aria-pressed="true"] { background: var(--blue); color: var(--blue-ink); }
+
+  .wx-result {
+    display: flex; align-items: center; gap: 16px; min-height: 76px;
+    padding-top: 14px; border-top: 1px solid var(--rule-soft); transition: opacity .25s;
+  }
+  .wx[data-filled="loading"] .wx-result { opacity: .45; }
+  .wx-icon { position: relative; width: 58px; height: 58px; flex-shrink: 0; color: var(--ink); display: grid; place-items: center; }
+  .wx-icon .map-n { position: absolute; top: -4px; right: -8px; margin: 0; }
+  .wx-icon svg { width: 54px; height: 54px; }
+  .wx-icon .ic-fill { fill: var(--bg-2); }
+  .wx-temp {
+    font-family: var(--font-display); font-weight: 700; font-size: 42px;
+    line-height: 1; letter-spacing: -.03em;
+  }
+  .wx-place { font-weight: 600; font-size: 14px; }
+  .wx-meta { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+  .wx-empty { font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+  .wx-loading {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--ink-soft);
+    animation: fade-pulse 1s ease-in-out infinite alternate;
+  }
+  @keyframes fade-pulse { from { opacity: 1; } to { opacity: .35; } }
+
+  /* values that came from the API: flash + numbered link to the JSON */
+  .fld { border-radius: var(--r-xs); transition: background .4s, color .4s; }
+  .fld.flash { background: var(--yellow); color: var(--yellow-ink); }
+  .map-n {
+    display: inline-grid; place-items: center; vertical-align: middle;
+    width: 18px; height: 18px; margin: 0 4px; border-radius: 50%;
+    background: var(--yellow); color: var(--yellow-ink);
+    font-family: var(--font-mono); font-size: 10.5px; font-weight: 500; line-height: 1;
+    opacity: 0; transition: opacity .3s;
+  }
+  #demo[data-mapped="1"] .map-n { opacity: 1; }
+
+  .site-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 20px; }
+  .site-img {
+    aspect-ratio: 16 / 9; border-radius: var(--r-md); overflow: hidden;
+    background: var(--bg-3); margin-bottom: 10px;
+  }
+  .site-img svg { width: 100%; height: 100%; display: block; }
+  .site-img .i-sky   { fill: var(--bg-3); }
+  .site-img .i-box   { fill: var(--blue); }
+  .site-img .i-slot  { fill: var(--blue-600); }
+  .site-img .i-paper { fill: var(--card); }
+  .site-img .i-tick  { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
+  .site-img .i-sun   { fill: var(--yellow); }
+  .site-kicker {
+    font-family: var(--font-mono); font-size: 10.5px; font-weight: 500;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--red-600);
+  }
+  .site-h {
+    font-family: var(--font-display); font-weight: 700; font-size: 21px;
+    line-height: 1.2; letter-spacing: -.015em; margin: 4px 0 6px;
+  }
+  .site-dek { font-size: 13.5px; line-height: 1.5; color: var(--ink-soft); margin: 0; }
+  .site-byline { font-size: 12px; color: var(--ink-mute); margin-top: 8px; }
+  .site-side h5 {
+    font-family: var(--font-display); font-weight: 700; font-size: 14px;
+    margin: 0 0 4px; padding-bottom: 6px; border-bottom: 2px solid var(--ink);
+  }
+  .site-list { list-style: none; margin: 0; padding: 0; }
+  .site-list li { padding: 9px 0; border-bottom: 1px solid var(--rule-soft); }
+  .site-list li:last-child { border-bottom: none; }
+  .site-list .t { display: block; font-weight: 600; font-size: 13.5px; line-height: 1.3; margin-top: 2px; }
+
+  /* ── HTTP messages in the middle ────────────────────────────── */
+  .wire { gap: 12px; }
+  .msgs { display: flex; flex-direction: column; gap: 16px; }
+  .msg {
+    background: var(--card); border: 1px solid var(--rule-soft);
+    border-radius: var(--r-lg); box-shadow: var(--shadow-sm); overflow: hidden;
+    transition: box-shadow .25s, opacity .25s;
+  }
+  .msg[data-state="idle"] { opacity: .62; }
+  .msg-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 14px 4px; }
+  .msg-title { font-family: var(--font-display); font-weight: 600; font-size: 15px; }
+  .msg-state {
+    margin-left: auto; font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--ink-mute);
+  }
+
+  .msg-track {
+    display: flex; align-items: center; gap: 10px; padding: 6px 14px 10px;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-mute);
+  }
+  .rail { position: relative; flex: 1; height: 26px; }
+  .rail::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 50%;
+    border-top: 1px dashed var(--rule);
+  }
+  .packet {
+    position: absolute; top: 0; left: 0; height: 26px; width: 46px;
+    border-radius: var(--r-pill); display: grid; place-items: center;
+    font-size: 13px; line-height: 1; opacity: 0;
+    transition: left .9s ease-in-out, opacity .2s;
+  }
+  .msg-req .packet { background: var(--blue);  color: var(--blue-ink); }
+  .msg-res .packet { background: var(--green); color: var(--green-ink); }
+  .packet[data-pos="start"] { left: 0; }
+  .packet[data-pos="end"]   { left: calc(100% - 46px); }
+  .packet[data-visible="1"] { opacity: 1; }
+
+  .http {
+    margin: 0; padding: 0 14px 14px;
+    display: grid; grid-template-columns: max-content minmax(0, 1fr);
+    gap: 6px 10px; align-items: baseline;
+  }
+  .http dt {
+    font-family: var(--font-sans); font-size: 12px; line-height: 1.35;
+    color: var(--ink-mute); text-align: right; padding-top: 5px;
+  }
+  .http dd {
+    margin: 0; padding: 4px 8px; border-radius: var(--r-xs);
+    background: var(--bg-2); color: var(--ink);
+    font-family: var(--font-mono); font-size: 12.5px; line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+  .http dd.json { white-space: pre; overflow-x: auto; overflow-wrap: normal; }
+  .http .jk { color: var(--ink-soft); }
+  .http .var { background: var(--yellow); color: var(--yellow-ink); border-radius: 4px; padding: 0 3px; }
+  .http .st-ok  { background: var(--green); color: var(--green-ink); border-radius: 4px; padding: 0 4px; }
+  .msg-empty {
+    margin: 0 14px 14px; padding: 18px 12px; border-radius: var(--r-md);
+    border: 1px dashed var(--rule); text-align: center;
+    font-size: 13px; color: var(--ink-mute);
+  }
+
+  /* ── weather server: a machine, not a page ──────────────────── */
+  .server {
+    background: var(--srv-bg); color: var(--srv-ink);
+    border: 1px solid var(--srv-line); border-radius: var(--r-lg);
+    box-shadow: var(--shadow-md); overflow: hidden;
+  }
+  .srv-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; border-bottom: 1px solid var(--srv-line);
+  }
+  .srv-rack { width: 30px; height: 30px; color: var(--srv-ink-2); flex-shrink: 0; }
+  .srv-host { font-family: var(--font-mono); font-size: 13px; color: var(--srv-ink); overflow-wrap: anywhere; }
+  .srv-sub  { font-family: var(--font-mono); font-size: 10.5px; color: var(--srv-ink-3); letter-spacing: .04em; }
+  .srv-led {
+    margin-left: auto; display: flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--srv-ink-2); white-space: nowrap;
+  }
+  .srv-led i { width: 9px; height: 9px; border-radius: 50%; background: var(--green); }
+  .server[data-busy="1"] .srv-led i { background: var(--yellow); animation: fade-pulse .45s ease-in-out infinite alternate; }
+  .srv-sec { padding: 12px 16px 14px; border-bottom: 1px solid var(--srv-line); }
+  .srv-sec h5 {
+    margin: 0 0 8px; font-family: var(--font-mono); font-weight: 500; font-size: 10.5px;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--srv-ink-3);
+  }
+  .srv-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12.5px; }
+  .srv-table th {
+    text-align: left; font-weight: 500; font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--srv-ink-3); padding: 0 6px 6px;
+  }
+  .srv-table td {
+    padding: 6px; color: var(--srv-ink-2); border-top: 1px solid var(--srv-line);
+    transition: background .25s, color .25s;
+  }
+  .srv-table td:first-child { color: var(--srv-ink); }
+  .srv-table tr.hit td { background: var(--yellow); color: var(--yellow-ink); border-top-color: transparent; }
+  .srv-log {
+    list-style: none; margin: 0; padding: 0; height: 128px; overflow-y: auto;
+    font-family: var(--font-mono); font-size: 11.5px; line-height: 1.6; color: var(--srv-ink-2);
+  }
+  .srv-log li { overflow-wrap: anywhere; }
+  .srv-log .t { color: var(--srv-ink-3); margin-right: 8px; }
+  .srv-log .v   { color: var(--yellow); }
+  .srv-log .ok  { color: var(--green); }
+  .srv-log .idle { color: var(--srv-ink-3); }
+
+  .srv-docs summary {
+    cursor: pointer; padding: 12px 16px; list-style: none;
+    font-family: var(--font-sans); font-weight: 600; font-size: 13.5px; color: var(--srv-ink);
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .srv-docs summary::-webkit-details-marker { display: none; }
+  .srv-docs summary::after { content: "+"; font-family: var(--font-mono); color: var(--srv-ink-3); }
+  .srv-docs[open] summary::after { content: "−"; }
+  .srv-docs summary:focus-visible { outline: 3px solid var(--yellow); outline-offset: -3px; }
+  .srv-docs-body { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .srv-docs-body p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--srv-ink-2); }
+  .srv-docs dl {
+    margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr);
+    gap: 4px 12px; font-family: var(--font-mono); font-size: 11.5px; line-height: 1.5;
+  }
+  .srv-docs dt { color: var(--srv-ink-3); }
+  .srv-docs dd { margin: 0; color: var(--srv-ink-2); overflow-wrap: anywhere; }
+  .srv-docs code { font-family: var(--font-mono); color: var(--yellow); }
+  .code-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .code-chip {
+    font-family: var(--font-mono); font-size: 10.5px; padding: 3px 9px;
+    border-radius: var(--r-pill); background: var(--srv-bg-2); color: var(--srv-ink-2);
+  }
+  .code-chip.ok  { background: var(--green); color: var(--green-ink); }
+  .code-chip.err { background: var(--red);   color: var(--red-ink); }
+
+  /* ── responsive ─────────────────────────────────────────────── */
+  @media (max-width: 1200px) {
+    .api-stage { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .demo-fullwide { padding: 0 12px; }
+    .detail.detail-intro { padding-left: 12px; padding-right: 12px; }
+    .detail-demo { padding: 22px 14px; }
+    .demo-legend { grid-template-columns: minmax(0, 1fr); }
+    .site-grid { grid-template-columns: minmax(0, 1fr); }
+    .site { padding: 0 14px 16px; }
+    .http { grid-template-columns: minmax(0, 1fr); }
+    .http dt { text-align: left; padding-top: 0; }
+  }
+  @media (max-width: 768px) {
+    .masthead .topnav { display: none; }
+    .related-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .packet, .frame, .msg, .fld { transition-duration: .01s; }
+    .wx-loading, .server[data-busy="1"] .srv-led i { animation: none; }
+  }
 
   /* ── footer ─────────────────────────────────────────────────── */
   .footer { padding: 60px var(--pad-x) 32px; max-width: var(--shell); margin: 0 auto; }
@@ -1146,41 +904,17 @@
   }
   .detail-rule { max-width: 760px; background: var(--rule-soft); opacity: 1; }
 
-  /* ── API: chips are solid colour blocks, selection is yellow ────────── */
-  .city-chip {
-    font-family: var(--font-sans); font-weight: 600; font-size: 13px;
-    letter-spacing: 0; border: none; background: var(--bg-2);
-    border-radius: var(--r-pill); padding: 8px 16px; color: var(--ink-soft);
-  }
-  .city-chip:hover { border: none; background: var(--bg-3); color: var(--ink); }
-  .city-chip.active {
-    border: none; background: var(--yellow); color: var(--yellow-ink);
-  }
-  .weather-table .condition-badge {
-    border: none; border-radius: var(--r-pill); padding: 3px 9px;
-    background: var(--bg-2); color: var(--ink-mute);
-  }
-  tr.highlighted .condition-badge {
-    border: none; background: var(--blue-soft); color: var(--blue-ink);
-  }
-  .api-docs .ep-method, .api-send-row .method-badge {
-    border: none; border-radius: var(--r-pill); padding: 3px 9px;
-    background: var(--green-soft); color: var(--green-ink);
-  }
-
-  /* ── API: simulated portal chrome keeps full contours ───────────────── */
-  .news-nav a.active {
-    border-bottom-color: transparent;
-    background: var(--yellow); color: var(--yellow-ink);
-    border-radius: var(--r-pill);
-  }
-  .news-hero { border-left: none; }
-
-
   /* Outfit has no true italic — italic text falls back to IBM Plex Sans */
   .compare-sub, .compare-side .compare-sub, .status-line, .file-sub,
   .calculation .empty, .cart-empty, .asm-cmt, .up-mark, .nb-mark,
   .m-body p:first-child::first-letter { font-family: var(--font-sans); }
+
+  /* ── Intro prose spans the same width as the demo box below ───────── */
+  .detail.detail-intro {
+    max-width: calc(1480px + 2 * var(--pad-x));
+    padding-bottom: 0;
+  }
+  .detail-intro .detail-prose { max-width: none; margin: 0; }
 
   /* ── Dark hero band (matches the index) ─────────────────────────────── */
   .detail-hero {
@@ -1259,7 +993,7 @@
   </div>
 </header>
 
-<div class="detail">
+<div class="detail detail-intro">
 
   <hr class="detail-rule" />
 
@@ -1269,389 +1003,203 @@
 
     <p>Najprostsza analogia to restauracja. Siedzisz przy stoliku i nie wchodzisz do kuchni. Zamiast tego podajesz zamówienie kelnerowi, a on wraca z gotowym daniem. Kuchnia nigdy Cię nie widziała; zna tylko zamówienie zapisane na kartce. API pełni rolę takiego kelnera: przyjmuje pytanie, zanosi je we właściwe miejsce i wraca z odpowiedzią.</p>
 
-    <p>W internecie ta rozmowa toczy się zwykle w kilku krokach i trwa setki milisekund. Klient (na przykład strona otwarta w przeglądarce) wysyła zapytanie pod konkretny adres, taki jak <code>/api/weather?city=Warsaw</code>. Serwer odbiera je, odszukuje pasujące dane i odsyła odpowiedź w uzgodnionym formacie; dzisiaj prawie zawsze jest to <em>JSON</em>, czyli prosty zapis tekstowy, czytelny zarówno dla człowieka, jak i dla maszyny. Demonstracja niżej pokazuje tę wymianę krok po kroku.</p>
+    <p>W internecie ta rozmowa toczy się zwykle w kilku krokach i trwa setki milisekund. Klient (na przykład strona otwarta w przeglądarce) wysyła zapytanie pod konkretny adres, taki jak <code>/api/weather?city=Warszawa</code>. Serwer odbiera je, odszukuje pasujące dane i odsyła odpowiedź w uzgodnionym formacie; dzisiaj prawie zawsze jest to <em>JSON</em>, czyli prosty zapis tekstowy, czytelny zarówno dla człowieka, jak i dla maszyny. Demonstracja niżej pokazuje tę wymianę krok po kroku.</p>
   </div>
 
 </div><!-- /detail (close to let demo go full-wide) -->
 
 <!-- ═══ DEMO BLOCK (full-width breakout) ════════════════════════ -->
 <section class="demo-fullwide">
-  <div class="detail-demo" id="demo">
+  <div class="detail-demo" id="demo" data-phase="idle" data-city="Warszawa" data-status="" data-mapped="0">
     <div class="demo-head">
-      <h2>Jak portal pobiera dane pogodowe</h2>
-      <p>Po lewej baza serwera pogodowego, po prawej strona portalu z wiadomościami. Wybierz miasto i kliknij <em>Wyślij zapytanie</em> i zobacz, jak liczba w bazie staje się liczbą w nagłówku artykułu.</p>
+      <h2>Jak strona internetowa pobiera pogodę z serwera</h2>
+      <p>W pierwszym panelu jest strona portalu Daily News otwarta w przeglądarce. Nie ma własnych pomiarów, więc musi o nie poprosić; w języku API nazywamy ją <em>klientem</em>. W ostatnim pracuje serwer pogodowy: program bez ekranu dla ludzi, który trzyma bazę pomiarów i odpowiada innym programom. Między nimi widać dwie wiadomości, które przelatują przez internet: niebieskie <em>zapytanie</em> od strony do serwera i zieloną <em>odpowiedź</em> od serwera do strony. Wybierz miasto w widżecie pogody na stronie albo kliknij <em>Wyślij zapytanie</em> i obserwuj, jak liczba z bazy serwera trafia na ekran.</p>
+      <div class="demo-legend">
+        <div class="legend-item">
+          <span class="chip client">Klient · strona</span>
+          <p>Strona w przeglądarce. Wysyła zapytanie i pokazuje dane, które dostała.</p>
+        </div>
+        <div class="legend-item">
+          <span class="chip net">Internet · HTTP</span>
+          <p>Dwie wiadomości tekstowe: zapytanie <b>→</b> do serwera i odpowiedź <b>←</b> do strony.</p>
+        </div>
+        <div class="legend-item">
+          <span class="chip server">Serwer · API</span>
+          <p>Program z bazą pomiarów. Czyta zapytanie, szuka danych i odsyła je jako JSON.</p>
+        </div>
+      </div>
     </div>
 
-    <div class="api-scene">
+    <div class="api-start">
+      <button type="button" class="btn primary" id="primaryBtn">Wyślij zapytanie</button>
+    </div>
 
-      <!-- city selector -->
-      <div class="api-city-row">
-        <label>Wybierz miasto:</label>
-        <div class="city-chips" id="cityChips">
-          <button class="city-chip active" data-city="New York">New York</button>
-          <button class="city-chip" data-city="London">London</button>
-          <button class="city-chip" data-city="Tokyo">Tokyo</button>
-          <button class="city-chip" data-city="Sydney">Sydney</button>
-          <button class="city-chip" data-city="Paris">Paris</button>
+    <div class="api-stage">
+
+      <!-- CLIENT: website in a browser -->
+      <div class="actor actor-client" id="actorClient">
+        <div class="actor-label">
+          <span class="chip client">1 · Klient</span>
+          <strong>Strona internetowa</strong>
+          <span class="actor-note">Portal z wiadomościami. Działa w Twojej przeglądarce i pyta serwer o pogodę.</span>
         </div>
-      </div>
-
-      <!-- two panels: server | channel | client -->
-      <div class="api-panels">
-
-        <!-- SERVER -->
-        <div class="panel-server">
-          <div class="panel-header">
-            <div class="panel-icon">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--ink-mute)">
-                <rect x="2" y="3" width="16" height="5" rx="1"/>
-                <rect x="2" y="12" width="16" height="5" rx="1"/>
-                <circle cx="16" cy="5.5" r="1" fill="currentColor" stroke="none"/>
-                <circle cx="16" cy="14.5" r="1" fill="currentColor" stroke="none"/>
-              </svg>
-            </div>
-            <div>
-              <div class="panel-title">Serwer pogodowy</div>
-              <div class="panel-sub">weather-api.example.com</div>
+        <div class="browser frame">
+          <div class="br-tabs">
+            <div class="br-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="br-tab"><span class="fav" aria-hidden="true">D</span>Daily News – wiadomości</div>
+          </div>
+          <div class="br-toolbar">
+            <span class="br-btn" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></span>
+            <span class="br-btn" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 5 5-5 5"/></svg></span>
+            <span class="br-btn" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8a5 5 0 1 1-1.5-3.6"/><path d="M13 2.5v3h-3"/></svg></span>
+            <div class="br-url">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="5.5" width="8" height="5" rx="1"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5"/></svg>
+              <span>https://<span class="host">dailynews.example.com</span></span>
             </div>
           </div>
-          <div class="weather-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Miasto</th>
-                  <th>Temp (°C)</th>
-                  <th>Wilg.</th>
-                  <th>Pogoda</th>
-                </tr>
-              </thead>
-              <tbody id="weatherTableBody">
-                <!-- filled by JS -->
-              </tbody>
-            </table>
-          </div>
 
-          <div class="api-docs">
-            <div class="api-docs-head">
-              <span class="docs-label">- Dokumentacja API</span>
-              <span class="docs-version">v1.2</span>
+          <div class="site">
+            <div class="site-head">
+              <div class="site-logo"><span class="mark" aria-hidden="true">D</span>Daily News</div>
+              <div class="site-date" id="siteDate"></div>
             </div>
-
-            <div class="docs-section">
-              <h5>Pobierz pogodę dla miasta</h5>
-              <div class="endpoint-row">
-                <span class="ep-method">GET</span>
-                <span class="ep-path">/api/weather?city=<span class="ep-param">{city}</span></span>
-              </div>
-              <dl>
-                <dt>city</dt>
-                <dd><code>string</code><span class="req-tag">wymagane</span></dd>
-                <dt>units</dt>
-                <dd><code>"metric"</code> lub <code>"imperial"</code><span class="req-tag">opcjonalne</span></dd>
-                <dt>lang</dt>
-                <dd><code>"pl"</code>, <code>"en"</code>...<span class="req-tag">opcjonalne</span></dd>
-              </dl>
-            </div>
-
-            <div class="docs-section">
-              <h5>Format odpowiedzi</h5>
-              <dl>
-                <dt>status</dt>
-                <dd><code>"success"</code> lub <code>"error"</code></dd>
-                <dt>data.city</dt>
-                <dd><code>string</code> - nazwa miasta</dd>
-                <dt>data.temperature</dt>
-                <dd><code>number</code> - temperatura</dd>
-                <dt>data.humidity</dt>
-                <dd><code>number</code> - wilgotność (%)</dd>
-                <dt>data.description</dt>
-                <dd><code>string</code> - stan pogody</dd>
-                <dt>data.timestamp</dt>
-                <dd><code>ISO 8601</code> - moment pomiaru</dd>
-              </dl>
-            </div>
-
-            <div class="docs-section">
-              <h5>Możliwe odpowiedzi</h5>
-              <div class="codes">
-                <span class="code-chip ok">200 OK</span>
-                <span class="code-chip warn">400 Bad Request</span>
-                <span class="code-chip warn">404 Not Found</span>
-                <span class="code-chip warn">429 Too Many Requests</span>
-                <span class="code-chip warn">500 Server Error</span>
-              </div>
-            </div>
-
-            <div class="docs-section">
-              <h5>Limity i uwierzytelnianie</h5>
-              <dl>
-                <dt>auth</dt>
-                <dd>nagłówek <code>X-API-Key</code></dd>
-                <dt>limit</dt>
-                <dd>60 zapytań na minutę</dd>
-                <dt>cache</dt>
-                <dd>5 minut po stronie serwera</dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-
-        <!-- CHANNEL -->
-        <div class="panel-channel">
-          <div class="channel-line"></div>
-          <div class="channel-arrow" id="arrowReq" title="Zapytanie (Request)">→</div>
-          <div class="channel-label">HTTP / JSON</div>
-          <div class="channel-arrow" id="arrowRes" title="Odpowiedź (Response)">←</div>
-        </div>
-
-        <!-- CLIENT -->
-        <div class="panel-client">
-          <div class="panel-header">
-            <div class="panel-icon">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--ink-mute)">
-                <rect x="2" y="2" width="16" height="12" rx="1"/>
-                <path d="M7 18h6M10 14v4"/>
-              </svg>
-            </div>
-            <div>
-              <div class="panel-title">Portal z wiadomościami</div>
-              <div class="panel-sub">dailynews.example.com</div>
-            </div>
-          </div>
-          <div class="news-mock">
-            <!-- brand bar -->
-            <div class="news-brand-bar">
-              <div class="news-brand">
-                <svg class="news-logo" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 2 L14.6 8.4 L21.5 9 L16.3 13.6 L17.8 20.4 L12 16.9 L6.2 20.4 L7.7 13.6 L2.5 9 L9.4 8.4 Z"/>
-                </svg>
-                <span class="news-brand-name"><span class="nb-mark">D</span>aily News</span>
-              </div>
-              <div class="news-live">
-                <span class="news-live-dot" id="newsDot"></span>
-                <span>Na żywo</span>
-              </div>
-            </div>
-
-            <!-- nav -->
-            <nav class="news-nav">
-              <a class="active">Aktualności</a>
-              <a>Sport</a>
-              <a>Kultura</a>
-              <a>Biznes</a>
-              <a>Świat</a>
+            <nav class="site-nav" aria-label="Menu portalu (makieta)">
+              <span class="on">Aktualności</span><span>Sport</span><span>Kultura</span><span>Biznes</span><span>Świat</span>
             </nav>
 
-            <!-- date strip -->
-            <div class="news-date-strip">
-              <span>Środa · 26 kwietnia 2026</span>
-              <span>Wydanie 14:32</span>
-            </div>
-
-            <!-- weather widget -->
-            <div class="news-weather-strip">
-              <div class="news-weather-heading" id="newsWeatherHeading">Pogoda w —</div>
-              <div class="weather-widget-row">
-                <div class="weather-icon-box" id="weatherIconBox">
-                  <!-- icon swapped by JS -->
-                  <svg id="weatherIcon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="20" cy="20" r="6"/>
-                    <line x1="20" y1="6"  x2="20" y2="10"/>
-                    <line x1="20" y1="30" x2="20" y2="34"/>
-                    <line x1="6"  y1="20" x2="10" y2="20"/>
-                    <line x1="30" y1="20" x2="34" y2="20"/>
-                    <line x1="10" y1="10" x2="13" y2="13"/>
-                    <line x1="27" y1="27" x2="30" y2="30"/>
-                    <line x1="10" y1="30" x2="13" y2="27"/>
-                    <line x1="27" y1="13" x2="30" y2="10"/>
-                  </svg>
-                </div>
-                <div class="news-weather-cards">
-                  <div class="weather-stat" id="statTemp">
-                    <div class="weather-stat-label">Temperatura</div>
-                    <div class="weather-stat-value" id="statTempVal">—°C</div>
-                  </div>
-                  <div class="weather-stat" id="statHum">
-                    <div class="weather-stat-label">Wilgotność</div>
-                    <div class="weather-stat-value" id="statHumVal">—%</div>
-                  </div>
-                  <div class="weather-stat" id="statCond">
-                    <div class="weather-stat-label">Stan</div>
-                    <div class="weather-stat-value" id="statCondVal" style="font-size:13px;padding-top:3px">—</div>
-                  </div>
-                </div>
+            <!-- weather widget: the only part of this page that uses the API -->
+            <div class="wx" id="wx" data-filled="empty">
+              <div>
+                <h4 class="wx-title">Pogoda</h4>
+                <p class="wx-hint">Wybierz miasto – strona zapyta serwer pogodowy.</p>
+                <div class="wx-cities" id="wxCities"></div>
               </div>
+              <div class="wx-result" id="wxResult"></div>
             </div>
 
-            <!-- hero article -->
-            <article class="news-hero">
-              <div class="news-hero-tag">Wybory · Tekst dnia</div>
-              <h3 class="news-hero-title">Rekordowa frekwencja w wyborach lokalnych</h3>
-              <p class="news-hero-dek">Komisje pracują od ósmej rano. W kilku miastach wojewódzkich frekwencja przekroczyła już 60%, najwyższy wynik od dekady. Państwowa Komisja Wyborcza zapowiada pierwsze cząstkowe wyniki na 22:00.</p>
-              <div class="news-hero-meta">
-                <span class="author-dot"></span>
-                <span>M. Kowalski</span>
-                <span>·</span>
-                <span>14 min temu</span>
-                <span>·</span>
-                <span>2 min czytania</span>
-              </div>
-            </article>
-
-            <!-- story list -->
-            <div class="news-stories">
-
-              <article class="news-story">
-                <div class="news-story-thumb">
-                  <svg viewBox="0 0 56 44" fill="none" stroke="currentColor" stroke-width="1.1">
-                    <ellipse cx="28" cy="32" rx="22" ry="6" opacity=".5"/>
-                    <ellipse cx="28" cy="32" rx="14" ry="4" opacity=".7"/>
-                    <circle cx="28" cy="20" r="6" fill="currentColor" opacity=".25"/>
-                    <path d="M 22 20 L 34 20 M 28 14 L 28 26" opacity=".7"/>
+            <div class="site-grid">
+              <article>
+                <div class="site-img" aria-hidden="true">
+                  <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice">
+                    <rect class="i-sky" width="320" height="180"/>
+                    <circle class="i-sun" cx="262" cy="46" r="20"/>
+                    <rect class="i-paper" x="138" y="34" width="52" height="64" rx="4" transform="rotate(-8 164 66)"/>
+                    <path class="i-tick" d="M150 66l9 9 18-20" transform="rotate(-8 164 66)"/>
+                    <rect class="i-box" x="92" y="86" width="136" height="94" rx="8"/>
+                    <rect class="i-slot" x="128" y="98" width="64" height="8" rx="4"/>
                   </svg>
                 </div>
-                <div class="news-story-body">
-                  <div class="news-story-tag">Sport</div>
-                  <div class="news-story-title">Legia wygrywa 3:1 w emocjonującym meczu</div>
-                  <div class="news-story-meta">A. Nowak · 1 godz. temu</div>
-                </div>
+                <div class="site-kicker">Wybory · Tekst dnia</div>
+                <h3 class="site-h">Rekordowa frekwencja w wyborach lokalnych</h3>
+                <p class="site-dek">Komisje pracują od ósmej rano. W kilku miastach wojewódzkich frekwencja przekroczyła już 60%, najwyższy wynik od dekady.</p>
+                <div class="site-byline">M. Kowalski · 14 min temu</div>
               </article>
-
-              <article class="news-story">
-                <div class="news-story-thumb">
-                  <svg viewBox="0 0 56 44" fill="none" stroke="currentColor" stroke-width="1.1">
-                    <path d="M 8 6 L 8 38 L 28 38 L 28 6 Z" opacity=".5"/>
-                    <path d="M 28 6 L 28 38 L 48 38 L 48 6 Z" opacity=".5"/>
-                    <path d="M 8 6 Q 18 12 28 6 Q 38 12 48 6" opacity=".7"/>
-                    <line x1="14" y1="14" x2="14" y2="36" opacity=".4"/>
-                    <line x1="20" y1="14" x2="20" y2="36" opacity=".4"/>
-                    <line x1="36" y1="14" x2="36" y2="36" opacity=".4"/>
-                    <line x1="42" y1="14" x2="42" y2="36" opacity=".4"/>
-                  </svg>
-                </div>
-                <div class="news-story-body">
-                  <div class="news-story-tag">Kultura</div>
-                  <div class="news-story-title">Nowy musical bije rekordy kasowe</div>
-                  <div class="news-story-meta">K. Wiśniewska · 3 godz. temu</div>
-                </div>
-              </article>
-
-              <article class="news-story">
-                <div class="news-story-thumb">
-                  <svg viewBox="0 0 56 44" fill="none" stroke="currentColor" stroke-width="1.1">
-                    <line x1="6"  y1="38" x2="50" y2="38" opacity=".5"/>
-                    <rect x="10" y="26" width="6" height="12" fill="currentColor" opacity=".4"/>
-                    <rect x="20" y="20" width="6" height="18" fill="currentColor" opacity=".4"/>
-                    <rect x="30" y="14" width="6" height="24" fill="currentColor" opacity=".4"/>
-                    <rect x="40" y="8"  width="6" height="30" fill="currentColor" opacity=".4"/>
-                    <path d="M 13 30 L 23 24 L 33 18 L 43 12" opacity=".8"/>
-                    <path d="M 39 14 L 43 12 L 45 16" opacity=".8"/>
-                  </svg>
-                </div>
-                <div class="news-story-body">
-                  <div class="news-story-tag">Biznes</div>
-                  <div class="news-story-title">Wall Street kończy tydzień na plusie</div>
-                  <div class="news-story-meta">P. Lewandowski · 5 godz. temu</div>
-                </div>
-              </article>
-
+              <aside class="site-side">
+                <h5>Najczęściej czytane</h5>
+                <ul class="site-list">
+                  <li><span class="site-kicker">Sport</span><span class="t">Legia wygrywa 3:1 w emocjonującym meczu</span></li>
+                  <li><span class="site-kicker">Kultura</span><span class="t">Nowy musical bije rekordy kasowe</span></li>
+                  <li><span class="site-kicker">Biznes</span><span class="t">Wall Street kończy tydzień na plusie</span></li>
+                </ul>
+              </aside>
             </div>
-
-            <!-- market ticker -->
-            <div class="news-ticker">
-              <span class="ticker-tag">Rynki</span>
-              <div class="ticker-strip">
-                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">WIG20</span>2 412,4 +1,2%</span>
-                <span class="ticker-item down"><span class="tick-arrow">▼</span><span class="tick-name">EUR/PLN</span>4,28 -0,3%</span>
-                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">BTC</span>68 240 +2,1%</span>
-                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">S&amp;P 500</span>5 218 +0,8%</span>
-                <span class="ticker-item down"><span class="tick-arrow">▼</span><span class="tick-name">DAX</span>17 940 -0,4%</span>
-                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">Złoto</span>2 314 +0,5%</span>
-                <!-- duplicated for seamless loop -->
-                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">WIG20</span>2 412,4 +1,2%</span>
-                <span class="ticker-item down"><span class="tick-arrow">▼</span><span class="tick-name">EUR/PLN</span>4,28 -0,3%</span>
-                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">BTC</span>68 240 +2,1%</span>
-                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">S&amp;P 500</span>5 218 +0,8%</span>
-                <span class="ticker-item down"><span class="tick-arrow">▼</span><span class="tick-name">DAX</span>17 940 -0,4%</span>
-                <span class="ticker-item up"><span class="tick-arrow">▲</span><span class="tick-name">Złoto</span>2 314 +0,5%</span>
-              </div>
-            </div>
-
           </div>
+          <div class="br-status" id="brStatus" role="status" aria-live="polite"></div>
         </div>
-      </div><!-- /api-panels -->
+      </div>
 
-      <!-- ── step track ───────────────────────────────────────── -->
-      <div style="padding: 20px 24px; border-top: 1px solid var(--rule-soft);">
-        <div class="kicker" style="margin-bottom:12px">- Przebieg rozmowy</div>
-        <div class="step-track" id="stepTrack">
-          <div class="step-block" id="step0">
-            <div class="step-indicator"></div>
-            <div class="step-num">01</div>
-            <div class="step-name">Pytanie</div>
-            <div class="step-desc">Strona pyta o pogodę dla wybranego miasta</div>
+      <!-- WIRE: the two HTTP messages -->
+      <div class="actor wire" id="actorWire">
+        <div class="actor-label">
+          <span class="chip net">Internet</span>
+          <strong>Wiadomości HTTP</strong>
+          <span class="actor-note">Tak naprawdę wygląda rozmowa strony z serwerem: zwykły tekst w ustalonym formacie.</span>
+        </div>
+        <div class="msgs">
+          <div class="msg msg-req" id="msgReq" data-state="idle">
+            <div class="msg-head">
+              <span class="chip client">Zapytanie</span>
+              <span class="msg-title">strona → serwer</span>
+              <span class="msg-state" id="reqState"></span>
+            </div>
+            <div class="msg-track" aria-hidden="true">
+              <span>Strona</span>
+              <div class="rail"><span class="packet" id="pktReq" data-pos="start">✉ →</span></div>
+              <span>Serwer</span>
+            </div>
+            <dl class="http" id="reqBody"></dl>
           </div>
-          <div class="step-block" id="step1">
-            <div class="step-indicator"></div>
-            <div class="step-num">02</div>
-            <div class="step-name">Odczyt bazy</div>
-            <div class="step-desc">Serwer odszukuje pasujący rekord w swojej bazie</div>
-          </div>
-          <div class="step-block" id="step2">
-            <div class="step-indicator"></div>
-            <div class="step-num">03</div>
-            <div class="step-name">Pakowanie</div>
-            <div class="step-desc">Dane układane w format, który klient zrozumie</div>
-          </div>
-          <div class="step-block" id="step3">
-            <div class="step-indicator"></div>
-            <div class="step-num">04</div>
-            <div class="step-name">Odpowiedź</div>
-            <div class="step-desc">Paczka z danymi wraca tą samą drogą do klienta</div>
-          </div>
-          <div class="step-block" id="step4">
-            <div class="step-indicator"></div>
-            <div class="step-num">05</div>
-            <div class="step-name">Wyświetlenie</div>
-            <div class="step-desc">Strona aktualizuje pola pogodowe nowymi danymi</div>
+
+          <div class="msg msg-res" id="msgRes" data-state="idle">
+            <div class="msg-head">
+              <span class="chip server">Odpowiedź</span>
+              <span class="msg-title">serwer → strona</span>
+              <span class="msg-state" id="resState"></span>
+            </div>
+            <div class="msg-track" aria-hidden="true">
+              <span>Strona</span>
+              <div class="rail"><span class="packet" id="pktRes" data-pos="end">← ✉</span></div>
+              <span>Serwer</span>
+            </div>
+            <div id="resBody"></div>
           </div>
         </div>
       </div>
 
-      <!-- ── req / res panels + send button ──────────────────── -->
-      <div class="api-controls">
-        <div class="api-send-row">
-          <span class="method-badge">GET</span>
-          <span class="endpoint-path"><span class="path-accent">/api/weather</span>?city=<span id="endpointCity" class="path-accent">New York</span></span>
-          <button class="btn primary" id="sendBtn" onclick="runDemo()">Wyślij zapytanie</button>
+      <!-- SERVER -->
+      <div class="actor actor-server" id="actorServer">
+        <div class="actor-label">
+          <span class="chip server">2 · Serwer</span>
+          <strong>Serwer pogodowy</strong>
+          <span class="actor-note">Stoi w centrum danych. Nie ma strony do oglądania – tylko bazę i API.</span>
         </div>
-
-        <div class="rr-grid">
-          <div class="rr-panel">
-            <div class="rr-header">
-              <span class="rr-badge req">Pytanie</span>
-              <span class="rr-title" id="reqTitle">Gotowe do wysłania</span>
+        <div class="server frame" id="server" data-busy="0">
+          <div class="srv-head">
+            <svg class="srv-rack" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <rect x="3" y="4" width="24" height="9" rx="2"/><rect x="3" y="17" width="24" height="9" rx="2"/>
+              <path d="M7 8.5h8M7 21.5h8"/><circle cx="22" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="22" cy="21.5" r="1.4" fill="currentColor" stroke="none"/>
+            </svg>
+            <div>
+              <div class="srv-host">weather-api.example.com</div>
+              <div class="srv-sub">API v1 · baza pomiarów</div>
             </div>
-            <div class="rr-body" id="reqBody"><span class="json-key">{
-  "endpoint"</span>: <span class="json-str">"/api/weather"</span>,
-  <span class="json-key">"method"</span>: <span class="json-str">"GET"</span>,
-  <span class="json-key">"parameters"</span>: {
-    <span class="json-key">"city"</span>: <span class="json-str" id="reqCity">"New York"</span>
-  }
-}</div>
+            <div class="srv-led" id="srvLed"><i></i><span>Online</span></div>
           </div>
-          <div class="rr-panel">
-            <div class="rr-header">
-              <span class="rr-badge res">Odpowiedź</span>
-              <span class="rr-title" id="resTitle">Czekamy na serwer</span>
-              <span class="rr-status idle" id="resStatus">—</span>
+          <div class="srv-sec">
+            <h5>Baza pomiarów</h5>
+            <table class="srv-table">
+              <thead><tr><th>Miasto</th><th>°C</th><th>Wilg.</th><th>Stan</th></tr></thead>
+              <tbody id="srvTable"></tbody>
+            </table>
+          </div>
+          <div class="srv-sec">
+            <h5>Dziennik serwera</h5>
+            <ul class="srv-log" id="srvLog" aria-label="Dziennik serwera"></ul>
+          </div>
+          <details class="srv-docs">
+            <summary>Dokumentacja API – umowa ze stronami</summary>
+            <div class="srv-docs-body">
+              <p>Twórcy strony nie widzą bazy serwera. Znają tylko tę umowę: pod jaki adres pytać i co przyjdzie w odpowiedzi.</p>
+              <dl>
+                <dt>adres</dt><dd><code>GET /api/weather?city={miasto}</code></dd>
+                <dt>klucz</dt><dd>nagłówek <code>X-API-Key</code></dd>
+                <dt>format</dt><dd><code>application/json</code></dd>
+                <dt>pola</dt><dd>city, temperature (°C), humidity (%), description, icon, updated</dd>
+                <dt>limit</dt><dd>60 zapytań na minutę</dd>
+              </dl>
+              <div class="code-chips">
+                <span class="code-chip ok">200 OK</span>
+                <span class="code-chip">400 Bad Request</span>
+                <span class="code-chip">401 Unauthorized</span>
+                <span class="code-chip err">404 Not Found</span>
+                <span class="code-chip">429 Too Many Requests</span>
+              </div>
             </div>
-            <div class="rr-body" id="resBody"><span class="json-key" style="opacity:.4">// Tutaj pojawi się odpowiedź serwera</span></div>
-          </div>
+          </details>
         </div>
       </div>
 
-    </div><!-- /api-scene -->
+    </div><!-- /api-stage -->
   </div><!-- /detail-demo -->
 </section>
 
@@ -1661,7 +1209,7 @@
   <!-- prose explanation -->
   <div class="detail-prose">
     <h3>Co się właśnie wydarzyło</h3>
-    <p>W ułamku sekundy odbyła się pełna rozmowa między dwoma programami. Strona portalu sformułowała pytanie (<em>daj mi pogodę dla Nowego Jorku</em>) i wysłała je pod konkretny adres serwera pogodowego. Serwer odszukał rekord, opakował go w odpowiedź i odesłał z powrotem. Strona rozpakowała paczkę i podstawiła liczby do trzech kafelków. Cała wymiana zmieściła się w czasie krótszym od mrugnięcia okiem.</p>
+    <p>W ułamku sekundy odbyła się pełna rozmowa między dwoma programami. Strona portalu sformułowała pytanie (<em>daj mi pogodę dla Warszawy</em>) i wysłała je pod konkretny adres serwera pogodowego. Serwer odszukał rekord, opakował go w odpowiedź i odesłał z powrotem. Strona rozpakowała paczkę i wstawiła liczby do widżetu pogody. Cała wymiana zmieściła się w czasie krótszym od mrugnięcia okiem.</p>
 
     <p>Żadna z tych dwóch stron nie musiała wiedzieć, jak dokładnie działa ta druga. Serwer nie zna wyglądu portalu; portal nie zna struktury bazy danych pogodowej. Łączy je tylko <em>kontrakt</em> - z góry uzgodniony format pytań i odpowiedzi. To właśnie jest siła tego mechanizmu: pozwala budować duże systemy z mniejszych, niezależnych części, które potrafią się ze sobą porozumieć.</p>
 
@@ -1671,7 +1219,7 @@
     <p>To wszystko działa, bo po jednej stronie linii jest <em>proste pytanie</em>, a po drugiej <em>prosta odpowiedź</em>. Reszta, czyli sieć, serwery, bazy danych i programiści, którzy to wszystko piszą, chowa się pod warstwą interfejsu. Tak jak w restauracji: nie musisz znać przepisu na zupę, żeby ją zamówić. Wystarczy, że obie strony rozumieją menu.</p>
 
     <h3>Czego nie widać w tej demonstracji</h3>
-    <p>Pominęliśmy kilka rzeczy, które w prawdziwej aplikacji są istotne. <em>Uwierzytelnianie</em>: zwykle pytanie zawiera klucz, który serwer sprawdza, zanim w ogóle zdecyduje, czy odpowiedzieć. <em>Pamięć podręczna</em>: identyczne pytanie zadane drugi raz dostaje odpowiedź z pamięci, bez schodzenia do bazy. <em>Błędy</em>: serwer może nie odpowiedzieć w ogóle, odpowiedzieć źle albo zająć się czymś innym. Każdy z tych tematów to osobny artykuł.</p>
+    <p>Pominęliśmy kilka rzeczy, które w prawdziwej aplikacji są istotne. <em>Uwierzytelnianie</em>: klucz z nagłówka <code>X-API-Key</code> widać w zapytaniu, ale w demonstracji jest zawsze poprawny. Prawdziwy serwer bez ważnego klucza odpowie <code>401 Unauthorized</code> i nie zajrzy do bazy. <em>Pamięć podręczna</em>: identyczne pytanie zadane drugi raz dostaje odpowiedź z pamięci, bez schodzenia do bazy. <em>Błędy</em>: serwer może nie odpowiedzieć w ogóle, odpowiedzieć źle albo być przeciążony. Każdy z tych tematów to osobny artykuł.</p>
 
     <p>Format <code>JSON</code>, w którym wraca odpowiedź, wygrał wśród API z prostego powodu: jest czytelny dla człowieka i jednocześnie trywialny do przetworzenia przez maszynę. Wcześniej w użyciu był XML - ten sam pomysł, ale dużo bardziej rozwlekły. Dzisiaj prawie każde nowe API mówi w JSON-ie.</p>
   </div>
@@ -1735,253 +1283,282 @@
 </footer>
 
 <script>
-  /* ─── Data ─────────────────────────────────────────────────── */
+  // ─── Constants ───────────────────────────────────────────────
+  const API_HOST = 'weather-api.example.com';
+  const API_PATH = '/api/weather';
+  const API_KEY = 'demo-7f3a';
+  const STEP_MS = 1800;
+  const PHASE_DONE = 7;
+
+  // what the weather server keeps in its database
   const DB = {
-    'New York': { temp: 22, humidity: 65, condition: 'Sunny',         conditionPl: 'Słonecznie' },
-    'London':   { temp: 15, humidity: 80, condition: 'Cloudy',        conditionPl: 'Pochmurnie' },
-    'Tokyo':    { temp: 28, humidity: 70, condition: 'Rainy',         conditionPl: 'Deszczowo' },
-    'Sydney':   { temp: 20, humidity: 60, condition: 'Clear',         conditionPl: 'Czyste niebo' },
-    'Paris':    { temp: 18, humidity: 75, condition: 'Partly Cloudy', conditionPl: 'Zmienne chmury' },
+    'Warszawa': { temp: 14, humidity: 72, description: 'Pochmurnie',           icon: 'cloudy' },
+    'Londyn':   { temp: 11, humidity: 84, description: 'Deszczowo',            icon: 'rain' },
+    'Tokio':    { temp: 23, humidity: 61, description: 'Słonecznie',           icon: 'sun' },
+    'Sydney':   { temp: 19, humidity: 58, description: 'Bezchmurnie',          icon: 'clear' },
+    'Nairobi':  { temp: 25, humidity: 47, description: 'Zmienne zachmurzenie', icon: 'partly' },
   };
+  // cities the website offers in its weather widget
+  const CITIES = ['Warszawa', 'Londyn', 'Tokio'];
 
-  const cities = Object.keys(DB);
-  let selectedCity = 'New York';
-  let running = false;
-  let timers = [];
+  // which actor is "speaking" in each phase (1-6)
+  const PHASE_ACTOR = { 1: 'client', 2: 'wire', 3: 'server', 4: 'server', 5: 'wire', 6: 'client' };
 
-  /* ─── Render table ─────────────────────────────────────────── */
-  function renderTable(highlightCity) {
-    const tbody = document.getElementById('weatherTableBody');
-    tbody.innerHTML = cities.map(city => {
-      const d = DB[city];
-      const hl = city === highlightCity ? ' class="highlighted"' : '';
-      return `<tr${hl}>
-        <td>${city}</td>
-        <td>${d.temp}</td>
-        <td>${d.humidity}%</td>
-        <td><span class="condition-badge">${d.condition}</span></td>
-      </tr>`;
-    }).join('');
-  }
+  // numbered links between JSON fields and the widget
+  const MAP_N = { city: 1, temperature: 2, humidity: 3, description: 4, icon: 5 };
 
-  /* ─── City chips ────────────────────────────────────────────── */
-  document.getElementById('cityChips').addEventListener('click', e => {
-    const chip = e.target.closest('.city-chip');
-    if (!chip || running) return;
-    document.querySelectorAll('.city-chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    selectedCity = chip.dataset.city;
-    updateEndpoint();
-    renderTable(null);
-    resetUI();
-  });
-
-  function updateEndpoint() {
-    document.getElementById('endpointCity').textContent = selectedCity;
-    document.getElementById('reqCity').textContent = `"${selectedCity}"`;
-  }
-
-  /* ─── Step helpers ──────────────────────────────────────────── */
-  function setStep(idx, state) {
-    const el = document.getElementById('step' + idx);
-    el.classList.remove('active', 'done');
-    if (state) el.classList.add(state);
-  }
-  function clearSteps() {
-    for (let i = 0; i < 5; i++) setStep(i, null);
-  }
-
-  /* ─── Arrow ─────────────────────────────────────────────────── */
-  function flashArrow(id, cls) {
-    const el = document.getElementById(id);
-    el.classList.remove('req-active', 'res-active');
-    void el.offsetWidth;
-    el.classList.add(cls);
-    const t = setTimeout(() => el.classList.remove(cls), 800);
-    timers.push(t);
-  }
-
-  /* ─── Weather icon SVG per condition ────────────────────────── */
   const WEATHER_ICONS = {
-    'Sunny': `
-      <circle cx="20" cy="20" r="6"/>
-      <line x1="20" y1="6"  x2="20" y2="10"/>
-      <line x1="20" y1="30" x2="20" y2="34"/>
-      <line x1="6"  y1="20" x2="10" y2="20"/>
-      <line x1="30" y1="20" x2="34" y2="20"/>
-      <line x1="10" y1="10" x2="13" y2="13"/>
-      <line x1="27" y1="27" x2="30" y2="30"/>
-      <line x1="10" y1="30" x2="13" y2="27"/>
-      <line x1="27" y1="13" x2="30" y2="10"/>
-    `,
-    'Clear': `
-      <path d="M 28 22 A 10 10 0 1 1 18 12 A 8 8 0 0 0 28 22 Z"/>
-      <circle cx="32" cy="14" r=".8" fill="currentColor"/>
-      <circle cx="10" cy="10" r=".8" fill="currentColor"/>
-      <circle cx="34" cy="28" r=".8" fill="currentColor"/>
-    `,
-    'Cloudy': `
-      <path d="M 12 26 Q 6 26 6 21 Q 6 16 11 16 Q 12 11 18 11 Q 24 11 25 16 Q 32 16 32 22 Q 32 26 27 26 Z"/>
-      <path d="M 16 30 Q 12 30 12 26 Q 12 22 17 22 Q 18 18 23 18 Q 28 18 29 22 Q 34 22 34 26 Q 34 30 30 30 Z" opacity=".5"/>
-    `,
-    'Rainy': `
-      <path d="M 12 22 Q 6 22 6 17 Q 6 12 11 12 Q 12 7 18 7 Q 24 7 25 12 Q 32 12 32 18 Q 32 22 27 22 Z"/>
-      <line x1="12" y1="26" x2="10" y2="32"/>
-      <line x1="19" y1="26" x2="17" y2="32"/>
-      <line x1="26" y1="26" x2="24" y2="32"/>
-      <line x1="32" y1="26" x2="30" y2="32"/>
-    `,
-    'Partly Cloudy': `
-      <circle cx="14" cy="14" r="5"/>
-      <line x1="14" y1="4"  x2="14" y2="7"/>
-      <line x1="4"  y1="14" x2="7"  y2="14"/>
-      <line x1="6"  y1="6"  x2="8"  y2="8"/>
-      <line x1="22" y1="6"  x2="20" y2="8"/>
-      <path d="M 16 28 Q 10 28 10 23 Q 10 18 15 18 Q 17 14 22 14 Q 28 14 29 19 Q 35 19 35 24 Q 35 28 30 28 Z" fill="var(--bg-2)"/>
-    `,
+    sun: `<circle cx="20" cy="20" r="6"/><line x1="20" y1="6" x2="20" y2="10"/><line x1="20" y1="30" x2="20" y2="34"/><line x1="6" y1="20" x2="10" y2="20"/><line x1="30" y1="20" x2="34" y2="20"/><line x1="10" y1="10" x2="13" y2="13"/><line x1="27" y1="27" x2="30" y2="30"/><line x1="10" y1="30" x2="13" y2="27"/><line x1="27" y1="13" x2="30" y2="10"/>`,
+    clear: `<path d="M 28 22 A 10 10 0 1 1 18 12 A 8 8 0 0 0 28 22 Z"/><circle cx="32" cy="14" r=".8" fill="currentColor"/><circle cx="10" cy="10" r=".8" fill="currentColor"/><circle cx="34" cy="28" r=".8" fill="currentColor"/>`,
+    cloudy: `<path d="M 12 26 Q 6 26 6 21 Q 6 16 11 16 Q 12 11 18 11 Q 24 11 25 16 Q 32 16 32 22 Q 32 26 27 26 Z"/><path d="M 16 30 Q 12 30 12 26 Q 12 22 17 22 Q 18 18 23 18 Q 28 18 29 22 Q 34 22 34 26 Q 34 30 30 30 Z" opacity=".5"/>`,
+    rain: `<path d="M 12 22 Q 6 22 6 17 Q 6 12 11 12 Q 12 7 18 7 Q 24 7 25 12 Q 32 12 32 18 Q 32 22 27 22 Z"/><line x1="12" y1="26" x2="10" y2="32"/><line x1="19" y1="26" x2="17" y2="32"/><line x1="26" y1="26" x2="24" y2="32"/><line x1="32" y1="26" x2="30" y2="32"/>`,
+    partly: `<circle cx="14" cy="14" r="5"/><line x1="14" y1="4" x2="14" y2="7"/><line x1="4" y1="14" x2="7" y2="14"/><line x1="6" y1="6" x2="8" y2="8"/><line x1="22" y1="6" x2="20" y2="8"/><path class="ic-fill" d="M 16 28 Q 10 28 10 23 Q 10 18 15 18 Q 17 14 22 14 Q 28 14 29 19 Q 35 19 35 24 Q 35 28 30 28 Z"/>`,
   };
 
-  function updateWeatherIcon(condition) {
-    const svg = document.getElementById('weatherIcon');
-    if (!svg) return;
-    svg.innerHTML = WEATHER_ICONS[condition] || WEATHER_ICONS['Sunny'];
-  }
+  // ─── State ───────────────────────────────────────────────────
+  const state = {
+    city: 'Warszawa',
+    phase: 0,          // 0 idle · 1-6 steps · 7 done
+    response: null,    // built by the server in phase 4
+    shown: null,       // what the widget currently displays
+    log: [],           // server log lines
+    flash: false,      // highlight freshly inserted values
+  };
+  let timer = null;
 
-  /* ─── Client panel update ───────────────────────────────────── */
-  function updateClientPanel(city, animate) {
-    const d = DB[city];
-    document.getElementById('newsWeatherHeading').textContent = `Pogoda w ${city}`;
+  // ─── DOM refs ────────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+  const demoEl = $('demo');
+  const primaryBtn = $('primaryBtn');
+  const actorEls = { client: $('actorClient'), wire: $('actorWire'), server: $('actorServer') };
+  const wxEl = $('wx');
+  const wxCitiesEl = $('wxCities');
+  const wxResultEl = $('wxResult');
+  const brStatusEl = $('brStatus');
+  const msgReqEl = $('msgReq');
+  const msgResEl = $('msgRes');
+  const reqStateEl = $('reqState');
+  const resStateEl = $('resState');
+  const reqBodyEl = $('reqBody');
+  const resBodyEl = $('resBody');
+  const pktReqEl = $('pktReq');
+  const pktResEl = $('pktRes');
+  const serverEl = $('server');
+  const srvLedEl = $('srvLed');
+  const srvTableEl = $('srvTable');
+  const srvLogEl = $('srvLog');
 
-    const setVal = (id, val) => {
-      const el = document.getElementById(id);
-      el.textContent = val;
+  // ─── Helpers ─────────────────────────────────────────────────
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const clock = () => new Date().toLocaleTimeString('pl-PL', { hour12: false });
+  const isRunning = () => state.phase >= 1 && state.phase < PHASE_DONE;
+
+  function buildResponse(city) {
+    const row = DB[city];
+    const updated = new Date(); updated.setSeconds(0, 0);
+    const body = {
+      city, temperature: row.temp, humidity: row.humidity,
+      description: row.description, icon: row.icon,
+      updated: updated.toISOString().replace('.000', ''),
     };
+    return { status: 200, statusText: 'OK', body };
+  }
+  const byteSize = obj => new TextEncoder().encode(JSON.stringify(obj)).length;
 
-    setVal('statTempVal', `${d.temp}°C`);
-    setVal('statHumVal', `${d.humidity}%`);
-    setVal('statCondVal', d.conditionPl);
-    updateWeatherIcon(d.condition);
+  function addLog(html) { state.log.push({ t: clock(), html }); }
 
-    if (animate) {
-      ['statTemp','statHum','statCond'].forEach(id => {
-        const el = document.getElementById(id);
-        el.classList.add('updated');
-        const t = setTimeout(() => el.classList.remove('updated'), 2000);
-        timers.push(t);
-      });
-      const iconBox = document.getElementById('weatherIconBox');
-      iconBox.classList.add('updated');
-      const tIcon = setTimeout(() => iconBox.classList.remove('updated'), 2000);
-      timers.push(tIcon);
+  function stopTimer() { clearTimeout(timer); timer = null; }
+  function schedule() {
+    stopTimer();
+    if (isRunning()) timer = setTimeout(advance, STEP_MS);
+  }
+
+  // ─── State transitions (finite state machine) ───────────────
+  function enterPhase(n) {
+    state.phase = n;
+    state.flash = false;
+    const city = state.city;
+    if (n === 1) state.response = null;
+    if (n === 3) {
+      addLog(`<span class="v">← GET ${esc(API_PATH)}?city=${esc(city)}</span>`);
+      addLog(`klucz ${esc(API_KEY)}: <span class="ok">poprawny</span>`);
+      addLog(`szukam „${esc(city)}” w bazie: <span class="ok">znaleziono</span>`);
     }
+    if (n === 4) {
+      state.response = buildResponse(city);
+      const r = state.response;
+      addLog(`<span class="ok">→ ${r.status} ${r.statusText}</span> · JSON · ${byteSize(r.body)} B`);
+    }
+    if (n === 6) {
+      state.shown = { city, response: state.response };
+      state.flash = true;
+    }
+    render();
+    schedule();
   }
 
-  /* ─── JSON render ───────────────────────────────────────────── */
-  function renderRequestJSON(city) {
-    return `<span class="json-key">{
-  "endpoint"</span>: <span class="json-str">"/api/weather"</span>,
-  <span class="json-key">"method"</span>: <span class="json-str">"GET"</span>,
-  <span class="json-key">"parameters"</span>: {
-    <span class="json-key">"city"</span>: <span class="json-str">"${city}"</span>
+  function start(city) {
+    stopTimer();
+    if (city) state.city = city;
+    enterPhase(1);
   }
-}`;
+  function advance() {
+    if (state.phase === 0 || state.phase === PHASE_DONE) return start();
+    enterPhase(state.phase + 1);
   }
-
-  function renderResponseJSON(city) {
-    const d = DB[city];
-    const ts = new Date().toISOString();
-    return `<span class="json-key">{
-  "status"</span>: <span class="json-ok">"success"</span>,
-  <span class="json-key">"data"</span>: {
-    <span class="json-key">"city"</span>:        <span class="json-str">"${city}"</span>,
-    <span class="json-key">"temperature"</span>: <span class="json-num">${d.temp}</span>,
-    <span class="json-key">"humidity"</span>:    <span class="json-num">${d.humidity}</span>,
-    <span class="json-key">"description"</span>: <span class="json-str">"${d.condition}"</span>,
-    <span class="json-key">"timestamp"</span>:   <span class="json-ts">"${ts}"</span>
+  function selectCity(city) {
+    if (!CITIES.includes(city)) return;
+    state.city = city;
+    start();
   }
-}`;
+  function onPrimary() {
+    if (!isRunning()) start();
   }
 
-  /* ─── Reset UI ──────────────────────────────────────────────── */
-  function resetUI() {
-    timers.forEach(clearTimeout);
-    timers = [];
-    clearSteps();
-    document.getElementById('reqBody').innerHTML = renderRequestJSON(selectedCity);
-    document.getElementById('resBody').innerHTML = '<span class="json-key" style="opacity:.4">// Tutaj pojawi się odpowiedź serwera</span>';
-    document.getElementById('reqTitle').textContent = 'Gotowe do wysłania';
-    document.getElementById('resTitle').textContent = 'Czekamy na serwer';
-    document.getElementById('resStatus').textContent = '—';
-    document.getElementById('resStatus').className = 'rr-status idle';
-    document.getElementById('sendBtn').disabled = false;
-    document.getElementById('sendBtn').textContent = 'Wyślij zapytanie';
-    document.getElementById('arrowReq').classList.remove('req-active','res-active');
-    document.getElementById('arrowRes').classList.remove('req-active','res-active');
-    running = false;
-    renderTable(null);
+  // ─── Render ──────────────────────────────────────────────────
+  function renderControls() {
+    let label = 'Wyślij zapytanie';
+    if (state.phase === PHASE_DONE) label = 'Wyślij ponownie';
+    else if (isRunning()) label = 'Wysyłanie…';
+    primaryBtn.textContent = label;
+    primaryBtn.disabled = isRunning();
   }
 
-  /* ─── Main demo sequence ────────────────────────────────────── */
-  function runDemo() {
-    if (running) return;
-    running = true;
-    const city = selectedCity;
-    const btn = document.getElementById('sendBtn');
-    btn.disabled = true;
-    btn.textContent = 'Wysyłanie…';
-
-    clearSteps();
-    renderTable(null);
-
-    // step 0 - wysyłanie pytania
-    setStep(0, 'active');
-    document.getElementById('reqTitle').textContent = `Wysyłam pytanie o ${city}...`;
-    flashArrow('arrowReq', 'req-active');
-
-    timers.push(setTimeout(() => {
-      setStep(0, 'done');
-      // step 1 - odczyt bazy
-      setStep(1, 'active');
-      renderTable(city); // highlight
-    }, 600));
-
-    timers.push(setTimeout(() => {
-      setStep(1, 'done');
-      // step 2 - pakowanie
-      setStep(2, 'active');
-    }, 1200));
-
-    timers.push(setTimeout(() => {
-      setStep(2, 'done');
-      // step 3 - odpowiedź w drodze
-      setStep(3, 'active');
-      flashArrow('arrowRes', 'res-active');
-      document.getElementById('resTitle').textContent = `Dane dla ${city} w drodze...`;
-      document.getElementById('resStatus').textContent = '200 OK';
-      document.getElementById('resStatus').className = 'rr-status ok';
-      document.getElementById('resBody').innerHTML = renderResponseJSON(city);
-    }, 1900));
-
-    timers.push(setTimeout(() => {
-      setStep(3, 'done');
-      // step 4 - wyświetlenie
-      setStep(4, 'active');
-      updateClientPanel(city, true);
-      document.getElementById('reqTitle').textContent = `Wysłano - ${city}`;
-      document.getElementById('resTitle').textContent = `Odpowiedź odebrana`;
-    }, 2600));
-
-    timers.push(setTimeout(() => {
-      setStep(4, 'done');
-      btn.disabled = false;
-      btn.textContent = 'Wyślij ponownie';
-      running = false;
-    }, 3400));
+  function renderActors() {
+    const actor = PHASE_ACTOR[state.phase];
+    Object.entries(actorEls).forEach(([k, el]) => el.classList.toggle('is-active', k === actor && k !== 'wire'));
+    // inside the wire, highlight the message that is travelling
+    msgReqEl.classList.toggle('is-active', state.phase === 1 || state.phase === 2);
+    msgResEl.classList.toggle('is-active', state.phase === 4 || state.phase === 5);
   }
 
-  /* ─── Init ──────────────────────────────────────────────────── */
-  renderTable(null);
-  updateEndpoint();
+  function buildCities() {
+    wxCitiesEl.innerHTML = CITIES.map(c =>
+      `<button type="button" class="wx-city" data-city="${esc(c)}" aria-pressed="false">${esc(c)}</button>`
+    ).join('');
+  }
+  function renderCities() {
+    wxCitiesEl.querySelectorAll('.wx-city').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.city === state.city)));
+  }
+
+  function renderWidget() {
+    const loading = isRunning() && state.phase < 6;
+    wxEl.dataset.filled = loading ? 'loading' : (state.shown ? 'filled' : 'empty');
+    const fl = state.flash ? ' flash' : '';
+    const n = k => `<span class="map-n">${MAP_N[k]}</span>`;
+    let html = '';
+    if (!state.shown) {
+      html = `<p class="wx-empty">${loading ? '' : 'Brak danych. Strona czeka, aż wybierzesz miasto.'}</p>`;
+    } else {
+      const d = state.shown.response.body;
+      html = `
+        <div class="wx-icon fld${fl}" data-field="icon">${n('icon')}<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${WEATHER_ICONS[d.icon] || WEATHER_ICONS.sun}</svg></div>
+        <div>
+          <div class="wx-place"><span class="fld${fl}" data-field="city">${esc(d.city)}</span>${n('city')}</div>
+          <div class="wx-temp"><span class="fld${fl}" data-field="temperature">${d.temperature}°C</span>${n('temperature')}</div>
+          <div class="wx-meta"><span class="fld${fl}" data-field="description">${esc(d.description)}</span>${n('description')} · wilgotność <span class="fld${fl}" data-field="humidity">${d.humidity}%</span>${n('humidity')}</div>
+        </div>`;
+    }
+    if (loading) html = `<div><div class="wx-loading">Pobieram dane…</div>${state.shown ? html : ''}</div>`;
+    wxResultEl.innerHTML = html;
+    demoEl.dataset.mapped = (state.shown && state.phase >= 6) ? '1' : '0';
+  }
+
+  function renderBrowserStatus() {
+    const s = {
+      0: state.shown ? 'Gotowe' : 'Strona załadowana',
+      1: `Przygotowuję zapytanie do ${API_HOST}…`,
+      2: `Łączenie z ${API_HOST}…`,
+      3: `Oczekiwanie na ${API_HOST}…`,
+      4: `Oczekiwanie na ${API_HOST}…`,
+      5: `Odbieranie danych z ${API_HOST}…`,
+      6: 'Gotowe',
+      7: 'Gotowe',
+    };
+    brStatusEl.textContent = s[state.phase];
+  }
+
+  function renderRequest() {
+    const p = state.phase;
+    msgReqEl.dataset.state = p === 0 ? 'idle' : (p === 1 ? 'building' : (p === 2 ? 'travelling' : 'delivered'));
+    reqStateEl.textContent = { idle: 'gotowe do wysłania', building: 'składanie', travelling: 'w drodze', delivered: 'dostarczone' }[msgReqEl.dataset.state];
+    pktReqEl.dataset.pos = p >= 2 ? 'end' : 'start';
+    pktReqEl.dataset.visible = p >= 1 ? '1' : '0';
+    reqBodyEl.innerHTML = `
+      <dt>Co i skąd</dt><dd>GET ${esc(API_PATH)}?city=<span class="var">${esc(state.city)}</span> HTTP/1.1</dd>
+      <dt>Do kogo</dt><dd>Host: ${API_HOST}</dd>
+      <dt>Klucz</dt><dd>X-API-Key: ${API_KEY}</dd>
+      <dt>Chcę dostać</dt><dd>Accept: application/json</dd>`;
+  }
+
+  function jsonHtml(body) {
+    const keys = Object.keys(body);
+    const lines = keys.map((k, i) => {
+      const v = typeof body[k] === 'number' ? body[k] : `"${esc(body[k])}"`;
+      const badge = MAP_N[k] ? `<span class="map-n">${MAP_N[k]}</span>` : '';
+      return `  <span class="jk">"${k}"</span>: ${v}${i < keys.length - 1 ? ',' : ''}${badge}`;
+    });
+    return `{\n${lines.join('\n')}\n}`;
+  }
+
+  function renderResponse() {
+    const p = state.phase;
+    const r = state.response;
+    msgResEl.dataset.state = p < 4 ? 'idle' : (p === 4 ? 'building' : (p === 5 ? 'travelling' : 'delivered'));
+    resStateEl.textContent = { idle: p >= 1 ? 'czekamy na serwer' : 'jeszcze nie ma', building: 'składanie', travelling: 'w drodze', delivered: 'odebrane' }[msgResEl.dataset.state];
+    pktResEl.dataset.pos = p >= 5 ? 'start' : 'end';
+    pktResEl.dataset.visible = p >= 4 ? '1' : '0';
+    if (!r) {
+      resBodyEl.innerHTML = `<p class="msg-empty">Tu pojawi się odpowiedź serwera.</p>`;
+      return;
+    }
+    resBodyEl.innerHTML = `<dl class="http">
+      <dt>Wynik</dt><dd>HTTP/1.1 <span class="st-ok">${r.status} ${r.statusText}</span></dd>
+      <dt>Format</dt><dd>Content-Type: application/json</dd>
+      <dt>Dane (JSON)</dt><dd class="json">${jsonHtml(r.body)}</dd>
+    </dl>`;
+  }
+
+  function renderServer() {
+    const p = state.phase;
+    serverEl.dataset.busy = (p === 3 || p === 4) ? '1' : '0';
+    srvLedEl.querySelector('span').textContent = (p === 3 || p === 4) ? 'Pracuje' : 'Online';
+    const hit = p >= 3 && p <= 4 ? state.city : null;
+    srvTableEl.innerHTML = Object.entries(DB).map(([c, d]) =>
+      `<tr${c === hit ? ' class="hit"' : ''}><td>${esc(c)}</td><td>${d.temp}</td><td>${d.humidity}%</td><td>${esc(d.description)}</td></tr>`
+    ).join('');
+    srvLogEl.innerHTML = state.log.length
+      ? state.log.map(l => `<li><span class="t">${l.t}</span>${l.html}</li>`).join('')
+      : `<li class="idle">Serwer czeka na zapytania…</li>`;
+    srvLogEl.scrollTop = srvLogEl.scrollHeight;
+  }
+
+  function render() {
+    demoEl.dataset.phase = state.phase === 0 ? 'idle' : (state.phase === PHASE_DONE ? 'done' : String(state.phase));
+    demoEl.dataset.city = state.city;
+    demoEl.dataset.status = state.response ? String(state.response.status) : '';
+    renderControls();
+    renderActors();
+    renderCities();
+    renderWidget();
+    renderBrowserStatus();
+    renderRequest();
+    renderResponse();
+    renderServer();
+  }
+
+  // ─── Listeners ───────────────────────────────────────────────
+  primaryBtn.addEventListener('click', onPrimary);
+  wxCitiesEl.addEventListener('click', e => {
+    const btn = e.target.closest('.wx-city');
+    if (btn) selectCity(btn.dataset.city);
+  });
+  // ─── Init ────────────────────────────────────────────────────
+  $('siteDate').textContent = new Intl.DateTimeFormat('pl-PL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
+  buildCities();
+  render();
+  // small handle for agents and tests: read state, drive the FSM
+  window.API_DEMO = { state, selectCity, advance };
 </script>
 </body>
 </html>
