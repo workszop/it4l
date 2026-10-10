@@ -22,7 +22,13 @@
 <style>
   /* ─── Index page widgets (tokens + chrome come from site.css) ─── */
 
-  /* ─── Page head: text left, pixel laptop right (straight on the white page) ─── */
+  /* ─── Hero band: full-bleed blue → green (AA shades, white text) ─── */
+  .hub-band {
+    background: linear-gradient(120deg, var(--blue-soft) 0%, var(--green-soft) 100%);
+    color: var(--blue-ink);
+  }
+  .hub-band .page-head { border-bottom: none; padding-top: 56px; padding-bottom: 60px; }
+  .hub-band .app-title, .hub-band .edu-lead { color: var(--blue-ink); }
   .hub-head {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
     gap: 48px; align-items: center;
@@ -31,8 +37,8 @@
   .hero-panel { display: flex; align-items: center; justify-content: center; }
   .hero-pixels {
     width: 100%; max-width: 300px; height: auto; display: block;
-    /* Pixel palette: SVG fill literals. Black laptop on the white page;
-       the dark theme flips it back to a white body so it stays visible. */
+    /* Pixel palette: SVG fill literals. Black laptop on the blue-green band,
+       identical in both themes (the band does not change with the theme). */
     --px-body:   #1C1917;
     --px-shade:  #857C69;
     --px-well:   #625B53;
@@ -42,7 +48,6 @@
     --px-green:  var(--green);
     --px-red:    var(--red);
   }
-  html[data-theme="dark"] .hero-pixels { --px-body: #FFFFFF; --px-well: #1C1917; }
 
   /* ─── Article cards ─── */
   .article-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
@@ -113,7 +118,8 @@
 </header>
 
 <main>
-<header class="page-head hub-head">
+<header class="hub-band">
+<div class="page-head hub-head">
   <div class="hub-text">
     <h1 class="app-title">Co robi komputer?</h1>
     <p class="edu-lead">Pięć interaktywnych artykułów o tym, co dzieje się między naciśnięciem klawisza a pikselem na ekranie.</p>
@@ -934,6 +940,7 @@
         <rect x="26" y="41" width="1" height="1" fill="var(--px-shade)"/>
       </svg>
   </div>
+</div>
 </header>
 
 <section class="sec sec-stone"><div class="wrap">
