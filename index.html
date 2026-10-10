@@ -22,13 +22,10 @@
 <style>
   /* ─── Index page widgets (tokens + chrome come from site.css) ─── */
 
-  /* ─── Hero band: full-bleed blue → green (AA shades, white text) ─── */
-  .hub-band {
-    background: linear-gradient(120deg, var(--blue-soft) 0%, var(--green-soft) 100%);
-    color: var(--blue-ink);
-  }
+  /* ─── Hero band: full-bleed solid green (AA shade, white text) ─── */
+  .hub-band { background: var(--green-soft); color: var(--green-ink); }
   .hub-band .page-head { border-bottom: none; padding-top: 56px; padding-bottom: 60px; }
-  .hub-band .app-title, .hub-band .edu-lead { color: var(--blue-ink); }
+  .hub-band .app-title, .hub-band .edu-lead { color: var(--green-ink); }
   .hub-head {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
     gap: 48px; align-items: center;
@@ -37,7 +34,7 @@
   .hero-panel { display: flex; align-items: center; justify-content: center; }
   .hero-pixels {
     width: 100%; max-width: 300px; height: auto; display: block;
-    /* Pixel palette: SVG fill literals. Black laptop on the blue-green band,
+    /* Pixel palette: SVG fill literals. Black laptop on the green band,
        identical in both themes (the band does not change with the theme). */
     --px-body:   #1C1917;
     --px-shade:  #857C69;
