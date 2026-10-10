@@ -17,428 +17,89 @@
     }
   })();
 </script>
+<link rel="stylesheet" href="colors_and_type.css" />
+<link rel="stylesheet" href="site.css" />
 <style>
-  /* ── edulab design system — Editorial Color ──────────────────────────
-     Fonts: Outfit (display) · IBM Plex Sans (sans) · Roboto Mono (mono)
-     Paper white page, warm ink, yellow primary, blue + green secondary,
-     red for danger. Every colour below is an edulab token.
-     ─────────────────────────────────────────────────────────────────── */
+  /* ─── API page widgets (tokens + chrome come from site.css) ───
+     Blue = the website and its request, green = the server and its
+     response, yellow = "look here now". */
+
+  /* ─── Server panel tokens: a machine stays an ink panel in both themes ─── */
   :root {
-    /* ── edulab brand fonts ── */
-    --font-display: 'Outfit', 'IBM Plex Sans', system-ui, sans-serif;
-    --font-sans:    'IBM Plex Sans', system-ui, -apple-system, sans-serif;
-    --font-mono:    'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-
-    /* ── edulab raw palette ── */
-    --paper:   #FFFFFF;  --paper-2: #FBF7E6;  --paper-3: #F5EDCB;
-    --surface: #FFFFFF;
-    --edu-ink: #1C1917;  --edu-ink-2: #57534E;  --edu-ink-3: #948C82;
-    --line:    #EDE7D2;  --line-2:  #DDD4B6;
-
-    --yellow: #FFD500;  --yellow-600: #F0C800;  --yellow-soft: #FFD500;  --yellow-ink: #1C1917;
-    --blue:   #1E8FC2;  --blue-600:   #177AA8;  --blue-soft:   #1E8FC2;  --blue-ink:   #FFFFFF;
-    --green:  #00A651;  --green-600:  #009444;  --green-soft:  #00A651;  --green-ink:  #FFFFFF;
-    --red:    #E5322D;  --red-600:    #C92823;  --red-soft:    #E5322D;  --red-ink:    #FFFFFF;
-    --grape:  #7A5AC2;
-
-    --primary: var(--yellow);  --on-primary: var(--yellow-ink);
-    --focus-ring: 0 0 0 3px color-mix(in srgb, var(--yellow) 45%, transparent);
-
-    /* ── radii & elevation ── */
-    --r-xs: 6px; --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
-    --shadow-sm: 0 1px 2px rgba(33,30,26,.06), 0 1px 1px rgba(33,30,26,.04);
-    --shadow-md: 0 4px 16px rgba(33,30,26,.08), 0 1px 3px rgba(33,30,26,.05);
-    --shadow-lg: 0 16px 40px rgba(33,30,26,.12), 0 3px 8px rgba(33,30,26,.06);
-    --shadow-primary: 0 8px 22px color-mix(in srgb, var(--yellow) 30%, transparent);
-
-    /* ── layout ── */
-    --pad-x: 30px;
-    --pad-y: 72px;
-    --gap: 28px;
-    --shell: 1100px;
+    --srv-bg:  var(--ink);
+    --srv-ink: var(--paper);
+    --srv-ok:  var(--green);
+    /* derived on the root element, so they follow the dark override below */
+    --srv-ink-2: color-mix(in srgb, var(--srv-ink) 80%, var(--srv-bg));
+    --srv-ink-3: color-mix(in srgb, var(--srv-ink) 62%, var(--srv-bg));
+    --srv-line:  color-mix(in srgb, var(--srv-ink) 16%, var(--srv-bg));
   }
-
-  /* ── Light (default): edulab paper ──────────────────────────────────── */
-  html[data-theme="light"] {
-    --bg:        var(--paper);
-    --bg-2:      var(--paper-2);
-    --bg-3:      var(--paper-3);
-    --ink:       var(--edu-ink);
-    --ink-soft:  var(--edu-ink-2);
-    --ink-mute:  var(--edu-ink-3);
-    --rule:      var(--line-2);
-    --rule-soft: var(--line);
-    --accent:    var(--blue);
-    --accent-2:  var(--blue-600);
-    --accent-tint:        var(--paper-2);
-    --accent-tint-soft:   var(--paper-2);
-    --accent-tint-strong: var(--paper-3);
-    --overlay:   rgba(255,255,255,.94);
-    --card:      var(--surface);
-    --logo-filter: none;
-    --hero-bg:    #24211E;
-    --hero-ink:   #FFFFFF;
-    --hero-ink-2: rgba(255,255,255,.74);
-    --green-tint: color-mix(in srgb, var(--green) 12%, transparent);
-    --amber: var(--yellow);
-    --amber-tint: color-mix(in srgb, var(--yellow) 22%, transparent);
-    /* API demo: browser chrome + server console */
-    --chrome-bg:   var(--paper-3);
-    --chrome-bg-2: var(--paper-2);
-    --srv-bg:   #24211E;  --srv-bg-2: #322D29;
-    --srv-ink:  #FFFFFF;  --srv-ink-2: rgba(255,255,255,.76);  --srv-ink-3: rgba(255,255,255,.52);
-    --srv-line: rgba(255,255,255,.14);
-  }
-
-  /* ── Dark: edulab ink surfaces (yellow reads as text on black) ──────── */
   html[data-theme="dark"] {
-    --bg:        #1C1917;
-    --bg-2:      #262220;
-    --bg-3:      #322D29;
-    --ink:       #FFFFFF;
-    --ink-soft:  rgba(255,255,255,.74);
-    --ink-mute:  rgba(255,255,255,.52);
-    --rule:      rgba(255,255,255,.30);
-    --rule-soft: rgba(255,255,255,.14);
-    --accent:    var(--yellow);
-    --accent-2:  var(--yellow-600);
-    --accent-tint:        rgba(255,255,255,.06);
-    --accent-tint-soft:   rgba(255,255,255,.04);
-    --accent-tint-strong: rgba(255,213,0,.22);
-    --overlay:   rgba(28,25,23,.94);
-    --card:      #262220;
-    --logo-filter: invert(1);
-    --hero-bg:    #24211E;
-    --hero-ink:   #FFFFFF;
-    --hero-ink-2: rgba(255,255,255,.74);
-    --green-tint: color-mix(in srgb, var(--green) 22%, transparent);
-    --amber: var(--yellow);
-    --amber-tint: color-mix(in srgb, var(--yellow) 22%, transparent);
-    --chrome-bg:   #322D29;
-    --chrome-bg-2: #262220;
-    --srv-bg:   #0F0D0C;  --srv-bg-2: #24211E;
-    --srv-ink:  #FFFFFF;  --srv-ink-2: rgba(255,255,255,.76);  --srv-ink-3: rgba(255,255,255,.52);
-    --srv-line: rgba(255,255,255,.16);
+    --srv-bg:  var(--paper-3);
+    --srv-ink: var(--ink);
+    --srv-ok:  var(--green-600);   /* lifted shade in dark, 4.5:1+ on paper-3 */
   }
 
-  /* ── Reset ──────────────────────────────────────────────────────────── */
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--font-sans);
-    font-size: 16px;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    transition: background .25s ease, color .25s ease;
-  }
-  a { color: inherit; text-decoration: none; cursor: pointer; }
-  button { font-family: inherit; }
+  .sec-lead em { font-style: normal; font-weight: 600; color: var(--ink); }
+  .further { margin-top: 44px; }
 
-  /* Content shell — edulab caps the column at 1100px */
-  .shell { max-width: var(--shell); margin: 0 auto; width: 100%; }
-
-  /* Functional label: mono, uppercase, tracked */
-  .kicker {
-    font-family: var(--font-mono);
-    font-weight: 500;
-    font-size: 12px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-  }
-  .dot { color: var(--ink-mute); padding: 0 6px; }
-
-  /* ── Theme toggle — full pill, never a partial contour ──────────────── */
-  .theme-toggle {
-    position: fixed;
-    top: 14px; right: 20px;
-    z-index: 100;
-    appearance: none; cursor: pointer;
-    background: var(--bg-2);
-    border: none;
-    color: var(--ink-soft);
-    padding: 9px 16px;
-    border-radius: var(--r-pill);
-    font-family: var(--font-sans);
-    font-weight: 600;
-    font-size: 12px;
-    letter-spacing: .02em;
-    transition: background .15s, color .15s;
-  }
-  .theme-toggle:hover { background: var(--yellow); color: var(--yellow-ink); }
-  .theme-toggle:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-  .theme-toggle .th-mark {
-    display: inline-block;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    margin-right: 8px;
-    vertical-align: -1px;
-    background: var(--ink);
-  }
-  .theme-toggle:hover .th-mark { background: var(--yellow-ink); }
-  .theme-toggle .lbl-jasny { display: inline; }
-  .theme-toggle .lbl-ciemny { display: none; }
-  html[data-theme="light"] .theme-toggle .lbl-jasny { display: none; }
-  html[data-theme="light"] .theme-toggle .lbl-ciemny { display: inline; }
-
-  /* ── edulab brand bar (required chrome) ─────────────────────────────── */
-  .masthead {
-    position: sticky; top: 0; z-index: 50; width: 100%;
-    background: var(--overlay);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--rule-soft);
-  }
-  .masthead .row {
-    max-width: var(--shell); margin: 0 auto;
-    padding: 8px var(--pad-x);
-    display: flex; justify-content: space-between; align-items: center; gap: 12px;
-  }
-  .masthead .brand { display: flex; align-items: center; gap: 2px; cursor: pointer; }
-  .masthead .edu-logo {
-    width: 64px; height: 64px; display: block; margin-right: -6px;
-    filter: var(--logo-filter);
-  }
-  .masthead .brand .wordmark {
-    font-family: var(--font-display); font-weight: 700;
-    font-size: 22px; letter-spacing: -.02em; color: var(--ink);
-  }
-  .masthead .topnav { display: flex; gap: 4px; padding-right: 132px; }
-  .masthead .topnav a {
-    font-family: var(--font-sans); font-weight: 600; font-size: 14px;
-    color: var(--ink-soft);
-    padding: 8px 14px; border-radius: var(--r-pill);
-    transition: background .15s, color .15s;
-  }
-  .masthead .topnav a:hover { background: var(--bg-2); color: var(--ink); }
-  .masthead .topnav a.active { background: var(--yellow); color: var(--yellow-ink); }
-
-  /* ── Detail page frame ──────────────────────────────────────────────── */
-  .detail {
-    max-width: 1240px;
-    margin: 0 auto;
-    padding: 48px var(--pad-x) calc(var(--pad-y) * 1.2);
-  }
-  .detail-back {
-    font-family: var(--font-mono); font-size: 11px;
-    letter-spacing: .08em; text-transform: uppercase;
-    color: var(--ink-mute); margin-bottom: 48px;
-  }
-  .detail-back a { transition: color .15s; }
-  .detail-back a:hover { color: var(--accent); }
-
-  .detail-head { max-width: 760px; margin: 0 auto; text-align: left; }
-  .detail-meta {
-    display: flex; align-items: center;
-    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
-    letter-spacing: .06em; text-transform: uppercase;
-    margin-bottom: 24px;
-  }
-  .detail-head h1 {
-    font-family: var(--font-display); font-weight: 400;
-    font-size: clamp(40px, 5vw, 72px); line-height: 1.05;
-    letter-spacing: -.02em;
-    margin: 0 0 24px; text-wrap: balance;
-  }
-  .detail-dek {
-    font-family: var(--font-sans); font-style: italic;
-    font-size: clamp(20px, 1.6vw, 24px);
-    line-height: 1.45; color: var(--ink-soft); margin: 0 0 32px;
-    max-width: 50ch;
-  }
-  .detail-byline {
-    display: flex; align-items: center;
-    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
-    letter-spacing: .06em; text-transform: uppercase;
-  }
-
-  .detail-rule {
-    height: 1px; background: var(--rule); opacity: .5;
-    margin: 56px auto;
-    max-width: 760px;
-    border: none;
-  }
-
-  .detail-prose { max-width: 660px; margin: 0 auto 48px; }
-  .detail-prose p {
-    font-family: var(--font-sans); font-size: 19px; line-height: 1.6;
-    color: var(--ink); margin: 0 0 24px; text-wrap: pretty;
-  }
-  .detail-prose p em { font-style: italic; color: var(--accent-2); }
-  .detail-prose p code,
-  .detail-prose code {
-    font-family: var(--font-mono); font-size: 15px;
-    background: var(--bg-2); padding: 1px 6px; border-radius: 3px;
-    color: var(--accent);
-  }
-  .detail-prose h3 {
-    font-family: var(--font-display); font-weight: 400;
-    font-size: 28px; margin: 48px 0 16px;
-    letter-spacing: -.005em;
-  }
-  .detail-prose .dropcap .dc {
-    font-family: var(--font-sans); font-style: italic;
-    font-size: 80px; line-height: .8;
-    float: left; padding: 6px 14px 0 0;
-    color: var(--accent);
-  }
-
-  /* ── Demo container (breaks out of .detail to be wider) ─────────────── */
-  .demo-fullwide {
-    padding: 0 var(--pad-x);
-    margin: 64px 0;
-  }
-  .detail-demo {
-    max-width: 1480px; margin: 0 auto;
-    padding: 40px;
-    background: var(--bg-2);
-    border: 1px solid var(--rule-soft);
-    border-radius: var(--r-xl);
-  }
-  .detail.detail-after {
-    padding-top: 0;
-  }
-  .detail-demo .demo-head { margin-bottom: 24px; max-width: none; }
-  .detail-demo .demo-head h2 {
-    font-family: var(--font-display); font-weight: 400;
-    font-size: 32px; margin: 8px 0 8px; letter-spacing: -.01em;
-  }
-  .detail-demo .demo-head > p {
-    font-family: var(--font-sans); font-size: 17px; line-height: 1.6; color: var(--ink-soft); margin: 0;
-  }
-  .detail-demo .demo-head p em { font-style: normal; font-weight: 600; color: var(--ink); }
-
-  /* ── Buttons ────────────────────────────────────────────────────────── */
-  .btn {
-    appearance: none; cursor: pointer;
-    background: transparent;
-    border: 1px solid var(--rule-soft);
-    color: var(--ink-soft);
-    padding: 8px 14px;
-    border-radius: 2px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    transition: border-color .15s, color .15s, background .15s;
-  }
-  .btn:hover { border-color: var(--ink-soft); color: var(--ink); }
-  .btn:disabled { opacity: .4; cursor: not-allowed; }
-  .btn.primary {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--bg);
-    padding: 10px 20px;
-    border-radius: 999px;
-    font-family: var(--font-sans);
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0;
-    text-transform: none;
-    transition: transform .15s ease, background .15s ease, opacity .15s;
-  }
-  .btn.primary:hover:not(:disabled) { background: var(--accent); transform: translateY(-1px); }
-
-  /* ── Aside ──────────────────────────────────────────────────────────── */
-  .detail-aside {
-    max-width: 660px; margin: 48px auto;
-    padding: 24px 28px;
-    background: var(--bg-2);
-    border-radius: 0 3px 3px 0;
-  }
-  .detail-aside h6 {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
-    text-transform: uppercase; color: var(--ink-mute);
-    margin: 0 0 12px;
-  }
-  .detail-aside ul { margin: 0; padding: 0; list-style: none; }
-  .detail-aside li { padding: 6px 0; }
-  .detail-aside a {
-    font-family: var(--font-sans); font-size: 16px; color: var(--ink);
-    border-bottom: 1px solid var(--rule-soft);
-    transition: color .15s, border-color .15s;
-  }
-  .detail-aside a:hover { color: var(--accent); border-color: var(--accent); }
-
-  /* ── Related ────────────────────────────────────────────────────────── */
-  .detail-related {
-    max-width: 1080px; margin: 80px auto 0;
-    border-top: 1px solid var(--rule-soft);
-    padding-top: 48px;
-  }
-  .detail-related h3 {
-    font-family: var(--font-display); font-weight: 400; font-size: 28px;
-    margin: 0 0 32px; letter-spacing: -.005em;
-  }
-  .related-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
-  }
-  .related-grid .related {
-    padding: 20px 0; border-top: 1px solid var(--rule);
-    cursor: pointer; transition: padding .15s;
-    display: flex; flex-direction: column; gap: 10px;
-  }
-  .related-grid .related:hover { padding-left: 8px; }
-  .related-grid .related:hover h4 { color: var(--accent); }
-  .related-grid .related .kicker { color: var(--accent); }
-  .related-grid .related h4 {
-    font-family: var(--font-display); font-weight: 400;
-    font-size: 22px; line-height: 1.15; margin: 0;
-    letter-spacing: -.005em; transition: color .15s;
-  }
-  .related-grid .related .read {
-    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
-    letter-spacing: .04em; margin-top: auto; padding-top: 8px;
-  }
-
-  /* ════════════════════════════════════════════════════════════
-     API DEMO - website (client) · HTTP messages · weather server
-     Blue = the website and its request, green = the server and
-     its response, yellow = "look here now".
-     ════════════════════════════════════════════════════════════ */
-
-  /* ── solid chips: actor + message labels ────────────────────── */
+  /* ─── Solid chips: actor + message labels ─── */
   .chip {
     display: inline-flex; align-items: center; gap: 6px;
     font-family: var(--font-mono); font-size: 11px; font-weight: 500;
     letter-spacing: .1em; text-transform: uppercase;
     padding: 4px 10px; border-radius: var(--r-pill); white-space: nowrap;
   }
-  .chip.client { background: var(--blue);   color: var(--blue-ink); }
-  .chip.server { background: var(--green);  color: var(--green-ink); }
-  .chip.net    { background: var(--yellow); color: var(--yellow-ink); }
+  .chip.client { background: var(--blue-soft);   color: var(--blue-ink); }
+  .chip.server { background: var(--green-soft);  color: var(--green-ink); }
+  .chip.net    { background: var(--yellow-soft); color: var(--yellow-ink); }
 
-  /* ── start button ───────────────────────────────────────────── */
-  .api-start { margin-bottom: 22px; }
+  /* ─── Start button + wide stage (breaks out of the 1100px column) ─── */
+  .api-start { margin: 0; }
+  .api-wide {
+    max-width: calc(1480px + 2 * var(--pad-x));
+    margin: 28px auto 0; padding: 0 var(--pad-x);
+  }
 
-  /* ── stage: three equal-height columns ──────────────────────── */
+  /* ─── Stage: three equal-height columns ─── */
   .api-stage {
     display: grid;
     grid-template-columns: minmax(0, 1.25fr) minmax(300px, 1fr) minmax(0, 1fr);
     grid-template-rows: auto 1fr;
-    column-gap: 22px; row-gap: 12px;
+    column-gap: 22px; row-gap: 0;
   }
-  /* label row + frame row shared by all columns, so frames start and end together */
-  .actor { display: grid; grid-row: span 2; grid-template-rows: subgrid; min-width: 0; }
-  .actor-label { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+  /* head row + body row shared by all columns, so cards start and end together */
+  .actor {
+    display: grid; grid-row: span 2; grid-template-rows: subgrid; min-width: 0;
+    background: var(--surface); border: 1px solid var(--line-2);
+    border-radius: var(--r-lg); box-shadow: var(--shadow-sm);
+  }
+  .actor-label {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px;
+    padding: 13px 18px; background: var(--paper-2);
+    border-bottom: 1px solid var(--line);
+    border-radius: calc(var(--r-lg) - 1px) calc(var(--r-lg) - 1px) 0 0;
+    transition: background .25s;
+  }
   .actor-label strong {
     font-family: var(--font-display); font-weight: 600; font-size: 19px;
     letter-spacing: -.01em; color: var(--ink);
   }
-  .frame { min-height: 0; transition: box-shadow .25s; }
+  .actor.is-active .actor-label { background: var(--yellow); }
+  .actor.is-active .actor-label strong { color: var(--yellow-ink); }
+  .actor-body { display: flex; flex-direction: column; min-height: 0; padding: 16px; }
+  .frame { flex: 1; min-height: 0; transition: box-shadow .25s; }
   .actor.is-active .frame,
   .msg.is-active { box-shadow: 0 0 0 3px var(--yellow), var(--shadow-md); }
 
-  /* ── browser window around the website ──────────────────────── */
+  /* ─── Browser window around the website ─── */
   .browser {
     display: flex; flex-direction: column;
-    background: var(--card); border: 1px solid var(--rule);
-    border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-md);
+    background: var(--surface); border: 1px solid var(--line-2);
+    border-radius: var(--r-md); overflow: hidden;
   }
   .br-tabs {
-    background: var(--chrome-bg); display: flex; align-items: flex-end;
+    background: var(--paper-3); display: flex; align-items: flex-end;
     gap: 12px; padding: 9px 12px 0;
   }
   .br-dots { display: flex; gap: 6px; padding-bottom: 10px; }
@@ -447,40 +108,40 @@
   .br-dots span:nth-child(2) { background: var(--yellow); }
   .br-dots span:nth-child(3) { background: var(--green); }
   .br-tab {
-    background: var(--card); border-radius: var(--r-sm) var(--r-sm) 0 0;
+    background: var(--surface); border-radius: var(--r-sm) var(--r-sm) 0 0;
     padding: 7px 16px 8px; display: flex; align-items: center; gap: 8px;
     font-family: var(--font-sans); font-size: 12px; font-weight: 500; color: var(--ink);
     min-width: 0; max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .br-tab .fav {
     width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0;
-    background: var(--red); color: var(--red-ink);
+    background: var(--red-soft); color: var(--red-ink);
     font-family: var(--font-display); font-weight: 800; font-size: 10px;
     display: grid; place-items: center;
   }
   .br-toolbar {
     display: flex; align-items: center; gap: 6px; padding: 8px 12px;
-    border-bottom: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--line);
   }
-  .br-btn { width: 24px; height: 24px; display: grid; place-items: center; color: var(--ink-mute); flex-shrink: 0; }
+  .br-btn { width: 24px; height: 24px; display: grid; place-items: center; color: var(--ink-3); flex-shrink: 0; }
   .br-btn svg { width: 15px; height: 15px; }
   .br-url {
     flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px;
-    background: var(--bg-2); border-radius: var(--r-pill); padding: 6px 14px;
-    font-family: var(--font-sans); font-size: 13px; color: var(--ink-mute);
+    background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 5px 14px;
+    font-family: var(--font-sans); font-size: 13px; color: var(--ink-3);
     white-space: nowrap; overflow: hidden;
   }
-  .br-url svg { width: 12px; height: 12px; flex-shrink: 0; color: var(--ink-soft); }
+  .br-url svg { width: 12px; height: 12px; flex-shrink: 0; color: var(--ink-2); }
   .br-url .host { color: var(--ink); }
   .br-status {
-    background: var(--chrome-bg-2); border-top: 1px solid var(--rule-soft);
+    background: var(--paper-2); border-top: 1px solid var(--line);
     padding: 5px 12px; min-height: 27px;
-    font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft);
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-2);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
 
-  /* ── the news website itself ────────────────────────────────── */
-  .site { flex: 1; background: var(--bg); color: var(--ink); padding: 0 20px 18px; }
+  /* ─── The news website itself (demo content) ─── */
+  .site { flex: 1; background: var(--paper); color: var(--ink); padding: 0 20px 18px; }
   .site-head {
     display: flex; align-items: center; justify-content: space-between;
     gap: 12px; flex-wrap: wrap; padding: 16px 0 12px;
@@ -493,57 +154,57 @@
   }
   .site-logo .mark {
     width: 30px; height: 30px; border-radius: var(--r-xs);
-    background: var(--red); color: var(--red-ink);
+    background: var(--red-soft); color: var(--red-ink);
     display: grid; place-items: center; font-size: 19px;
   }
-  .site-date { font-size: 12px; color: var(--ink-mute); }
-  .site-nav { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 0; border-bottom: 1px solid var(--rule-soft); }
+  .site-date { font-size: 12px; color: var(--ink-3); }
+  .site-nav { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 0; border-bottom: 1px solid var(--line); }
   .site-nav span {
     font-family: var(--font-sans); font-weight: 600; font-size: 13px;
-    color: var(--ink-soft); padding: 5px 11px; border-radius: var(--r-pill);
+    color: var(--ink-2); padding: 5px 11px; border-radius: var(--r-pill);
   }
-  .site-nav span.on { background: var(--ink); color: var(--bg); }
+  .site-nav span.on { background: var(--ink); color: var(--paper); }
 
   /* weather widget = the part of the website that talks to the API */
   .wx {
     margin: 16px 0; padding: 16px;
-    background: var(--bg-2); border-radius: var(--r-lg);
+    background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--r-lg);
     display: flex; flex-direction: column; gap: 12px;
   }
   .wx-title { font-family: var(--font-display); font-weight: 700; font-size: 16px; margin: 0; }
-  .wx-hint { font-size: 12.5px; color: var(--ink-soft); margin: 2px 0 10px; }
+  .wx-hint { font-size: 12.5px; color: var(--ink-2); margin: 2px 0 10px; }
   .wx-cities { display: flex; flex-wrap: wrap; gap: 6px; }
   .wx-city {
-    appearance: none; border: none; cursor: pointer;
-    background: var(--card); color: var(--ink); box-shadow: var(--shadow-sm);
+    appearance: none; cursor: pointer;
+    background: var(--surface); color: var(--ink);
+    border: 1px solid var(--line-strong);
     font-family: var(--font-sans); font-weight: 600; font-size: 13px;
-    padding: 7px 14px; border-radius: var(--r-pill);
-    transition: background .15s, color .15s;
+    padding: 6px 14px; border-radius: var(--r-pill);
+    transition: background .15s, color .15s, border-color .15s;
   }
-  .wx-city:hover { background: var(--bg-3); }
-  .wx-city:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-  .wx-city[aria-pressed="true"] { background: var(--blue); color: var(--blue-ink); }
+  .wx-city:hover { background: var(--paper-3); }
+  .wx-city[aria-pressed="true"] { background: var(--blue-soft); border-color: var(--blue-soft); color: var(--blue-ink); }
 
   .wx-result {
     position: relative; display: flex; align-items: center; gap: 16px; min-height: 98px;
-    padding-top: 12px; border-top: 1px solid var(--rule-soft);
+    padding-top: 12px; border-top: 1px solid var(--line);
   }
   .wx-result > :not(.wx-loading) { transition: opacity .25s; }
   .wx[data-filled="loading"] .wx-result > :not(.wx-loading) { opacity: .4; }
   .wx-icon { width: 56px; height: 56px; flex-shrink: 0; color: var(--ink); display: grid; place-items: center; }
   .wx-icon svg { width: 54px; height: 54px; }
-  .wx-icon .ic-fill { fill: var(--bg-2); }
+  .wx-icon .ic-fill { fill: var(--paper-2); }
   .wx-temp {
     font-family: var(--font-display); font-weight: 700; font-size: 42px;
     line-height: 1; letter-spacing: -.03em;
   }
   .wx-place { font-weight: 600; font-size: 14px; }
-  .wx-meta { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
-  .wx-empty { font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+  .wx-meta { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+  .wx-empty { font-size: 13.5px; color: var(--ink-2); margin: 0; }
   .wx-loading {
     position: absolute; top: 14px; right: 0;
     font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
-    text-transform: uppercase; color: var(--ink-soft);
+    text-transform: uppercase; color: var(--ink-2);
     animation: fade-pulse 1s ease-in-out infinite alternate;
   }
   @keyframes fade-pulse { from { opacity: 1; } to { opacity: .35; } }
@@ -562,14 +223,14 @@
 
   .site-lead {
     display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 14px; align-items: center;
-    padding-bottom: 12px; border-bottom: 1px solid var(--rule-soft);
+    padding-bottom: 12px; border-bottom: 1px solid var(--line);
   }
-  .site-img { aspect-ratio: 3 / 2; border-radius: var(--r-sm); overflow: hidden; background: var(--bg-3); }
+  .site-img { aspect-ratio: 3 / 2; border-radius: var(--r-sm); overflow: hidden; background: var(--paper-3); }
   .site-img svg { width: 100%; height: 100%; display: block; }
-  .site-img .i-sky   { fill: var(--bg-3); }
+  .site-img .i-sky   { fill: var(--paper-3); }
   .site-img .i-box   { fill: var(--blue); }
-  .site-img .i-slot  { fill: var(--blue-600); }
-  .site-img .i-paper { fill: var(--card); }
+  .site-img .i-slot  { fill: var(--blue-soft); }
+  .site-img .i-paper { fill: var(--surface); }
   .site-img .i-tick  { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
   .site-img .i-sun   { fill: var(--yellow); }
   .site-kicker {
@@ -583,27 +244,34 @@
   .site-more { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding-top: 10px; }
   .site-more .t { display: block; font-weight: 600; font-size: 13.5px; line-height: 1.3; margin-top: 2px; }
 
-  /* ── HTTP messages in the middle ────────────────────────────── */
+  /* ─── HTTP messages in the middle ─── */
   .msgs { display: flex; flex-direction: column; gap: 16px; }
   .msg {
     display: flex; flex-direction: column;
-    background: var(--card); border: 1px solid var(--rule-soft);
-    border-radius: var(--r-lg); box-shadow: var(--shadow-sm); overflow: hidden;
-    transition: box-shadow .25s, opacity .25s;
+    background: var(--surface); border: 1px solid var(--line-2);
+    border-radius: var(--r-md); overflow: hidden;
+    transition: box-shadow .25s;
   }
-  .msg[data-state="idle"] { opacity: .62; }
+  .msg[data-state="idle"] { border-style: dashed; }
   .msg-res { flex: 1; }
-  .msg-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 14px 14px 4px; }
-  .msg-title { font-family: var(--font-display); font-weight: 600; font-size: 15px; }
+  .msg-head {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    padding: 10px 14px; background: var(--paper-2); border-bottom: 1px solid var(--line);
+    transition: background .25s;
+  }
+  .msg.is-active .msg-head { background: var(--yellow); }
+  .msg.is-active .msg-title { color: var(--yellow-ink); }
+  .msg-title { font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--ink); }
 
-  .msg-track { display: flex; align-items: center; gap: 10px; padding: 6px 14px 10px;
+  .msg-track {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px 8px;
     font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em;
-    text-transform: uppercase; color: var(--ink-mute);
+    text-transform: uppercase; color: var(--ink-3);
   }
   .rail { position: relative; flex: 1; height: 26px; }
   .rail::before {
     content: ""; position: absolute; left: 0; right: 0; top: 50%;
-    border-top: 1px dashed var(--rule);
+    border-top: 1px dashed var(--line-2);
   }
   .packet {
     position: absolute; top: 0; left: 0; height: 26px; width: 46px;
@@ -611,8 +279,8 @@
     font-size: 13px; line-height: 1; opacity: 0;
     transition: left .9s ease-in-out, opacity .2s;
   }
-  .msg-req .packet { background: var(--blue);  color: var(--blue-ink); }
-  .msg-res .packet { background: var(--green); color: var(--green-ink); }
+  .msg-req .packet { background: var(--blue-soft);  color: var(--blue-ink); }
+  .msg-res .packet { background: var(--green-soft); color: var(--green-ink); }
   .packet[data-pos="start"] { left: 0; }
   .packet[data-pos="end"]   { left: calc(100% - 46px); }
   .packet[data-visible="1"] { opacity: 1; }
@@ -622,42 +290,43 @@
   .seg { display: flex; flex-direction: column; align-items: center; gap: 5px; }
   .seg code {
     font-family: var(--font-mono); font-size: 14px; color: var(--ink);
-    background: var(--bg-2); border-radius: var(--r-xs); padding: 6px 8px;
+    background: var(--paper-3); border-radius: var(--r-xs); padding: 6px 8px;
   }
   .seg.var code { background: var(--yellow); color: var(--yellow-ink); }
-  .seg small { font-family: var(--font-sans); font-size: 13px; color: var(--ink-soft); }
-  .url-to { margin: 12px 14px 14px; font-size: 12.5px; color: var(--ink-mute); }
-  .url-to b { font-family: var(--font-mono); font-weight: 400; color: var(--ink-soft); }
+  .seg small { font-family: var(--font-sans); font-size: 13px; color: var(--ink-2); }
+  .url-to { margin: 12px 14px 14px; font-size: 12.5px; color: var(--ink-3); }
+  .url-to b { font-family: var(--font-mono); font-weight: 400; color: var(--ink-2); }
 
   /* response: status + data */
+  .msg-body { flex: 1; display: flex; flex-direction: column; }
   .res-status {
     display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
-    padding: 2px 14px 10px; font-size: 13.5px; color: var(--ink-soft);
+    padding: 2px 14px 10px; font-size: 13.5px; color: var(--ink-2);
   }
   .res-status .st {
     font-family: var(--font-mono); font-size: 13px;
-    background: var(--green); color: var(--green-ink);
+    background: var(--green-soft); color: var(--green-ink);
     border-radius: var(--r-xs); padding: 3px 8px;
   }
   .res-json {
     flex: 1; margin: 0 14px 14px; padding: 12px 14px;
-    background: var(--bg-2); border-radius: var(--r-md);
+    background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--r-sm);
     font-family: var(--font-mono); font-size: 13.5px; line-height: 1.8; color: var(--ink);
     white-space: pre; overflow-x: auto;
   }
-  .res-json .jk { color: var(--ink-soft); }
+  .res-json .jk { color: var(--ink-2); }
   .msg-empty {
-    flex: 1; margin: 0 14px 14px; padding: 18px 12px; border-radius: var(--r-md);
-    border: 1px dashed var(--rule); display: grid; place-items: center; text-align: center;
-    font-size: 13px; color: var(--ink-mute);
+    flex: 1; margin: 0 14px 14px; padding: 18px 12px; border-radius: var(--r-sm);
+    background: var(--paper-2); border: 1px solid var(--line); display: grid; place-items: center; text-align: center;
+    font-size: 13px; color: var(--ink-3);
   }
 
-  /* ── weather server: a machine, not a page ──────────────────── */
+  /* ─── Weather server: a machine, not a page (dark data panel) ─── */
   .server {
     display: flex; flex-direction: column;
     background: var(--srv-bg); color: var(--srv-ink);
-    border: 1px solid var(--srv-line); border-radius: var(--r-lg);
-    box-shadow: var(--shadow-md); overflow: hidden;
+    border: 1px solid var(--srv-line); border-radius: var(--r-md);
+    overflow: hidden;
   }
   .srv-head {
     display: flex; align-items: center; gap: 12px;
@@ -698,236 +367,30 @@
   }
   .srv-log li { overflow-wrap: anywhere; }
   .srv-log .v  { color: var(--yellow); }
-  .srv-log .ok { color: var(--green); }
+  .srv-log .ok { color: var(--srv-ok); }
   .srv-log .idle { color: var(--srv-ink-3); }
 
-  /* ── responsive ─────────────────────────────────────────────── */
+  /* ─── Responsive ─── */
   @media (max-width: 1200px) {
-    .api-stage { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; row-gap: 26px; }
-    .actor { display: flex; flex-direction: column; gap: 12px; grid-row: auto; }
+    .api-stage { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; row-gap: 22px; }
+    .actor { display: flex; flex-direction: column; grid-row: auto; }
+    .actor-body { flex: 1; }
   }
   @media (max-width: 768px) {
-    .demo-fullwide { padding: 0 12px; }
-    .detail.detail-intro, .detail.detail-after { padding-left: 12px; padding-right: 12px; }
-    .detail-demo { padding: 22px 14px; }
+    .api-wide { margin-top: 22px; }
+    .actor-label { padding: 12px 16px; }
+    .actor-body { padding: 12px; }
     .site { padding: 0 14px 16px; }
     .site-more { grid-template-columns: minmax(0, 1fr); }
-    .masthead .topnav { display: none; }
-    .related-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .packet, .frame, .msg, .fld { transition-duration: .01s; }
+    .packet, .frame, .msg, .fld, .actor-label, .msg-head { transition-duration: .01s; }
     .wx-loading, .server[data-busy="1"] .srv-led i { animation: none; }
-  }
-
-  /* ── footer ─────────────────────────────────────────────────── */
-  .footer { padding: 60px var(--pad-x) 32px; max-width: var(--shell); margin: 0 auto; }
-  .footer-grid {
-    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px;
-    padding: 32px 0;
-    border-top: 1px solid var(--rule-soft);
-  }
-  .footer .col h6 {
-    font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--ink-mute); margin: 0 0 14px;
-  }
-  .footer .col p {
-    font-family: var(--font-sans); font-size: 14px; color: var(--ink-soft);
-    line-height: 1.6; margin: 0 0 6px;
-  }
-  .footer .col a {
-    display: block; font-family: var(--font-sans); font-size: 14px;
-    color: var(--ink); padding: 3px 0;
-  }
-  .footer .col a:hover { color: var(--accent); }
-  @media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr; gap: 28px; } }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     edulab component layer — flat fills, full contours, soft shadows.
-     Overrides the editorial idiom above; every value is an edulab token.
-     ══════════════════════════════════════════════════════════════════════ */
-
-  /* Display font has no true italic — drop synthesised obliques */
-  .hero-dek, .detail-dek, .masthead .brand .tag,
-  .row-author, .detail-prose .dropcap .dc, .toc .ttl { font-style: normal; }
-
-  /* ── Buttons: primary = solid yellow pill, secondary = sand pill ────── */
-  .btn {
-    background: var(--bg-2);
-    border: none;
-    color: var(--ink-soft);
-    padding: 9px 18px;
-    border-radius: var(--r-pill);
-    font-family: var(--font-sans);
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 0;
-    text-transform: none;
-    transition: background .15s, color .15s;
-  }
-  .btn:hover { background: var(--bg-3); color: var(--ink); border: none; }
-  .btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-  .btn.primary, .btn.accent {
-    background: var(--yellow);
-    border: none;
-    color: var(--yellow-ink);
-    padding: 11px 22px;
-    border-radius: var(--r-pill);
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 0;
-    text-transform: none;
-    box-shadow: var(--shadow-primary);
-  }
-  .btn.primary:hover, .btn.primary:hover:not(:disabled), .btn.accent:hover {
-    background: var(--yellow-600); color: var(--yellow-ink); transform: none;
-  }
-  .btn.active {
-    background: var(--yellow); color: var(--yellow-ink); border: none;
-  }
-  .btn:disabled, .btn.primary:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
-
-  /* ── Chip / tag: solid colour, white text (dark on yellow) ──────────── */
-  .pill {
-    font-family: var(--font-mono); font-size: 11px;
-    letter-spacing: .08em; text-transform: uppercase;
-    background: var(--blue-soft); color: var(--blue-ink);
-    border: none;
-    padding: 4px 10px; border-radius: var(--r-pill);
-  }
-
-  /* ── Full contours only: no coloured edge on one side ───────────────── */
-  .detail-aside {
-    border-left: none;
-    background: var(--bg-2);
-    border-radius: var(--r-lg);
-    padding: 22px 26px;
-  }
-  .tab.active, .file-tab.active {
-    border-bottom-color: transparent;
-    background: var(--yellow);
-    color: var(--yellow-ink);
-    border-radius: var(--r-pill);
-  }
-
-  /* ── Section eyebrow: functional label, no leading dash ─────────────── */
-  .section-head .kicker, .demo-head .kicker { color: var(--ink-mute); }
-
-  /* ── Cards & wells: generous radii, soft low shadow ─────────────────── */
-  .demo-frame, .demo-card, .card, .panel {
-    border-radius: var(--r-lg);
-  }
-
-  /* ── Page header scheme: solid ink title → full-width lead ──────────── */
-  .detail { max-width: var(--shell); }
-  .detail-head { max-width: 760px; }
-  .detail-head h1 {
-    font-family: var(--font-display); font-weight: 800;
-    font-size: clamp(2.1rem, 4.6vw, 3rem);
-    letter-spacing: -.025em; line-height: 1.05;
-    color: var(--ink); margin: 0 0 20px;
-  }
-  .detail-dek {
-    font-family: var(--font-sans); font-style: normal; font-weight: 400;
-    font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6;
-    color: var(--ink-soft); max-width: none; margin: 0 0 24px;
-  }
-  /* meta + byline sit under the lead, never above the title */
-  .detail-meta, .detail-byline {
-    display: block; line-height: 2;
-    font-family: var(--font-mono); font-size: 12px;
-    letter-spacing: .14em; text-transform: uppercase;
-    color: var(--ink-mute); margin: 0;
-  }
-  /* Functional label chip inside panels: solid colour, white text */
-  .pane-label, .vp-label {
-    background: var(--blue-soft); color: var(--blue-ink);
-    border: none; border-radius: var(--r-pill); padding: 3px 10px;
-  }
-  .detail-prose p {
-    font-family: var(--font-sans); font-size: 18px; line-height: 1.68;
-    color: var(--ink);
-  }
-  .detail-prose h3 {
-    font-family: var(--font-display); font-weight: 600;
-    font-size: 25px; letter-spacing: -.01em;
-  }
-  .detail-prose p code, .detail-prose code {
-    font-family: var(--font-mono); font-size: 15px;
-    background: var(--bg-3); color: var(--ink);
-    padding: .12em .4em; border-radius: var(--r-xs);
-  }
-  .detail-prose .dropcap .dc {
-    font-family: var(--font-display); font-style: normal; font-weight: 700;
-    color: var(--yellow-ink);
-  }
-  .detail-rule { max-width: 760px; background: var(--rule-soft); opacity: 1; }
-
-  /* Outfit has no true italic — italic text falls back to IBM Plex Sans */
-  .compare-sub, .compare-side .compare-sub, .status-line, .file-sub,
-  .calculation .empty, .cart-empty, .asm-cmt, .up-mark, .nb-mark,
-  .m-body p:first-child::first-letter { font-family: var(--font-sans); }
-
-  /* ── Prose before and after the demo spans the demo box width ──────── */
-  .detail.detail-intro, .detail.detail-after { max-width: calc(1480px + 2 * var(--pad-x)); }
-  .detail.detail-intro { padding-bottom: 0; }
-  .detail-intro .detail-prose { max-width: none; margin: 0; }
-  .detail-after .detail-prose { max-width: none; margin: 0 0 48px; }
-  .detail-after .detail-aside { max-width: none; margin: 48px 0; }
-  .detail-after .detail-related { max-width: none; }
-
-  /* ── Dark hero band (matches the index) ─────────────────────────────── */
-  .detail-hero {
-    background: var(--hero-bg);
-    padding: 26px var(--pad-x) 60px;
-    margin-bottom: 0;
-  }
-  .detail-hero-inner { max-width: var(--shell); margin: 0 auto; }
-  .detail-hero .detail-back {
-    font-family: var(--font-mono); font-size: 12px;
-    letter-spacing: .14em; text-transform: uppercase;
-    color: var(--hero-ink-2); margin-bottom: 44px;
-  }
-  .detail-hero .detail-back a { color: var(--hero-ink-2); transition: color .15s; }
-  .detail-hero .detail-back a:hover { color: var(--yellow); }
-  .detail-hero h1 {
-    max-width: 900px; margin: 0 0 20px;
-    font-family: var(--font-display); font-weight: 800;
-    font-size: clamp(2.1rem, 4.6vw, 3rem);
-    letter-spacing: -.025em; line-height: 1.05;
-    color: var(--hero-ink); text-wrap: balance;
-  }
-  .detail-hero .detail-dek {
-    max-width: 720px; margin: 0;
-    font-family: var(--font-sans); font-style: normal;
-    font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6;
-    color: var(--hero-ink-2);
-  }
-  /* the band already separates hero from prose */
-  .detail-hero + .detail .detail-rule,
-  .detail-hero + main .detail-rule { display: none; }
-  .detail { padding-top: 56px; }
-
-  .footer .col .foot-copy {
-    font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em;
-    color: var(--ink-mute); margin-top: 14px;
   }
 </style>
 </head>
 <body>
 
-<button class="theme-toggle" onclick="
-  var t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-  document.documentElement.dataset.theme = t;
-  localStorage.setItem('substrate-theme', t);
-">
-  <span class="th-mark"></span>
-  <span class="lbl-jasny">Jasny</span>
-  <span class="lbl-ciemny">Ciemny</span>
-</button>
-
-<!-- ── Masthead ─────────────────────────────────────────────────────── -->
 <header class="masthead">
   <div class="row">
     <a href="index.html" class="brand">
@@ -937,50 +400,44 @@
     <nav class="topnav">
       <a href="index.html">Indeks</a>
       <a href="#" class="active">Sieci</a>
-      <a href="#">Krzem</a>
-      <a href="#">Metody</a>
-      <a href="#">O nas</a>
+      <a href="binary.html">Krzem</a>
+      <a href="compilation.html">Metody</a>
+      <a href="#">O piśmie</a>
     </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Przełącz motyw">
+      <span class="th-mark"></span>
+      <span class="lbl-jasny">Jasny</span>
+      <span class="lbl-ciemny">Ciemny</span>
+    </button>
   </div>
 </header>
 
-<!-- ── Article ───────────────────────────────────────────────────────── -->
 <main>
-<header class="detail-hero">
-  <div class="detail-hero-inner">
-    <div class="detail-back"><a href="index.html">← Powrót do indeksu</a></div>
-    <h1>Czym jest API</h1>
-    <p class="detail-dek">Aplikacje rzadko działają same. Pobierają dane od innych programów przez interfejs, który nazywa się API. Pokazujemy, jak ta rozmowa wygląda od środka.</p>
-  </div>
+<header class="page-head">
+  <h1 class="app-title">Czym jest API</h1>
+  <p class="edu-lead">Aplikacje rzadko działają same. Pobierają dane od innych programów przez interfejs, który nazywa się API. Pokazujemy, jak ta rozmowa wygląda od środka.</p>
 </header>
 
-<div class="detail detail-intro">
-
-  <hr class="detail-rule" />
-
-  <!-- prose intro -->
-  <div class="detail-prose">
-    <p class="dropcap"><span class="dc">K</span>iedy portal z wiadomościami pokazuje temperaturę za oknem, nie ma własnego termometru. Pyta o nią inny program - serwis pogodowy, który gdzieś trzyma bazę pomiarów z całego świata i udostępnia ją na żądanie. Mechanizm takiego pytania nazywa się <em>API</em>: skrót od Application Programming Interface. Po polsku: interfejs, przez który jeden program rozmawia z drugim.</p>
+<section class="sec"><div class="wrap">
+  <div class="detail-prose dropcap">
+    <p><span class="dc">K</span>iedy portal z wiadomościami pokazuje temperaturę za oknem, nie ma własnego termometru. Pyta o nią inny program - serwis pogodowy, który gdzieś trzyma bazę pomiarów z całego świata i udostępnia ją na żądanie. Mechanizm takiego pytania nazywa się <em>API</em>: skrót od Application Programming Interface. Po polsku: interfejs, przez który jeden program rozmawia z drugim.</p>
 
     <p>Najprostsza analogia to restauracja. Siedzisz przy stoliku i nie wchodzisz do kuchni. Zamiast tego podajesz zamówienie kelnerowi, a on wraca z gotowym daniem. Kuchnia nigdy Cię nie widziała; zna tylko zamówienie zapisane na kartce. API pełni rolę takiego kelnera: przyjmuje pytanie, zanosi je we właściwe miejsce i wraca z odpowiedzią.</p>
 
     <p>W internecie ta rozmowa toczy się zwykle w kilku krokach i trwa setki milisekund. Klient (na przykład strona otwarta w przeglądarce) wysyła zapytanie pod konkretny adres, taki jak <code>/api/weather?city=Warszawa</code>. Serwer odbiera je, odszukuje pasujące dane i odsyła odpowiedź w uzgodnionym formacie; dzisiaj prawie zawsze jest to <em>JSON</em>, czyli prosty zapis tekstowy, czytelny zarówno dla człowieka, jak i dla maszyny. Demonstracja niżej pokazuje tę wymianę krok po kroku.</p>
   </div>
+</div></section>
 
-</div><!-- /detail (close to let demo go full-wide) -->
-
-<!-- ═══ DEMO BLOCK (full-width breakout) ════════════════════════ -->
-<section class="demo-fullwide">
-  <div class="detail-demo" id="demo" data-phase="idle" data-city="Warszawa" data-status="" data-mapped="0">
-    <div class="demo-head">
-      <h2>Jak strona internetowa pobiera pogodę z serwera</h2>
-      <p>W pierwszym panelu jest strona portalu Daily News otwarta w przeglądarce. Nie ma własnych pomiarów, więc musi o nie poprosić; w języku API nazywamy ją <em>klientem</em>. W ostatnim pracuje serwer pogodowy: program bez ekranu, który trzyma bazę pomiarów. Między nimi widać dwie wiadomości: niebieskie <em>zapytanie</em> od strony do serwera i zieloną <em>odpowiedź</em> od serwera do strony. Wybierz miasto na stronie albo kliknij <em>Wyślij zapytanie</em> i obserwuj, jak liczba z bazy serwera trafia na ekran.</p>
-    </div>
-
+<section class="sec sec-stone" id="demo" data-phase="idle" data-city="Warszawa" data-status="" data-mapped="0">
+  <div class="wrap">
+    <div class="sec-head"><h2>Jak strona internetowa pobiera pogodę z serwera</h2></div>
+    <p class="sec-lead">W pierwszym panelu jest strona portalu Daily News otwarta w przeglądarce. Nie ma własnych pomiarów, więc musi o nie poprosić; w języku API nazywamy ją <em>klientem</em>. W ostatnim pracuje serwer pogodowy: program bez ekranu, który trzyma bazę pomiarów. Między nimi widać dwie wiadomości: niebieskie <em>zapytanie</em> od strony do serwera i zieloną <em>odpowiedź</em> od serwera do strony. Wybierz miasto na stronie albo kliknij <em>Wyślij zapytanie</em> i obserwuj, jak liczba z bazy serwera trafia na ekran.</p>
     <div class="api-start">
       <button type="button" class="btn primary" id="primaryBtn">Wyślij zapytanie</button>
     </div>
+  </div>
 
+  <div class="api-wide">
     <div class="api-stage">
 
       <!-- CLIENT: website in a browser -->
@@ -989,6 +446,7 @@
           <span class="chip client">Klient</span>
           <strong>Strona internetowa</strong>
         </div>
+        <div class="actor-body">
         <div class="browser frame">
           <div class="br-tabs">
             <div class="br-dots" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -1046,6 +504,7 @@
           </div>
           <div class="br-status" id="brStatus" role="status" aria-live="polite"></div>
         </div>
+        </div>
       </div>
 
       <!-- WIRE: the two messages -->
@@ -1054,6 +513,7 @@
           <span class="chip net">Internet</span>
           <strong>Zapytanie i odpowiedź</strong>
         </div>
+        <div class="actor-body">
         <div class="msgs frame">
           <div class="msg msg-req" id="msgReq" data-state="idle">
             <div class="msg-head">
@@ -1081,6 +541,7 @@
             <div class="msg-body" id="resBody"></div>
           </div>
         </div>
+        </div>
       </div>
 
       <!-- SERVER -->
@@ -1089,6 +550,7 @@
           <span class="chip server">Serwer</span>
           <strong>Serwer pogodowy</strong>
         </div>
+        <div class="actor-body">
         <div class="server frame" id="server" data-busy="0">
           <div class="srv-head">
             <svg class="srv-rack" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
@@ -1113,16 +575,14 @@
             <ul class="srv-log" id="srvLog" aria-label="Dziennik serwera"></ul>
           </div>
         </div>
+        </div>
       </div>
 
     </div><!-- /api-stage -->
-  </div><!-- /detail-demo -->
+  </div><!-- /api-wide -->
 </section>
 
-<!-- reopen .detail wrapper for the after-demo prose, aside, related -->
-<div class="detail detail-after">
-
-  <!-- prose explanation -->
+<section class="sec"><div class="wrap">
   <div class="detail-prose">
     <h3>Co się właśnie wydarzyło</h3>
     <p>W ułamku sekundy odbyła się pełna rozmowa między dwoma programami. Strona portalu sformułowała pytanie (<em>daj mi pogodę dla Warszawy</em>) i wysłała je pod konkretny adres serwera pogodowego. Serwer odszukał rekord, opakował go w odpowiedź i odesłał z powrotem. Strona rozpakowała paczkę i wstawiła liczby do widżetu pogody. Cała wymiana zmieściła się w czasie krótszym od mrugnięcia okiem.</p>
@@ -1140,39 +600,38 @@
     <p>Format <code>JSON</code>, w którym wraca odpowiedź, wygrał wśród API z prostego powodu: jest czytelny dla człowieka i jednocześnie trywialny do przetworzenia przez maszynę. Wcześniej w użyciu był XML - ten sam pomysł, ale dużo bardziej rozwlekły. Dzisiaj prawie każde nowe API mówi w JSON-ie.</p>
   </div>
 
-  <div class="detail-aside">
-    <h6>Dalsza lektura</h6>
-    <ul>
+  <aside class="card further">
+    <div class="card-head"><span class="kicker">Dalsza lektura</span></div>
+    <ul class="link-list">
       <li><a href="website.html">Anatomia strony WWW - jak przeglądarka renderuje to, co dostała w odpowiedzi z API</a></li>
       <li><a href="compilation.html">Kompilator i interpreter - inny przykład tłumaczenia z jednego języka na drugi</a></li>
       <li><a href="binary.html">System dwójkowy - jak każdy bajt JSON-a wygląda od podszewki</a></li>
       <li><a href="image.html">Anatomia obrazu - co wraca, kiedy API zamiast tekstu odsyła zdjęcie</a></li>
     </ul>
-  </div>
+  </aside>
+  <div class="back-row"><a class="btn" href="index.html">← Powrót do indeksu</a></div>
+</div></section>
 
-  <!-- related -->
-  <div class="detail-related">
-    <h3>Powiązane demonstracje</h3>
-    <div class="related-grid">
-      <div class="related" onclick="location.href='website.html'">
-        <div class="kicker">Przeglądarka</div>
-        <h4>Anatomia strony WWW</h4>
-        <div class="read">22 min · Interaktywne</div>
-      </div>
-      <div class="related" onclick="location.href='compilation.html'">
-        <div class="kicker">Metody</div>
-        <h4>Kompilator i interpreter</h4>
-        <div class="read">18 min · Interaktywne</div>
-      </div>
-      <div class="related" onclick="location.href='binary.html'">
-        <div class="kicker">Krzem</div>
-        <h4>System dwójkowy</h4>
-        <div class="read">14 min · Interaktywne</div>
-      </div>
-    </div>
+<section class="sec sec-stone"><div class="wrap">
+  <div class="sec-head"><h2>Powiązane demonstracje</h2></div>
+  <div class="related-grid">
+    <a class="card related" href="website.html">
+      <div class="card-head"><span class="kicker">Przeglądarka</span></div>
+      <div class="card-body"><h4>Anatomia strony WWW</h4></div>
+      <div class="card-foot"><span class="read">22 min · Interaktywne</span></div>
+    </a>
+    <a class="card related" href="compilation.html">
+      <div class="card-head"><span class="kicker">Metody</span></div>
+      <div class="card-body"><h4>Kompilator i interpreter</h4></div>
+      <div class="card-foot"><span class="read">18 min · Interaktywne</span></div>
+    </a>
+    <a class="card related" href="binary.html">
+      <div class="card-head"><span class="kicker">Krzem</span></div>
+      <div class="card-body"><h4>System dwójkowy</h4></div>
+      <div class="card-foot"><span class="read">14 min · Interaktywne</span></div>
+    </a>
   </div>
-
-</div><!-- /detail -->
+</div></section>
 </main>
 
 <footer class="footer">
@@ -1437,6 +896,12 @@
 
   // ─── Listeners ───────────────────────────────────────────────
   primaryBtn.addEventListener('click', onPrimary);
+  document.getElementById('themeToggle').addEventListener('click', function(){
+    var next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('substrate-theme', next); } catch (_) {}
+    document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+  });
   wxCitiesEl.addEventListener('click', e => {
     const btn = e.target.closest('.wx-city');
     if (btn) selectCity(btn.dataset.city);

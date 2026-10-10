@@ -17,876 +17,194 @@
     }
   })();
 </script>
+<link rel="stylesheet" href="colors_and_type.css" />
+<link rel="stylesheet" href="site.css" />
 <style>
-  /* ── edulab design system — Editorial Color ──────────────────────────
-     Fonts: Outfit (display) · IBM Plex Sans (sans) · Roboto Mono (mono)
-     Paper white page, warm ink, yellow primary, blue + green secondary,
-     red for danger. Every colour below is an edulab token.
-     ─────────────────────────────────────────────────────────────────── */
-  :root {
-    /* ── edulab brand fonts ── */
-    --font-display: 'Outfit', 'IBM Plex Sans', system-ui, sans-serif;
-    --font-sans:    'IBM Plex Sans', system-ui, -apple-system, sans-serif;
-    --font-mono:    'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  /* ─── Image page widgets (tokens + chrome come from site.css) ─── */
+  .hidden { display: none !important; }
 
-    /* ── edulab raw palette ── */
-    --paper:   #FFFFFF;  --paper-2: #FBF7E6;  --paper-3: #F5EDCB;
-    --surface: #FFFFFF;
-    --edu-ink: #1C1917;  --edu-ink-2: #57534E;  --edu-ink-3: #948C82;
-    --line:    #EDE7D2;  --line-2:  #DDD4B6;
-
-    --yellow: #FFD500;  --yellow-600: #F0C800;  --yellow-soft: #FFD500;  --yellow-ink: #1C1917;
-    --blue:   #1E8FC2;  --blue-600:   #177AA8;  --blue-soft:   #1E8FC2;  --blue-ink:   #FFFFFF;
-    --green:  #00A651;  --green-600:  #009444;  --green-soft:  #00A651;  --green-ink:  #FFFFFF;
-    --red:    #E5322D;  --red-600:    #C92823;  --red-soft:    #E5322D;  --red-ink:    #FFFFFF;
-    --grape:  #7A5AC2;
-
-    --primary: var(--yellow);  --on-primary: var(--yellow-ink);
-    --focus-ring: 0 0 0 3px color-mix(in srgb, var(--yellow) 45%, transparent);
-
-    /* ── radii & elevation ── */
-    --r-xs: 6px; --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
-    --shadow-sm: 0 1px 2px rgba(33,30,26,.06), 0 1px 1px rgba(33,30,26,.04);
-    --shadow-md: 0 4px 16px rgba(33,30,26,.08), 0 1px 3px rgba(33,30,26,.05);
-    --shadow-lg: 0 16px 40px rgba(33,30,26,.12), 0 3px 8px rgba(33,30,26,.06);
-    --shadow-primary: 0 8px 22px color-mix(in srgb, var(--yellow) 30%, transparent);
-
-    /* ── layout ── */
-    --pad-x: 30px;
-    --pad-y: 72px;
-    --gap: 28px;
-    --shell: 1100px;
-  }
-
-  /* ── Light (default): edulab paper ──────────────────────────────────── */
-  html[data-theme="light"] {
-    --bg:        var(--paper);
-    --bg-2:      var(--paper-2);
-    --bg-3:      var(--paper-3);
-    --ink:       var(--edu-ink);
-    --ink-soft:  var(--edu-ink-2);
-    --ink-mute:  var(--edu-ink-3);
-    --rule:      var(--line-2);
-    --rule-soft: var(--line);
-    --accent:    var(--blue);
-    --accent-2:  var(--blue-600);
-    --accent-tint:        var(--paper-2);
-    --accent-tint-soft:   var(--paper-2);
-    --accent-tint-strong: var(--paper-3);
-    --overlay:   rgba(255,255,255,.94);
-    --card:      var(--surface);
-    --logo-filter: none;
-    --hero-bg:    #24211E;
-    --hero-ink:   #FFFFFF;
-    --hero-ink-2: rgba(255,255,255,.74);
-    --badge-bg: rgba(255,255,255,.90);
-  }
-
-  /* ── Dark: edulab ink surfaces (yellow reads as text on black) ──────── */
-  html[data-theme="dark"] {
-    --bg:        #1C1917;
-    --bg-2:      #262220;
-    --bg-3:      #322D29;
-    --ink:       #FFFFFF;
-    --ink-soft:  rgba(255,255,255,.74);
-    --ink-mute:  rgba(255,255,255,.52);
-    --rule:      rgba(255,255,255,.30);
-    --rule-soft: rgba(255,255,255,.14);
-    --accent:    var(--yellow);
-    --accent-2:  var(--yellow-600);
-    --accent-tint:        rgba(255,255,255,.06);
-    --accent-tint-soft:   rgba(255,255,255,.04);
-    --accent-tint-strong: rgba(255,213,0,.22);
-    --overlay:   rgba(28,25,23,.94);
-    --card:      #262220;
-    --logo-filter: invert(1);
-    --hero-bg:    #24211E;
-    --hero-ink:   #FFFFFF;
-    --hero-ink-2: rgba(255,255,255,.74);
-    --badge-bg: rgba(28,25,23,.88);
-  }
-
-  /* ── Reset ──────────────────────────────────────────────────────────── */
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--font-sans);
-    font-size: 16px;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    transition: background .25s ease, color .25s ease;
-  }
-  a { color: inherit; text-decoration: none; cursor: pointer; }
-  button { font-family: inherit; }
-
-  /* Content shell — edulab caps the column at 1100px */
-  .shell { max-width: var(--shell); margin: 0 auto; width: 100%; }
-
-  /* Functional label: mono, uppercase, tracked */
-  .kicker {
-    font-family: var(--font-mono);
-    font-weight: 500;
-    font-size: 12px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-  }
-  .dot { color: var(--ink-mute); padding: 0 6px; }
-
-  /* ── Theme toggle — full pill, never a partial contour ──────────────── */
-  .theme-toggle {
-    position: fixed;
-    top: 14px; right: 20px;
-    z-index: 100;
-    appearance: none; cursor: pointer;
-    background: var(--bg-2);
-    border: none;
-    color: var(--ink-soft);
-    padding: 9px 16px;
-    border-radius: var(--r-pill);
-    font-family: var(--font-sans);
-    font-weight: 600;
-    font-size: 12px;
-    letter-spacing: .02em;
-    transition: background .15s, color .15s;
-  }
-  .theme-toggle:hover { background: var(--yellow); color: var(--yellow-ink); }
-  .theme-toggle:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-  .theme-toggle .th-mark {
-    display: inline-block;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    margin-right: 8px;
-    vertical-align: -1px;
-    background: var(--ink);
-  }
-  .theme-toggle:hover .th-mark { background: var(--yellow-ink); }
-  .theme-toggle .lbl-jasny { display: inline; }
-  .theme-toggle .lbl-ciemny { display: none; }
-  html[data-theme="light"] .theme-toggle .lbl-jasny { display: none; }
-  html[data-theme="light"] .theme-toggle .lbl-ciemny { display: inline; }
-
-  /* ── edulab brand bar (required chrome) ─────────────────────────────── */
-  .masthead {
-    position: sticky; top: 0; z-index: 50; width: 100%;
-    background: var(--overlay);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--rule-soft);
-  }
-  .masthead .row {
-    max-width: var(--shell); margin: 0 auto;
-    padding: 8px var(--pad-x);
-    display: flex; justify-content: space-between; align-items: center; gap: 12px;
-  }
-  .masthead .brand { display: flex; align-items: center; gap: 2px; cursor: pointer; }
-  .masthead .edu-logo {
-    width: 64px; height: 64px; display: block; margin-right: -6px;
-    filter: var(--logo-filter);
-  }
-  .masthead .brand .wordmark {
-    font-family: var(--font-display); font-weight: 700;
-    font-size: 22px; letter-spacing: -.02em; color: var(--ink);
-  }
-  .masthead .topnav { display: flex; gap: 4px; padding-right: 132px; }
-  .masthead .topnav a {
-    font-family: var(--font-sans); font-weight: 600; font-size: 14px;
-    color: var(--ink-soft);
-    padding: 8px 14px; border-radius: var(--r-pill);
-    transition: background .15s, color .15s;
-  }
-  .masthead .topnav a:hover { background: var(--bg-2); color: var(--ink); }
-  .masthead .topnav a.active { background: var(--yellow); color: var(--yellow-ink); }
-
-  /* ── Detail page frame ──────────────────────────────────────────────── */
-  .detail {
-    max-width: 1240px;
-    margin: 0 auto;
-    padding: 48px var(--pad-x) calc(var(--pad-y) * 1.2);
-  }
-  .detail-back {
-    font-family: var(--font-mono); font-size: 11px;
-    letter-spacing: .08em; text-transform: uppercase;
-    color: var(--ink-mute); margin-bottom: 48px;
-  }
-  .detail-back a { transition: color .15s; }
-  .detail-back a:hover { color: var(--accent); }
-
-  .detail-head {
-    max-width: 760px; margin: 0 auto;
-    text-align: left;
-  }
-  .detail-meta {
-    display: flex; align-items: center;
-    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
-    letter-spacing: .06em; text-transform: uppercase;
-    margin-bottom: 24px;
-  }
-  .detail-head h1 {
-    font-family: var(--font-display); font-weight: 400;
-    font-size: clamp(40px, 5vw, 72px); line-height: 1.05;
-    letter-spacing: -.02em;
-    margin: 0 0 24px; text-wrap: balance;
-  }
-  .detail-dek {
-    font-family: var(--font-sans); font-style: italic;
-    font-size: clamp(20px, 1.6vw, 24px);
-    line-height: 1.45; color: var(--ink-soft); margin: 0 0 32px;
-    max-width: 50ch;
-  }
-  .detail-byline {
-    display: flex; align-items: center;
-    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
-    letter-spacing: .06em; text-transform: uppercase;
-  }
-
-  .detail-rule {
-    height: 1px; background: var(--rule); opacity: .5;
-    margin: 56px auto;
-    max-width: 760px;
-    border: none;
-  }
-
-  .detail-prose {
-    max-width: 660px; margin: 0 auto 48px;
-  }
-  .detail-prose p {
-    font-family: var(--font-sans); font-size: 19px; line-height: 1.6;
-    color: var(--ink); margin: 0 0 24px; text-wrap: pretty;
-  }
-  .detail-prose p em { font-style: italic; color: var(--accent-2); }
-  .detail-prose p code,
-  .detail-prose code {
+  /* ─── Section lead inline marks ─── */
+  .sec-lead code {
     font-family: var(--font-mono); font-size: 15px;
-    background: var(--bg-2); padding: 1px 6px; border-radius: 3px;
-    color: var(--accent);
+    background: var(--paper-3); color: var(--ink);
+    padding: .12em .4em; border-radius: var(--r-xs);
   }
-  .detail-prose h3 {
-    font-family: var(--font-display); font-weight: 400;
-    font-size: 28px; margin: 48px 0 16px;
-    letter-spacing: -.005em;
-  }
-  .detail-prose .dropcap .dc {
-    font-family: var(--font-sans); font-style: italic;
-    font-size: 80px; line-height: .8;
-    float: left; padding: 6px 14px 0 0;
-    color: var(--accent);
-  }
+  .sec-lead em { font-style: italic; color: var(--ink); }
 
-  /* ── Demo container ─────────────────────────────────────────────────── */
-  .detail-demo {
-    max-width: 1080px; margin: 64px auto;
-    padding: 40px;
-    background: var(--bg-2);
-    border: 1px solid var(--rule-soft);
-    border-radius: 4px;
+  /* ─── Functional labels inside the demos ─── */
+  .pixel-side h6, .control-group label {
+    font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2);
   }
-  .detail-demo .demo-head { margin-bottom: 32px; max-width: 60ch; }
-  .detail-demo .demo-head h2 {
-    font-family: var(--font-display); font-weight: 400;
-    font-size: 32px; margin: 8px 0 8px; letter-spacing: -.01em;
-  }
-  .detail-demo .demo-head p {
-    font-family: var(--font-sans); font-size: 16px; color: var(--ink-soft); margin: 0;
-  }
+  .pixel-side h6 { margin: 0 0 10px; }
 
-  .demo-shell {
-    background: var(--bg);
-    border: 1px solid var(--rule-soft);
-    border-radius: 3px;
-    padding: 28px;
-  }
-
-  /* ── Upload zone ────────────────────────────────────────────────────── */
+  /* ─── Upload zone (clickable: --line-strong contour) ─── */
   .upload-zone {
-    border: 2px dashed var(--rule-soft);
-    border-radius: 3px;
-    padding: 64px 32px;
-    text-align: center;
-    background: var(--bg);
-    cursor: pointer;
-    transition: border-color .2s, background .2s;
+    padding: 56px 32px; text-align: center; cursor: pointer;
+    background: var(--surface);
+    border: 2px dashed var(--line-strong); border-radius: var(--r-md);
+    transition: background .2s, border-color .2s;
   }
-  .upload-zone:hover, .upload-zone.dragover {
-    border-color: var(--accent);
-    background: var(--accent-tint-soft);
-  }
+  .upload-zone:hover, .upload-zone.dragover { background: var(--paper-2); border-color: var(--ink); }
   .upload-zone .up-mark {
-    font-family: var(--font-sans); font-style: italic;
-    font-size: 56px; color: var(--accent);
-    line-height: 1; margin-bottom: 18px;
+    width: 64px; height: 64px; margin: 0 auto 18px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--yellow); color: var(--yellow-ink); border-radius: 50%;
+    font-family: var(--font-sans); font-weight: 600; font-size: 30px; line-height: 1;
   }
   .upload-zone h3 {
-    font-family: var(--font-display); font-weight: 400;
-    font-size: 26px; margin: 0 0 8px;
-    letter-spacing: -.005em;
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 26px; letter-spacing: -.01em; color: var(--ink); margin: 0 0 8px;
   }
   .upload-zone p {
-    font-family: var(--font-mono); font-size: 11px;
-    letter-spacing: .08em; text-transform: uppercase;
-    color: var(--ink-mute); margin: 0;
+    font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); margin: 0;
   }
   #fileInput { display: none; }
 
-  /* ── Result layout (after upload) ───────────────────────────────────── */
-  .file-row {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 32px;
-    align-items: start;
+  /* ─── File result: thumbnail well + ruled metadata ─── */
+  .file-row { display: grid; grid-template-columns: 220px 1fr; gap: 32px; align-items: start; }
+  .file-thumb, .pixel-thumb {
+    display: flex; align-items: center; justify-content: center; padding: 14px;
+    background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--r-md);
   }
-  .file-thumb {
-    background: var(--bg);
-    border: 1px solid var(--rule-soft);
-    border-radius: 2px;
-    padding: 14px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .file-thumb img {
-    max-width: 100%;
-    max-height: 220px;
-    display: block;
-    border-radius: 2px;
-  }
-  .file-actions {
-    margin-top: 14px;
-    display: flex; justify-content: center;
-  }
+  .file-thumb img { max-width: 100%; max-height: 220px; display: block; border-radius: var(--r-xs); }
+  .file-actions { margin-top: 14px; display: flex; justify-content: center; }
 
-  /* ── Metadata grid ──────────────────────────────────────────────────── */
   .metadata-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0;
-    border-top: 1px solid var(--rule-soft);
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    border: 1px solid var(--line-2); border-radius: var(--r-md); overflow: hidden;
   }
   .metadata-item {
-    padding: 16px 18px;
-    border-bottom: 1px solid var(--rule-soft);
-    border-right: 1px solid var(--rule-soft);
+    padding: 14px 18px; background: var(--surface);
+    border-bottom: 1px solid var(--line); border-right: 1px solid var(--line);
   }
   .metadata-item:nth-child(2n) { border-right: none; }
+  .metadata-item:nth-last-child(-n+2) { border-bottom: none; }
+  .metadata-item:nth-child(4n+3), .metadata-item:nth-child(4n+4) { background: var(--paper-2); }
   .metadata-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--ink-mute);
-    text-transform: uppercase;
-    letter-spacing: .12em;
     margin-bottom: 6px;
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
   }
   .metadata-value {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    color: var(--accent);
-    word-break: break-all;
-    font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono); font-size: 14px; font-weight: 500;
+    color: var(--ink); word-break: break-all; font-variant-numeric: tabular-nums;
   }
 
-  /* ── Buttons ────────────────────────────────────────────────────────── */
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px 20px;
-    margin-bottom: 20px;
-    align-items: center;
-  }
-  .control-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: nowrap;
-  }
-  .control-group label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-  }
+  /* ─── Slider controls ─── */
+  .card-body > .controls { gap: 14px 24px; margin-bottom: 20px; }
+  .control-group { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
   .control-group .val {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--ink);
     min-width: 56px;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: .04em;
+    font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+    color: var(--ink); font-variant-numeric: tabular-nums;
   }
   input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 140px;
-    background: transparent;
-    accent-color: var(--accent);
+    -webkit-appearance: none; appearance: none;
+    width: 140px; height: 20px; margin: 0; background: transparent; cursor: pointer;
   }
-  input[type="range"]::-webkit-slider-runnable-track {
-    height: 2px;
-    background: var(--rule-soft);
-  }
+  input[type="range"]::-webkit-slider-runnable-track { height: 8px; background: var(--track); border-radius: var(--r-pill); }
+  input[type="range"]::-moz-range-track { height: 8px; background: var(--track); border-radius: var(--r-pill); }
   input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    background: var(--accent);
-    border-radius: 50%;
-    cursor: pointer;
-    margin-top: -6px;
+    -webkit-appearance: none; appearance: none;
+    width: 20px; height: 20px; margin-top: -6px;
+    background: var(--surface); border: 2px solid var(--ink); border-radius: 50%;
+    box-shadow: var(--shadow-sm);
   }
   input[type="range"]::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    background: var(--accent);
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
+    width: 16px; height: 16px;
+    background: var(--surface); border: 2px solid var(--ink); border-radius: 50%;
+    box-shadow: var(--shadow-sm);
   }
+  input[type="range"]:focus-visible { box-shadow: none; }
+  input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: var(--focus-ring); }
+  input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: var(--focus-ring); }
 
-  .btn {
-    appearance: none; cursor: pointer;
-    background: transparent;
-    border: 1px solid var(--rule-soft);
-    color: var(--ink-soft);
-    padding: 8px 14px;
-    border-radius: 2px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    transition: border-color .15s, color .15s, background .15s;
+  /* ─── Pixel explorer ─── */
+  .resolution-display {
+    margin: 0 0 18px;
+    font-family: var(--font-mono); font-size: 13px; color: var(--ink-2);
   }
-  .btn:hover { border-color: var(--ink-soft); color: var(--ink); }
-  .btn.active {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: var(--accent-tint);
-  }
-  .btn.primary {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--bg);
-    padding: 10px 18px;
-    border-radius: 999px;
-    font-family: var(--font-sans);
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0;
-    text-transform: none;
-    transition: transform .15s ease, background .15s ease;
-  }
-  .btn.primary:hover { background: var(--accent); transform: translateY(-1px); }
-
-  /* ── Pixel explorer ─────────────────────────────────────────────────── */
-  .pixel-stage {
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 28px;
-    align-items: start;
-  }
-  .pixel-side h6 {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-    margin: 0 0 10px;
-  }
-  .pixel-thumb {
-    background: var(--bg);
-    border: 1px solid var(--rule-soft);
-    border-radius: 2px;
-    padding: 12px;
-  }
-  .pixel-thumb img {
-    max-width: 100%;
-    max-height: 200px;
-    display: block;
-    margin: 0 auto;
-    border-radius: 2px;
-  }
+  .resolution-display span { color: var(--ink); font-weight: 500; }
+  .pixel-stage { display: grid; grid-template-columns: 200px 1fr; gap: 28px; align-items: start; }
+  .pixel-thumb { padding: 12px; }
+  .pixel-thumb img { max-width: 100%; max-height: 200px; display: block; margin: 0 auto; border-radius: var(--r-xs); }
   .pixel-canvas-wrap {
-    position: relative;
-    background:
-      repeating-conic-gradient(var(--bg-2) 0% 25%, var(--bg) 0% 50%) 50% / 16px 16px;
-    border: 1px solid var(--rule-soft);
-    border-radius: 2px;
-    padding: 16px;
-    display: flex;
-    justify-content: center;
-    overflow: auto;
+    position: relative; display: flex; justify-content: center; overflow: auto; padding: 16px;
+    background: repeating-conic-gradient(var(--paper-2) 0% 25%, var(--paper) 0% 50%) 50% / 16px 16px;
+    border: 1px solid var(--line); border-radius: var(--r-md);
   }
-  #pixelCanvas {
-    image-rendering: pixelated;
-    cursor: crosshair;
-    display: block;
-  }
+  #pixelCanvas { image-rendering: pixelated; cursor: crosshair; display: block; }
   .pixel-info {
-    position: absolute;
-    background: var(--overlay);
-    border: 1px solid var(--accent);
-    border-radius: 2px;
-    padding: 12px 14px;
-    pointer-events: none;
-    z-index: 10;
-    display: none;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    min-width: 180px;
+    position: absolute; z-index: 10; display: none; pointer-events: none;
+    min-width: 180px; padding: 12px 14px;
+    background: var(--surface); border: 1px solid var(--line-2); border-radius: var(--r-sm);
+    box-shadow: var(--shadow-md);
+    font-family: var(--font-mono); font-size: 12px;
   }
   .pixel-info.visible { display: block; }
-  .pixel-color-box {
-    width: 100%;
-    height: 32px;
-    border-radius: 2px;
-    margin-bottom: 8px;
-    border: 1px solid var(--rule-soft);
-  }
-  .pixel-coords { color: var(--ink-mute); margin-bottom: 4px; letter-spacing: .04em; }
-  .pixel-rgb { color: var(--ink); margin-bottom: 2px; letter-spacing: .04em; }
-  .pixel-hex { color: var(--accent); margin-bottom: 6px; letter-spacing: .04em; }
-  .pixel-binary {
-    color: var(--accent-2);
-    font-size: 9px;
-    letter-spacing: .04em;
-    line-height: 1.5;
-    word-break: break-all;
-  }
+  .pixel-color-box { width: 100%; height: 32px; margin-bottom: 8px; border: 1px solid var(--line); border-radius: var(--r-xs); }
+  .pixel-coords { color: var(--ink-3); margin-bottom: 4px; }
+  .pixel-rgb { color: var(--ink); margin-bottom: 2px; }
+  .pixel-hex { color: var(--ink); font-weight: 500; margin-bottom: 6px; }
+  .pixel-binary { color: var(--ink-2); font-size: 11px; line-height: 1.5; word-break: break-all; }
 
-  .resolution-display {
-    font-family: var(--font-mono); font-size: 11px;
-    color: var(--ink-mute);
-    letter-spacing: .04em;
-    margin: 0 0 18px;
-  }
-  .resolution-display span { color: var(--accent); }
-
-  /* ── Binary view ────────────────────────────────────────────────────── */
+  /* ─── Hex dump ─── */
   .binary-container {
-    background: var(--bg);
-    border: 1px solid var(--rule-soft);
-    border-radius: 2px;
-    padding: 14px 18px;
-    max-height: 320px;
-    overflow-y: auto;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    line-height: 1.7;
+    max-height: 320px; overflow-y: auto; padding: 14px 18px;
+    background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--r-md);
+    font-family: var(--font-mono); font-size: 12px; line-height: 1.7;
   }
-  .binary-row {
-    display: grid;
-    grid-template-columns: 80px 1fr 160px;
-    gap: 18px;
-    padding: 2px 0;
-  }
-  .binary-offset { color: var(--ink-mute); letter-spacing: .04em; }
-  .binary-hex { color: var(--accent); word-spacing: 2px; letter-spacing: .04em; }
-  .binary-ascii { color: var(--ink-soft); letter-spacing: .04em; white-space: pre; }
+  .binary-row { display: grid; grid-template-columns: 80px 1fr 160px; gap: 18px; padding: 2px 0; }
+  .binary-offset { color: var(--ink-3); letter-spacing: .04em; }
+  .binary-hex { color: var(--ink); font-weight: 500; word-spacing: 2px; letter-spacing: .04em; }
+  .binary-ascii { color: var(--ink-2); letter-spacing: .04em; white-space: pre; }
 
-  .legend {
-    display: flex;
-    gap: 28px;
-    flex-wrap: wrap;
-    margin-top: 16px;
-    padding-top: 14px;
-    border-top: 1px dashed var(--rule-soft);
-  }
+  .legend { display: flex; flex-wrap: wrap; gap: 28px; }
   .legend-item {
     display: flex; align-items: center; gap: 8px;
-    font-family: var(--font-mono); font-size: 10px;
-    color: var(--ink-mute);
-    letter-spacing: .08em;
-    text-transform: uppercase;
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2);
   }
-  .legend-color {
-    width: 10px; height: 10px;
-    border-radius: 1px;
-  }
+  .legend-color { width: 12px; height: 12px; border-radius: 50%; }
+  .legend-color.offset { background: var(--ink-3); }
+  .legend-color.hex { background: var(--ink); }
+  .legend-color.ascii { background: var(--line-strong); }
 
-  /* ── Size comparison ────────────────────────────────────────────────── */
-  .size-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    margin-bottom: 0;
-  }
+  /* ─── Size comparison ─── */
+  .size-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   .preview-cell {
-    position: relative;
-    background: var(--bg);
-    border: 1px solid var(--rule-soft);
-    border-radius: 2px;
-    padding: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 220px;
+    position: relative; min-height: 220px; padding: 48px 18px 18px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--r-md);
   }
-  .preview-cell img {
-    max-width: 100%;
-    max-height: 280px;
-    display: block;
-    border-radius: 2px;
-  }
+  .preview-cell img { max-width: 100%; max-height: 280px; display: block; border-radius: var(--r-xs); }
   .size-badge {
-    position: absolute;
-    top: 10px; left: 10px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    padding: 3px 8px;
-    border-radius: 2px;
-    background: var(--badge-bg);
+    position: absolute; top: 12px; left: 12px;
+    padding: 4px 10px; border-radius: var(--r-pill);
+    background: var(--blue-soft); color: var(--blue-ink);
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    letter-spacing: .08em; text-transform: uppercase; font-variant-numeric: tabular-nums;
   }
 
-  /* ── Aside ──────────────────────────────────────────────────────────── */
-  .detail-aside {
-    max-width: 660px; margin: 48px auto;
-    padding: 24px 28px;
-    background: var(--bg-2);
-    border-radius: 0 3px 3px 0;
-  }
-  .detail-aside h6 {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
-    text-transform: uppercase; color: var(--ink-mute);
-    margin: 0 0 12px;
-  }
-  .detail-aside ul { margin: 0; padding: 0; list-style: none; }
-  .detail-aside li { padding: 6px 0; }
-  .detail-aside a {
-    font-family: var(--font-sans); font-size: 16px; color: var(--ink);
-    border-bottom: 1px solid var(--rule-soft);
-    transition: color .15s, border-color .15s;
-  }
-  .detail-aside a:hover { color: var(--accent); border-color: var(--accent); }
-
-  /* ── Footer ─────────────────────────────────────────────────────────── */
-  .footer { padding: 60px var(--pad-x) 32px; max-width: var(--shell); margin: 0 auto; }
-  .footer-grid {
-    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px;
-    padding-bottom: 32px;
-    border-top: 1px solid var(--rule);
-    padding-top: 32px;
-  }
-  .footer .col h6 {
-    font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--ink-mute); margin: 0 0 14px;
-  }
-  .footer .col p {
-    font-family: var(--font-sans); font-size: 14px; color: var(--ink-soft);
-    line-height: 1.5; margin: 0;
-  }
-  .footer .col a {
-    display: block; font-family: var(--font-sans); font-size: 14px;
-    color: var(--ink); padding: 3px 0;
-  }
-  .footer .col a:hover { color: var(--accent); }
-
-  /* ── Scrollbars ─────────────────────────────────────────────────────── */
-  ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--rule-soft); border-radius: 2px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--ink-mute); }
-
-  /* ── Responsive ─────────────────────────────────────────────────────── */
-  @media (max-width: 1100px) {
-    .masthead .topnav { padding-right: 90px; }
-  }
+  /* ─── Responsive ─── */
   @media (max-width: 900px) {
-    .file-row { grid-template-columns: 1fr; }
-    .pixel-stage { grid-template-columns: 1fr; }
-    .size-row { grid-template-columns: 1fr; }
-    .metadata-grid { grid-template-columns: 1fr; }
+    .file-row, .pixel-stage, .size-row, .metadata-grid { grid-template-columns: 1fr; }
     .metadata-item { border-right: none; }
+    .metadata-item:nth-last-child(2) { border-bottom: 1px solid var(--line); }
+    .metadata-item:nth-child(4n+3), .metadata-item:nth-child(4n+4) { background: var(--surface); }
+    .metadata-item:nth-child(2n) { background: var(--paper-2); }
     .binary-row { grid-template-columns: 70px 1fr; }
     .binary-row .binary-ascii { display: none; }
   }
-  @media (max-width: 760px) {
-    :root { --pad-x: 28px; --pad-y: 64px; }
-    .detail-demo { padding: 24px; }
-    .demo-shell { padding: 18px; }
-    .footer-grid { grid-template-columns: 1fr; }
-    .masthead .topnav { display: none; }
+  @media (max-width: 768px) {
     .upload-zone { padding: 40px 20px; }
-  }
-
-  .hidden { display: none !important; }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     edulab component layer — flat fills, full contours, soft shadows.
-     Overrides the editorial idiom above; every value is an edulab token.
-     ══════════════════════════════════════════════════════════════════════ */
-
-  /* Display font has no true italic — drop synthesised obliques */
-  .hero-dek, .detail-dek, .masthead .brand .tag,
-  .row-author, .detail-prose .dropcap .dc, .toc .ttl { font-style: normal; }
-
-  /* ── Buttons: primary = solid yellow pill, secondary = sand pill ────── */
-  .btn {
-    background: var(--bg-2);
-    border: none;
-    color: var(--ink-soft);
-    padding: 9px 18px;
-    border-radius: var(--r-pill);
-    font-family: var(--font-sans);
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 0;
-    text-transform: none;
-    transition: background .15s, color .15s;
-  }
-  .btn:hover { background: var(--bg-3); color: var(--ink); border: none; }
-  .btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-  .btn.primary, .btn.accent {
-    background: var(--yellow);
-    border: none;
-    color: var(--yellow-ink);
-    padding: 11px 22px;
-    border-radius: var(--r-pill);
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 0;
-    text-transform: none;
-    box-shadow: var(--shadow-primary);
-  }
-  .btn.primary:hover, .btn.primary:hover:not(:disabled), .btn.accent:hover {
-    background: var(--yellow-600); color: var(--yellow-ink); transform: none;
-  }
-  .btn.active {
-    background: var(--yellow); color: var(--yellow-ink); border: none;
-  }
-  .btn:disabled, .btn.primary:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
-
-  /* ── Chip / tag: solid colour, white text (dark on yellow) ──────────── */
-  .pill {
-    font-family: var(--font-mono); font-size: 11px;
-    letter-spacing: .08em; text-transform: uppercase;
-    background: var(--blue-soft); color: var(--blue-ink);
-    border: none;
-    padding: 4px 10px; border-radius: var(--r-pill);
-  }
-
-  /* ── Full contours only: no coloured edge on one side ───────────────── */
-  .detail-aside {
-    border-left: none;
-    background: var(--bg-2);
-    border-radius: var(--r-lg);
-    padding: 22px 26px;
-  }
-  .tab.active, .file-tab.active {
-    border-bottom-color: transparent;
-    background: var(--yellow);
-    color: var(--yellow-ink);
-    border-radius: var(--r-pill);
-  }
-
-  /* ── Section eyebrow: functional label, no leading dash ─────────────── */
-  .section-head .kicker, .demo-head .kicker { color: var(--ink-mute); }
-
-  /* ── Cards & wells: generous radii, soft low shadow ─────────────────── */
-  .demo-frame, .demo-card, .card, .panel {
-    border-radius: var(--r-lg);
-  }
-
-  /* ── Page header scheme: solid ink title → full-width lead ──────────── */
-  .detail { max-width: var(--shell); }
-  .detail-head { max-width: 760px; }
-  .detail-head h1 {
-    font-family: var(--font-display); font-weight: 800;
-    font-size: clamp(2.1rem, 4.6vw, 3rem);
-    letter-spacing: -.025em; line-height: 1.05;
-    color: var(--ink); margin: 0 0 20px;
-  }
-  .detail-dek {
-    font-family: var(--font-sans); font-style: normal; font-weight: 400;
-    font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6;
-    color: var(--ink-soft); max-width: none; margin: 0 0 24px;
-  }
-  /* meta + byline sit under the lead, never above the title */
-  .detail-meta, .detail-byline {
-    display: block; line-height: 2;
-    font-family: var(--font-mono); font-size: 12px;
-    letter-spacing: .14em; text-transform: uppercase;
-    color: var(--ink-mute); margin: 0;
-  }
-  /* Functional label chip inside panels: solid colour, white text */
-  .pane-label, .vp-label {
-    background: var(--blue-soft); color: var(--blue-ink);
-    border: none; border-radius: var(--r-pill); padding: 3px 10px;
-  }
-  .detail-prose p {
-    font-family: var(--font-sans); font-size: 18px; line-height: 1.68;
-    color: var(--ink);
-  }
-  .detail-prose h3 {
-    font-family: var(--font-display); font-weight: 600;
-    font-size: 25px; letter-spacing: -.01em;
-  }
-  .detail-prose p code, .detail-prose code {
-    font-family: var(--font-mono); font-size: 15px;
-    background: var(--bg-3); color: var(--ink);
-    padding: .12em .4em; border-radius: var(--r-xs);
-  }
-  .detail-prose .dropcap .dc {
-    font-family: var(--font-display); font-style: normal; font-weight: 700;
-    color: var(--yellow-ink);
-  }
-  .detail-rule { max-width: 760px; background: var(--rule-soft); opacity: 1; }
-
-
-  /* Outfit has no true italic — italic text falls back to IBM Plex Sans */
-  .compare-sub, .compare-side .compare-sub, .status-line, .file-sub,
-  .calculation .empty, .cart-empty, .asm-cmt, .up-mark, .nb-mark,
-  .m-body p:first-child::first-letter { font-family: var(--font-sans); }
-
-  /* ── Dark hero band (matches the index) ─────────────────────────────── */
-  .detail-hero {
-    background: var(--hero-bg);
-    padding: 26px var(--pad-x) 60px;
-    margin-bottom: 0;
-  }
-  .detail-hero-inner { max-width: var(--shell); margin: 0 auto; }
-  .detail-hero .detail-back {
-    font-family: var(--font-mono); font-size: 12px;
-    letter-spacing: .14em; text-transform: uppercase;
-    color: var(--hero-ink-2); margin-bottom: 44px;
-  }
-  .detail-hero .detail-back a { color: var(--hero-ink-2); transition: color .15s; }
-  .detail-hero .detail-back a:hover { color: var(--yellow); }
-  .detail-hero h1 {
-    max-width: 900px; margin: 0 0 20px;
-    font-family: var(--font-display); font-weight: 800;
-    font-size: clamp(2.1rem, 4.6vw, 3rem);
-    letter-spacing: -.025em; line-height: 1.05;
-    color: var(--hero-ink); text-wrap: balance;
-  }
-  .detail-hero .detail-dek {
-    max-width: 720px; margin: 0;
-    font-family: var(--font-sans); font-style: normal;
-    font-size: clamp(17px, 1.35vw, 19px); line-height: 1.6;
-    color: var(--hero-ink-2);
-  }
-  /* the band already separates hero from prose */
-  .detail-hero + .detail .detail-rule,
-  .detail-hero + main .detail-rule { display: none; }
-  .detail { padding-top: 56px; }
-
-  .footer .col .foot-copy {
-    font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em;
-    color: var(--ink-mute); margin-top: 14px;
+    .legend { gap: 10px 20px; }
   }
 </style>
 </head>
 <body>
-
-<button class="theme-toggle" id="themeToggle" aria-label="Przełącz motyw">
-  <span class="th-mark"></span>
-  <span class="lbl-jasny">Jasny</span>
-  <span class="lbl-ciemny">Ciemny</span>
-</button>
 
 <header class="masthead">
   <div class="row">
@@ -901,33 +219,37 @@
       <a href="compilation.html">Metody</a>
       <a href="#">O piśmie</a>
     </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Przełącz motyw">
+      <span class="th-mark"></span>
+      <span class="lbl-jasny">Jasny</span>
+      <span class="lbl-ciemny">Ciemny</span>
+    </button>
   </div>
 </header>
 
-<header class="detail-hero">
-  <div class="detail-hero-inner">
-    <div class="detail-back"><a href="index.html">← Powrót do indeksu</a></div>
-    <h1>Anatomia obrazu</h1>
-    <p class="detail-dek">Każdy obraz to tabela liczb. Otwierając plik graficzny, otwieramy długą listę trójek wartości; każda z nich opisuje kolor jednego punktu na ekranie.</p>
-  </div>
+<main>
+<header class="page-head">
+  <h1 class="app-title">Anatomia obrazu</h1>
+  <p class="edu-lead">Każdy obraz to tabela liczb. Otwierając plik graficzny, otwieramy długą listę trójek wartości; każda z nich opisuje kolor jednego punktu na ekranie.</p>
 </header>
 
-<article class="detail">
-
-  <hr class="detail-rule" />
-
-  <section class="detail-prose dropcap">
+<section class="sec"><div class="wrap">
+  <div class="detail-prose dropcap">
     <p><span class="dc">O</span>braz, który widzisz w tej chwili na ekranie, nie istnieje w komputerze jako „obraz". Istnieje jako bardzo długa lista bajtów, czyli liczb od <code>0</code> do <code>255</code> ułożonych obok siebie w pamięci. Lista ta ma swój układ: kolejne trójki opisują kolejne piksele, kolejne wiersze pikseli składają się w wiersze obrazu. Wszystko, co dzieje się powyżej tego poziomu, jest <em>interpretacją</em>: program graficzny czyta tę listę i wyświetla ją jako siatkę kolorowych kwadracików.</p>
     <p>Ta strona pozwala otworzyć dowolny plik graficzny i obejrzeć go z czterech stron jednocześnie: jako metryczkę pliku, siatkę pikseli, sekwencję bajtów i jako obraz, który tracimy, gdy go zmniejszamy.</p>
-  </section>
+  </div>
+</div></section>
 
-  <section class="detail-demo" id="demoFile">
-    <header class="demo-head">
-      <h2>Część I. Otwórz plik</h2>
-      <p>Zacznij od dowolnego obrazu z dysku. Wszystkie obliczenia zachodzą lokalnie w przeglądarce; nic nie wychodzi poza Twój komputer.</p>
-    </header>
+<section class="sec sec-stone" id="demoFile"><div class="wrap">
+  <div class="sec-head"><h2>Otwórz plik</h2></div>
+  <p class="sec-lead">Zacznij od dowolnego obrazu z dysku. Wszystkie obliczenia zachodzą lokalnie w przeglądarce; nic nie wychodzi poza Twój komputer.</p>
 
-    <div class="demo-shell">
+  <div class="card demo-card">
+    <div class="card-head">
+      <span class="kicker">Metryczka pliku</span>
+      <span class="pill">Interaktywne</span>
+    </div>
+    <div class="card-body">
       <div class="upload-zone" id="uploadZone">
         <div class="up-mark">↓</div>
         <h3>Upuść tu obraz</h3>
@@ -949,29 +271,35 @@
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</div></section>
 
-  <section class="detail-prose">
+<section class="sec"><div class="wrap">
+  <div class="detail-prose">
     <h3>Co składa się z czego</h3>
     <p>Plik na dysku nie jest jeszcze obrazem, tylko jego <em>opisem</em>. Pierwsze bajty pliku to sygnatura formatu: dla PNG to <code>89 50 4E 47</code>, dla JPEG-a <code>FF D8 FF</code>. Dalej idą metadane: szerokość, wysokość, paleta, sposób kompresji. Reszta to skompresowana zawartość obrazu, którą trzeba dopiero rozpakować, żeby pojawiły się piksele.</p>
     <p>Dopiero rozpakowane piksele są tym, czym obraz jest naprawdę. Niżej można je zobaczyć z bliska, każdy z osobna.</p>
-  </section>
+  </div>
+</div></section>
 
-  <section class="detail-demo" id="demoPixels">
-    <header class="demo-head">
-      <h2>Część II. Każdy piksel to trzy liczby</h2>
-      <p>Najedź kursorem na dowolny kwadracik, żeby zobaczyć jego współrzędne, kolor i zapis dwójkowy. Suwaki obniżają rozdzielczość obrazu, by pokazać, jak komputer „widzi" tę samą scenę przy mniejszej liczbie pikseli.</p>
-    </header>
+<section class="sec sec-stone" id="demoPixels"><div class="wrap">
+  <div class="sec-head"><h2>Każdy piksel to trzy liczby</h2></div>
+  <p class="sec-lead">Najedź kursorem na dowolny kwadracik, żeby zobaczyć jego współrzędne, kolor i zapis dwójkowy. Suwaki obniżają rozdzielczość obrazu, by pokazać, jak komputer „widzi" tę samą scenę przy mniejszej liczbie pikseli.</p>
 
-    <div class="demo-shell">
+  <div class="card demo-card">
+    <div class="card-head">
+      <span class="kicker">Siatka pikseli</span>
+      <span class="pill">Interaktywne</span>
+    </div>
+    <div class="card-body">
       <div class="controls">
         <div class="control-group">
-          <label>Rozdzielczość</label>
+          <label for="resolutionSlider">Rozdzielczość</label>
           <input type="range" id="resolutionSlider" min="8" max="64" value="32" />
           <span class="val" id="resolutionValue">32px</span>
         </div>
         <div class="control-group">
-          <label>Powiększenie</label>
+          <label for="zoomSlider">Powiększenie</label>
           <input type="range" id="zoomSlider" min="4" max="32" value="14" />
           <span class="val" id="zoomValue">14px</span>
         </div>
@@ -1003,55 +331,69 @@
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</div></section>
 
-  <section class="detail-prose">
+<section class="sec"><div class="wrap">
+  <div class="detail-prose">
     <h3>Te same dane jako bajty</h3>
     <p>Każdy piksel zajmuje w pamięci trzy bajty, po jednym na kanał czerwony, zielony i niebieski. Sześć cyfr w zapisie szesnastkowym (na przykład <code>FF8800</code>) to dokładnie te trzy bajty, tylko zapisane w bardziej zwartej notacji niż ośmiobitowy zapis dwójkowy każdego z nich.</p>
     <p>Niżej widać surową zawartość pliku: pierwsze 512 bajtów. Lewa kolumna to pozycja w pliku, środkowa - bajty po szesnastkowemu, prawa - próba odczytania ich jako tekst (większość bajtów nie odpowiada drukowanym znakom, więc widać kropki).</p>
-  </section>
+  </div>
+</div></section>
 
-  <section class="detail-demo" id="demoBytes">
-    <header class="demo-head">
-      <h2>Część III. Plik jako sekwencja bajtów</h2>
-      <p>Pierwsze bajty to tak zwana <em>magic number</em> - sygnatura formatu, dzięki której system od razu wie, czego się spodziewać.</p>
-    </header>
+<section class="sec sec-stone" id="demoBytes"><div class="wrap">
+  <div class="sec-head"><h2>Plik jako sekwencja bajtów</h2></div>
+  <p class="sec-lead">Pierwsze bajty to tak zwana <em>magic number</em> - sygnatura formatu, dzięki której system od razu wie, czego się spodziewać.</p>
 
-    <div class="demo-shell">
+  <div class="card demo-card">
+    <div class="card-head">
+      <span class="kicker">Pierwsze 512 bajtów</span>
+      <span class="pill">Interaktywne</span>
+    </div>
+    <div class="card-body">
       <div class="binary-container" id="binaryContainer"></div>
+    </div>
+    <div class="card-foot">
       <div class="legend">
         <div class="legend-item">
-          <div class="legend-color" style="background: var(--ink-mute);"></div>
+          <div class="legend-color offset"></div>
           <span>Pozycja w pliku</span>
         </div>
         <div class="legend-item">
-          <div class="legend-color" style="background: var(--accent);"></div>
+          <div class="legend-color hex"></div>
           <span>Bajty (heksadecymalnie)</span>
         </div>
         <div class="legend-item">
-          <div class="legend-color" style="background: var(--ink-soft);"></div>
+          <div class="legend-color ascii"></div>
           <span>Próba odczytu jako ASCII</span>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</div></section>
 
-  <section class="detail-prose">
+<section class="sec"><div class="wrap">
+  <div class="detail-prose">
     <h3>Mniej pikseli, mniej bajtów</h3>
     <p>Im więcej pikseli, tym więcej trójek liczb do zapamiętania. Obraz <em>4000 × 3000</em> to dwanaście milionów pikseli, czyli trzydzieści sześć milionów bajtów surowych danych. Zmniejszenie obrazu o połowę liniowo zmniejsza tę liczbę czterokrotnie, i właśnie dlatego strony internetowe rzadko podają oryginalne pliki ze smartfonów.</p>
     <p>Suwak niżej pokazuje, jaką cenę płacimy za tę oszczędność: każdy piksel, który wyrzucamy, przestaje istnieć razem z odcieniem, który niósł.</p>
-  </section>
+  </div>
+</div></section>
 
-  <section class="detail-demo" id="demoScale">
-    <header class="demo-head">
-      <h2>Część IV. Co zostaje, gdy zmniejszamy</h2>
-      <p>Po lewej oryginał, po prawej ten sam obraz przepuszczony przez <code>downsampling</code> - operację, która łączy sąsiednie piksele w jeden uśredniony kolor.</p>
-    </header>
+<section class="sec sec-stone" id="demoScale"><div class="wrap">
+  <div class="sec-head"><h2>Co zostaje, gdy zmniejszamy</h2></div>
+  <p class="sec-lead">Po lewej oryginał, po prawej ten sam obraz przepuszczony przez <code>downsampling</code> - operację, która łączy sąsiednie piksele w jeden uśredniony kolor.</p>
 
-    <div class="demo-shell">
+  <div class="card demo-card">
+    <div class="card-head">
+      <span class="kicker">Skalowanie</span>
+      <span class="pill">Interaktywne</span>
+    </div>
+    <div class="card-body">
       <div class="controls">
         <div class="control-group">
-          <label>Skala</label>
+          <label for="scaleSlider">Skala</label>
           <input type="range" id="scaleSlider" min="5" max="100" value="40" />
           <span class="val" id="scaleValue">40%</span>
         </div>
@@ -1067,19 +409,22 @@
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</div></section>
 
-  <aside class="detail-aside">
-    <h6>Dalsza lektura</h6>
-    <ul>
+<section class="sec"><div class="wrap">
+  <aside class="card">
+    <div class="card-head"><span class="kicker">Dalsza lektura</span></div>
+    <ul class="link-list">
       <li><a href="binary.html">System dwójkowy - od czego się to wszystko zaczyna</a></li>
       <li><a href="#">Co dokładnie robi PNG, czego nie robi JPEG</a></li>
       <li><a href="#">Kompresja stratna w dwóch słowach</a></li>
       <li><a href="#">Dlaczego skala szarości to też trzy kanały</a></li>
     </ul>
   </aside>
-
-</article>
+  <div class="back-row"><a class="btn" href="index.html">← Powrót do indeksu</a></div>
+</div></section>
+</main>
 
 <footer class="footer">
   <div class="footer-grid">
@@ -1311,7 +656,7 @@
         ctx.fillRect(x * zoomLevel, y * zoomLevel, zoomLevel, zoomLevel);
 
         if (showGrid && zoomLevel >= 6) {
-          ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--rule-soft').trim() || '#EDE7D2';
+          ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--rule-soft').trim() || '#E0DBD3';
           ctx.strokeRect(x * zoomLevel, y * zoomLevel, zoomLevel, zoomLevel);
         }
 

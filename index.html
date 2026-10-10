@@ -17,492 +17,92 @@
     }
   })();
 </script>
+<link rel="stylesheet" href="colors_and_type.css" />
+<link rel="stylesheet" href="site.css" />
 <style>
-  /* ── edulab design system — Editorial Color ──────────────────────────
-     Fonts: Outfit (display) · IBM Plex Sans (sans) · Roboto Mono (mono)
-     Paper white page, warm ink, yellow primary, blue + green secondary,
-     red for danger. Every colour below is an edulab token.
-     ─────────────────────────────────────────────────────────────────── */
-  :root {
-    /* ── edulab brand fonts ── */
-    --font-display: 'Outfit', 'IBM Plex Sans', system-ui, sans-serif;
-    --font-sans:    'IBM Plex Sans', system-ui, -apple-system, sans-serif;
-    --font-mono:    'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  /* ─── Index page widgets (tokens + chrome come from site.css) ─── */
 
-    /* ── edulab raw palette ── */
-    --paper:   #FFFFFF;  --paper-2: #FBF7E6;  --paper-3: #F5EDCB;
-    --surface: #FFFFFF;
-    --edu-ink: #1C1917;  --edu-ink-2: #57534E;  --edu-ink-3: #948C82;
-    --line:    #EDE7D2;  --line-2:  #DDD4B6;
-
-    --yellow: #FFD500;  --yellow-600: #F0C800;  --yellow-soft: #FFD500;  --yellow-ink: #1C1917;
-    --blue:   #1E8FC2;  --blue-600:   #177AA8;  --blue-soft:   #1E8FC2;  --blue-ink:   #FFFFFF;
-    --green:  #00A651;  --green-600:  #009444;  --green-soft:  #00A651;  --green-ink:  #FFFFFF;
-    --red:    #E5322D;  --red-600:    #C92823;  --red-soft:    #E5322D;  --red-ink:    #FFFFFF;
-    --grape:  #7A5AC2;
-
-    --primary: var(--yellow);  --on-primary: var(--yellow-ink);
-    --focus-ring: 0 0 0 3px color-mix(in srgb, var(--yellow) 45%, transparent);
-
-    /* ── radii & elevation ── */
-    --r-xs: 6px; --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
-    --shadow-sm: 0 1px 2px rgba(33,30,26,.06), 0 1px 1px rgba(33,30,26,.04);
-    --shadow-md: 0 4px 16px rgba(33,30,26,.08), 0 1px 3px rgba(33,30,26,.05);
-    --shadow-lg: 0 16px 40px rgba(33,30,26,.12), 0 3px 8px rgba(33,30,26,.06);
-    --shadow-primary: 0 8px 22px color-mix(in srgb, var(--yellow) 30%, transparent);
-
-    /* ── layout ── */
-    --pad-x: 30px;
-    --pad-y: 72px;
-    --gap: 28px;
-    --shell: 1100px;
+  /* ─── Page head: text left, pixel-laptop panel right ─── */
+  :root { --pixel-panel: var(--ink); }
+  html[data-theme="dark"] { --pixel-panel: var(--paper-2); }
+  .hub-head {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
+    gap: 48px; align-items: center;
   }
-
-  /* ── Light (default): edulab paper ──────────────────────────────────── */
-  html[data-theme="light"] {
-    --bg:        var(--paper);
-    --bg-2:      var(--paper-2);
-    --bg-3:      var(--paper-3);
-    --ink:       var(--edu-ink);
-    --ink-soft:  var(--edu-ink-2);
-    --ink-mute:  var(--edu-ink-3);
-    --rule:      var(--line-2);
-    --rule-soft: var(--line);
-    --accent:    var(--blue);
-    --accent-2:  var(--blue-600);
-    --accent-tint:        var(--paper-2);
-    --accent-tint-soft:   var(--paper-2);
-    --accent-tint-strong: var(--paper-3);
-    --overlay:   rgba(255,255,255,.94);
-    --card:      var(--surface);
-    --logo-filter: none;
-    --hero-bg:    #24211E;
-    --hero-ink:   #FFFFFF;
-    --hero-ink-2: rgba(255,255,255,.74);
+  .hub-head .app-title { margin-bottom: 16px; }
+  .hero-panel {
+    display: flex; align-items: center; justify-content: center;
+    padding: 34px 40px;
+    background: var(--pixel-panel); border-radius: var(--r-xl);
   }
-
-  /* ── Dark: edulab ink surfaces (yellow reads as text on black) ──────── */
-  html[data-theme="dark"] {
-    --bg:        #1C1917;
-    --bg-2:      #262220;
-    --bg-3:      #322D29;
-    --ink:       #FFFFFF;
-    --ink-soft:  rgba(255,255,255,.74);
-    --ink-mute:  rgba(255,255,255,.52);
-    --rule:      rgba(255,255,255,.30);
-    --rule-soft: rgba(255,255,255,.14);
-    --accent:    var(--yellow);
-    --accent-2:  var(--yellow-600);
-    --accent-tint:        rgba(255,255,255,.06);
-    --accent-tint-soft:   rgba(255,255,255,.04);
-    --accent-tint-strong: rgba(255,213,0,.22);
-    --overlay:   rgba(28,25,23,.94);
-    --card:      #262220;
-    --logo-filter: invert(1);
-    --hero-bg:    #24211E;
-    --hero-ink:   #FFFFFF;
-    --hero-ink-2: rgba(255,255,255,.74);
-  }
-
-  /* ── Reset ──────────────────────────────────────────────────────────── */
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--font-sans);
-    font-size: 16px;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    transition: background .25s ease, color .25s ease;
-  }
-  a { color: inherit; text-decoration: none; cursor: pointer; }
-  button { font-family: inherit; }
-
-  /* Content shell — edulab caps the column at 1100px */
-  .shell { max-width: var(--shell); margin: 0 auto; width: 100%; }
-
-  /* Functional label: mono, uppercase, tracked */
-  .kicker {
-    font-family: var(--font-mono);
-    font-weight: 500;
-    font-size: 12px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-  }
-  .dot { color: var(--ink-mute); padding: 0 6px; }
-
-  /* ── Theme toggle — full pill, never a partial contour ──────────────── */
-  .theme-toggle {
-    position: fixed;
-    top: 14px; right: 20px;
-    z-index: 100;
-    appearance: none; cursor: pointer;
-    background: var(--bg-2);
-    border: none;
-    color: var(--ink-soft);
-    padding: 9px 16px;
-    border-radius: var(--r-pill);
-    font-family: var(--font-sans);
-    font-weight: 600;
-    font-size: 12px;
-    letter-spacing: .02em;
-    transition: background .15s, color .15s;
-  }
-  .theme-toggle:hover { background: var(--yellow); color: var(--yellow-ink); }
-  .theme-toggle:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-  .theme-toggle .th-mark {
-    display: inline-block;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    margin-right: 8px;
-    vertical-align: -1px;
-    background: var(--ink);
-  }
-  .theme-toggle:hover .th-mark { background: var(--yellow-ink); }
-  .theme-toggle .lbl-jasny { display: inline; }
-  .theme-toggle .lbl-ciemny { display: none; }
-  html[data-theme="light"] .theme-toggle .lbl-jasny { display: none; }
-  html[data-theme="light"] .theme-toggle .lbl-ciemny { display: inline; }
-
-  /* ── edulab brand bar (required chrome) ─────────────────────────────── */
-  .masthead {
-    position: sticky; top: 0; z-index: 50; width: 100%;
-    background: var(--overlay);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--rule-soft);
-  }
-  .masthead .row {
-    max-width: var(--shell); margin: 0 auto;
-    padding: 8px var(--pad-x);
-    display: flex; justify-content: space-between; align-items: center; gap: 12px;
-  }
-  .masthead .brand { display: flex; align-items: center; gap: 2px; cursor: pointer; }
-  .masthead .edu-logo {
-    width: 64px; height: 64px; display: block; margin-right: -6px;
-    filter: var(--logo-filter);
-  }
-  .masthead .brand .wordmark {
-    font-family: var(--font-display); font-weight: 700;
-    font-size: 22px; letter-spacing: -.02em; color: var(--ink);
-  }
-  .masthead .topnav { display: flex; gap: 4px; padding-right: 132px; }
-  .masthead .topnav a {
-    font-family: var(--font-sans); font-weight: 600; font-size: 14px;
-    color: var(--ink-soft);
-    padding: 8px 14px; border-radius: var(--r-pill);
-    transition: background .15s, color .15s;
-  }
-  .masthead .topnav a:hover { background: var(--bg-2); color: var(--ink); }
-  .masthead .topnav a.active { background: var(--yellow); color: var(--yellow-ink); }
-
-  /* ── Hero ───────────────────────────────────────────────────────────── */
-  .hero {
-    padding: calc(var(--pad-y) * 1.1) var(--pad-x);
-    border-bottom: 1px solid var(--rule-soft);
-  }
-  .hero-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 48px;
-    align-items: start;
-  }
-  .hero-title {
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: clamp(80px, 11vw, 168px);
-    line-height: 1.0;
-    letter-spacing: -.035em;
-    margin: 0 0 40px;
-    color: var(--ink);
-  }
-  .hero-dek {
-    font-family: var(--font-sans); font-size: 20px;
-    font-style: italic;
-    line-height: 1.45; color: var(--ink-soft);
-    max-width: 36ch; margin: 0;
-  }
-  /* ── Article list ───────────────────────────────────────────────────── */
-  .indexsec {
-    padding: var(--pad-y) var(--pad-x);
-    border-bottom: 1px solid var(--rule-soft);
-  }
-  .section-head { margin-bottom: 40px; }
-  .article-list { list-style: none; padding: 0; margin: 0; }
-  .article-row {
-    display: grid;
-    grid-template-columns: 60px 140px 1fr 200px 120px;
-    gap: 32px;
-    padding: 36px 0;
-    border-top: 1px solid var(--rule-soft);
-    align-items: start;
-    cursor: pointer;
-    transition: padding-left .15s, padding-right .15s;
-  }
-  .article-row:last-child { border-bottom: 1px solid var(--rule-soft); }
-  .article-row:hover { padding-left: 16px; padding-right: 16px; }
-  .article-row:hover h3 { color: var(--accent); }
-  .article-row a { display: contents; }
-  .row-no {
-    font-family: var(--font-display); font-size: 28px; font-style: italic;
-    color: var(--ink-mute);
-  }
-  .row-meta { display: flex; flex-direction: column; gap: 6px; }
-  .row-meta .row-author {
-    font-family: var(--font-sans); font-style: italic; font-size: 14px;
-    color: var(--ink-soft);
-  }
-  .row-title h3 {
-    font-family: var(--font-display); font-weight: 400;
-    font-size: 28px; line-height: 1.15; letter-spacing: -.005em;
-    margin: 0 0 8px; color: var(--ink); text-wrap: pretty;
-    transition: color .15s;
-  }
-  .row-title p {
-    font-family: var(--font-sans); font-size: 15px; line-height: 1.5;
-    color: var(--ink-soft); margin: 0; max-width: 50ch;
-  }
-  .row-thumb {
-    background: var(--bg-2); aspect-ratio: 16/10;
-    border: 1px solid var(--rule-soft); border-radius: 2px; overflow: hidden;
-    color: var(--ink);
-  }
-  .row-thumb svg { width: 100%; height: 100%; display: block; }
-  .row-read {
-    display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
-    font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);
-    letter-spacing: .04em; text-transform: uppercase;
-  }
-  .pill {
-    font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
-    border: 1px solid var(--accent); color: var(--accent);
-    padding: 3px 8px; border-radius: 2px;
-  }
-
-  /* ── Manifesto ──────────────────────────────────────────────────────── */
-  .manifesto {
-    padding: var(--pad-y) var(--pad-x);
-    border-bottom: 1px solid var(--rule-soft);
-  }
-  .m-grid {
-    display: grid; grid-template-columns: 200px 1fr; gap: 60px;
-    max-width: 1100px;
-  }
-  .m-label {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--ink-mute);
-    padding-top: 12px; border-top: 1px solid var(--rule-soft);
-  }
-  .m-body p {
-    font-family: var(--font-sans); font-size: clamp(20px, 2vw, 26px);
-    line-height: 1.45; margin: 0 0 24px;
-    color: var(--ink-soft);
-  }
-  .m-body p em { font-style: italic; color: var(--accent); }
-  .m-body p:first-child::first-letter {
-    font-family: var(--font-display); font-size: 64px;
-    font-style: italic;
-    float: left; line-height: .8; padding: 6px 12px 0 0;
-    color: var(--accent);
-  }
-  .m-sig {
-    font-family: var(--font-sans); font-style: italic; font-size: 16px;
-    color: var(--ink-mute); margin-top: 16px;
-  }
-
-  /* ── Departments ────────────────────────────────────────────────────── */
-  /* ── Footer ─────────────────────────────────────────────────────────── */
-  .footer { padding: 60px var(--pad-x) 32px; max-width: var(--shell); margin: 0 auto; }
-  .footer-grid {
-    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px;
-    padding-bottom: 32px;
-    border-top: 1px solid var(--rule);
-    padding-top: 32px;
-  }
-  .footer .col h6 {
-    font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--ink-mute); margin: 0 0 14px;
-  }
-  .footer .col p {
-    font-family: var(--font-sans); font-size: 14px; color: var(--ink-soft);
-    line-height: 1.5; margin: 0;
-  }
-  .footer .col a {
-    display: block; font-family: var(--font-sans); font-size: 14px;
-    color: var(--ink); padding: 3px 0;
-  }
-  .footer .col a:hover { color: var(--accent); }
-
-  /* ── Responsive ─────────────────────────────────────────────────────── */
-  @media (max-width: 1100px) {
-    .hero .hero-grid { gap: 36px; }
-    .article-row { grid-template-columns: 40px 100px 1fr 140px; gap: 24px; }
-    .row-thumb { display: none; }
-    .t-cell:nth-child(2) { border-right: none; }
-    .t-cell:nth-child(1), .t-cell:nth-child(2) { border-bottom: 1px solid var(--rule-soft); }
-    .masthead .topnav { padding-right: 90px; }
-  }
-  @media (max-width: 760px) {
-    :root { --pad-x: 28px; --pad-y: 64px; }
-    .hero-title { font-size: clamp(60px, 14vw, 100px); }
-    .article-row { grid-template-columns: 32px 1fr; }
-    .article-row .row-meta, .article-row .row-read { grid-column: 2; }
-    .t-cell { border-right: none; border-bottom: 1px solid var(--rule-soft); padding: 24px 0; }
-    .t-cell:last-child { border-bottom: none; }
-    .footer-grid { grid-template-columns: 1fr; }
-    .masthead .topnav { display: none; }
-    .masthead .topnav { padding-right: 0; }
-  }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     edulab component layer — flat fills, full contours, soft shadows.
-     Overrides the editorial idiom above; every value is an edulab token.
-     ══════════════════════════════════════════════════════════════════════ */
-
-  /* Display font has no true italic — drop synthesised obliques */
-  .hero-dek, .detail-dek, .masthead .brand .tag,
-  .row-author, .detail-prose .dropcap .dc { font-style: normal; }
-
-  /* ── Buttons: primary = solid yellow pill, secondary = sand pill ────── */
-  .btn {
-    background: var(--bg-2);
-    border: none;
-    color: var(--ink-soft);
-    padding: 9px 18px;
-    border-radius: var(--r-pill);
-    font-family: var(--font-sans);
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 0;
-    text-transform: none;
-    transition: background .15s, color .15s;
-  }
-  .btn:hover { background: var(--bg-3); color: var(--ink); border: none; }
-  .btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-  .btn.primary, .btn.accent {
-    background: var(--yellow);
-    border: none;
-    color: var(--yellow-ink);
-    padding: 11px 22px;
-    border-radius: var(--r-pill);
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 0;
-    text-transform: none;
-    box-shadow: var(--shadow-primary);
-  }
-  .btn.primary:hover, .btn.primary:hover:not(:disabled), .btn.accent:hover {
-    background: var(--yellow-600); color: var(--yellow-ink); transform: none;
-  }
-  .btn.active {
-    background: var(--yellow); color: var(--yellow-ink); border: none;
-  }
-  .btn:disabled, .btn.primary:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
-
-  /* ── Chip / tag: solid colour, white text (dark on yellow) ──────────── */
-  .pill {
-    font-family: var(--font-mono); font-size: 11px;
-    letter-spacing: .08em; text-transform: uppercase;
-    background: var(--blue-soft); color: var(--blue-ink);
-    border: none;
-    padding: 4px 10px; border-radius: var(--r-pill);
-  }
-
-  /* ── Full contours only: no coloured edge on one side ───────────────── */
-  .detail-aside {
-    border-left: none;
-    background: var(--bg-2);
-    border-radius: var(--r-lg);
-    padding: 22px 26px;
-  }
-  .tab.active, .file-tab.active {
-    border-bottom-color: transparent;
-    background: var(--yellow);
-    color: var(--yellow-ink);
-    border-radius: var(--r-pill);
-  }
-
-  /* ── Section eyebrow: functional label, no leading dash ─────────────── */
-  .section-head .kicker, .demo-head .kicker { color: var(--ink-mute); }
-
-  /* ── Cards & wells: generous radii, soft low shadow ─────────────────── */
-  .demo-frame, .demo-card, .card, .panel {
-    border-radius: var(--r-lg);
-  }
-
-  /* ── Index: hero + list ─────────────────────────────────────────────── */
-  .masthead .row, .indexsec, .manifesto, .section-head {
-    max-width: var(--shell); margin-left: auto; margin-right: auto;
-  }
-
-  /* ── Hero: full-bleed sand band, capped content, pixel art ──────────── */
-  .hero {
-    background: var(--hero-bg);
-    border-bottom: none;
-    padding: 76px var(--pad-x) 84px;
-  }
-  .hero .hero-title { color: var(--hero-ink); }
-  .hero .hero-dek   { color: var(--hero-ink-2); }
-  .hero .hero-grid {
-    max-width: var(--shell); margin: 0 auto;
-    grid-template-columns: 1.15fr .85fr;
-    gap: 56px;
-    align-items: center;
-  }
-  .hero-art { display: flex; justify-content: center; align-items: center; }
+  html[data-theme="dark"] .hero-panel { border: 1px solid var(--line-2); }
   .hero-pixels {
-    width: 100%; max-width: 380px; height: auto;
-    /* pixel palette — SVG fill needs values that resolve on the element */
+    width: 100%; max-width: 300px; height: auto; display: block;
+    /* Pixel palette: SVG fill literals, identical in both themes */
     --px-body:   #FFFFFF;
-    --px-shade:  #948C82;
+    --px-shade:  #857C69;
     --px-well:   #1C1917;
     --px-screen: #100E0D;
-    --px-yellow: #FFD500;
-    --px-blue:   #1E8FC2;
-    --px-green:  #00A651;
-    --px-red:    #E5322D;
+    --px-yellow: var(--yellow);
+    --px-blue:   var(--blue);
+    --px-green:  var(--green);
+    --px-red:    var(--red);
   }
-  @media (max-width: 768px) {
-    .hero .hero-grid { grid-template-columns: 1fr; gap: 36px; }
-    .hero-art { order: -1; }
+
+  /* ─── Article cards ─── */
+  .article-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+  .article-card { color: var(--ink); transition: box-shadow .2s; }
+  .article-card:hover { box-shadow: var(--shadow-md); }
+  .ac-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 0; }
+  .ac-meta .kicker { color: var(--ink); }
+  .ac-meta .ac-author { color: var(--ink-2); }
+  .ac-read { display: flex; align-items: center; gap: 12px; }
+  .ac-min {
+    font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2);
   }
-  .hero-title {
-    font-family: var(--font-display); font-weight: 800;
-    font-size: clamp(56px, 8vw, 104px); letter-spacing: -.035em;
+  .ac-body {
+    display: grid; grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 32px; align-items: center;
+  }
+  .ac-body h3 {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 26px; line-height: 1.15; letter-spacing: -.01em;
+    color: var(--ink); margin: 0 0 8px; text-wrap: balance;
+  }
+  .ac-body p {
+    font-family: var(--font-sans); font-size: 15.5px; line-height: 1.55;
+    color: var(--ink-2); margin: 0; text-wrap: pretty;
+  }
+  .ac-thumb {
+    aspect-ratio: 2 / 1; overflow: hidden;
+    background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--r-md);
     color: var(--ink);
   }
-  .hero-center, .hero-title { text-align: left; }
-  .hero-dek {
-    font-family: var(--font-sans); font-style: normal;
-    font-size: 18px; line-height: 1.6; color: var(--ink-soft);
-    border-left: none; padding-left: 0; max-width: 46ch; text-align: left;
+  .ac-thumb svg { width: 100%; height: 100%; display: block; }
+
+  /* ─── Manifesto ─── */
+  .manifesto p {
+    font-family: var(--font-sans); font-size: clamp(19px, 2vw, 23px);
+    line-height: 1.55; color: var(--ink); margin: 0 0 22px;
   }
-  .row-author { font-family: var(--font-mono); font-style: normal; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); }
-  .row-title h3 { font-family: var(--font-display); font-weight: 600; }
-  .row-title p  { font-family: var(--font-sans); color: var(--ink-soft); }
-  .row-thumb { border-radius: var(--r-lg); }
+  .manifesto p em { font-style: italic; color: var(--accent-2); }
+  .manifesto .m-sig {
+    font-family: var(--font-sans); font-style: italic; font-size: 16px;
+    color: var(--ink-3); margin: 6px 0 0;
+  }
 
-  /* Outfit has no true italic — italic text falls back to IBM Plex Sans */
-  .compare-sub, .compare-side .compare-sub, .status-line, .file-sub,
-  .calculation .empty, .cart-empty, .asm-cmt, .up-mark, .nb-mark,
-  .m-body p:first-child::first-letter { font-family: var(--font-sans); }
-
-  .footer .col .foot-copy {
-    font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em;
-    color: var(--ink-mute); margin-top: 14px;
+  @media (max-width: 768px) {
+    .hub-head { grid-template-columns: 1fr; gap: 28px; }
+    .hero-panel { padding: 28px; }
+    .hero-pixels { max-width: 220px; }
+    .ac-body { grid-template-columns: 1fr; gap: 18px; }
+    .ac-body h3 { font-size: 22px; }
+    .ac-thumb { max-width: 240px; }
   }
 </style>
 </head>
 <body>
-
-<button class="theme-toggle" id="themeToggle" aria-label="Przełącz motyw">
-  <span class="th-mark"></span>
-  <span class="lbl-jasny">Jasny</span>
-  <span class="lbl-ciemny">Ciemny</span>
-</button>
 
 <header class="masthead">
   <div class="row">
@@ -517,16 +117,21 @@
       <a href="#">Metody</a>
       <a href="#">O piśmie</a>
     </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Przełącz motyw">
+      <span class="th-mark"></span>
+      <span class="lbl-jasny">Jasny</span>
+      <span class="lbl-ciemny">Ciemny</span>
+    </button>
   </div>
 </header>
 
-<section class="hero">
-  <div class="hero-grid">
-    <div class="hero-center">
-      <h1 class="hero-title">Co<br/>robi<br/>komputer?</h1>
-      <p class="hero-dek">Pięć interaktywnych artykułów o tym, co dzieje się między naciśnięciem klawisza a pikselem na ekranie.</p>
-    </div>
-    <div class="hero-art">
+<main>
+<header class="page-head hub-head">
+  <div class="hub-text">
+    <h1 class="app-title">Co robi komputer?</h1>
+    <p class="edu-lead">Pięć interaktywnych artykułów o tym, co dzieje się między naciśnięciem klawisza a pikselem na ekranie.</p>
+  </div>
+  <div class="hero-panel">
       <svg class="hero-pixels" viewBox="0 0 46 44" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="Pikselowy laptop w rzucie izometrycznym">
         <rect x="22" y="1" width="1" height="1" fill="var(--px-body)"/>
         <rect x="22" y="2" width="1" height="1" fill="var(--px-body)"/>
@@ -1341,27 +946,29 @@
         <rect x="25" y="41" width="1" height="1" fill="var(--px-shade)"/>
         <rect x="26" y="41" width="1" height="1" fill="var(--px-shade)"/>
       </svg>
-    </div>
   </div>
-</section>
+</header>
 
-<section class="indexsec">
-  <div class="section-head">
-    <span class="kicker">Spis demonstracji</span>
-  </div>
+<section class="sec sec-stone"><div class="wrap">
+  <div class="sec-head"><h2>Spis demonstracji</h2></div>
   <ul class="article-list">
-    <li class="article-row">
-      <a href="binary.html">
-        <div class="row-no">01</div>
-        <div class="row-meta">
-          <span class="kicker">Krzem</span>
-          <span class="row-author">I. Chen</span>
+    <li>
+      <a class="card article-card" href="binary.html">
+        <div class="card-head">
+          <div class="ac-meta">
+            <span class="kicker">Krzem</span><span class="dot">·</span><span class="kicker ac-author">I. Chen</span>
+          </div>
+          <div class="ac-read">
+            <span class="pill">Interaktywne</span>
+            <span class="ac-min">14 min</span>
+          </div>
         </div>
-        <div class="row-title">
-          <h3>System dwójkowy</h3>
-          <p>Komputer ma do dyspozycji dwa stany, włączony i wyłączony. Buduje z nich liczby, znaki i kolory, czyli wszystko, co widzisz na ekranie.</p>
-        </div>
-        <div class="row-thumb">
+        <div class="card-body ac-body">
+          <div class="ac-text">
+            <h3>System dwójkowy</h3>
+            <p>Komputer ma do dyspozycji dwa stany, włączony i wyłączony. Buduje z nich liczby, znaki i kolory, czyli wszystko, co widzisz na ekranie.</p>
+          </div>
+          <div class="ac-thumb">
           <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
             <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.55">
               <rect x="14"  y="34" width="18" height="32" fill="currentColor" />
@@ -1374,25 +981,27 @@
               <rect x="168" y="34" width="18" height="32" fill="currentColor" />
             </g>
           </svg>
-        </div>
-        <div class="row-read">
-          <span class="pill">Interaktywne</span>
-          <span>14 min</span>
+          </div>
         </div>
       </a>
     </li>
-    <li class="article-row">
-      <a href="image.html">
-        <div class="row-no">02</div>
-        <div class="row-meta">
-          <span class="kicker">Przeglądarka</span>
-          <span class="row-author">R. Okafor</span>
+    <li>
+      <a class="card article-card" href="image.html">
+        <div class="card-head">
+          <div class="ac-meta">
+            <span class="kicker">Przeglądarka</span><span class="dot">·</span><span class="kicker ac-author">R. Okafor</span>
+          </div>
+          <div class="ac-read">
+            <span class="pill">Interaktywne</span>
+            <span class="ac-min">16 min</span>
+          </div>
         </div>
-        <div class="row-title">
-          <h3>Anatomia obrazu</h3>
-          <p>Każdy obraz to tabela liczb. Otwierając plik graficzny, otwieramy długą listę trójek wartości; każda z nich opisuje kolor jednego punktu na ekranie.</p>
-        </div>
-        <div class="row-thumb">
+        <div class="card-body ac-body">
+          <div class="ac-text">
+            <h3>Anatomia obrazu</h3>
+            <p>Każdy obraz to tabela liczb. Otwierając plik graficzny, otwieramy długą listę trójek wartości; każda z nich opisuje kolor jednego punktu na ekranie.</p>
+          </div>
+          <div class="ac-thumb">
           <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
             <g fill="currentColor">
               <rect x="34" y="14" width="11" height="11" opacity="0.18" />
@@ -1447,25 +1056,27 @@
               <rect x="142" y="62" width="11" height="11" opacity="0.22" />
             </g>
           </svg>
-        </div>
-        <div class="row-read">
-          <span class="pill">Interaktywne</span>
-          <span>16 min</span>
+          </div>
         </div>
       </a>
     </li>
-    <li class="article-row">
-      <a href="compilation.html">
-        <div class="row-no">03</div>
-        <div class="row-meta">
-          <span class="kicker">Metody</span>
-          <span class="row-author">S. Patel</span>
+    <li>
+      <a class="card article-card" href="compilation.html">
+        <div class="card-head">
+          <div class="ac-meta">
+            <span class="kicker">Metody</span><span class="dot">·</span><span class="kicker ac-author">S. Patel</span>
+          </div>
+          <div class="ac-read">
+            <span class="pill">Interaktywne</span>
+            <span class="ac-min">18 min</span>
+          </div>
         </div>
-        <div class="row-title">
-          <h3>Kompilator i interpreter</h3>
-          <p>Dwa sposoby na to, żeby tekst kodu zaczął coś robić: skompilować raz i wypuścić, albo czytać linijka po linijce. Symulacja pokazuje, ile to kosztuje.</p>
-        </div>
-        <div class="row-thumb">
+        <div class="card-body ac-body">
+          <div class="ac-text">
+            <h3>Kompilator i interpreter</h3>
+            <p>Dwa sposoby na to, żeby tekst kodu zaczął coś robić: skompilować raz i wypuścić, albo czytać linijka po linijce. Symulacja pokazuje, ile to kosztuje.</p>
+          </div>
+          <div class="ac-thumb">
           <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
             <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.55">
               <path d="M 22 22 L 90 22 L 90 78 L 22 78 Z" />
@@ -1488,25 +1099,27 @@
               <path d="M 102 46 L 108 50 L 102 54" stroke-width="1.6" />
             </g>
           </svg>
-        </div>
-        <div class="row-read">
-          <span class="pill">Interaktywne</span>
-          <span>18 min</span>
+          </div>
         </div>
       </a>
     </li>
-    <li class="article-row">
-      <a href="website.html">
-        <div class="row-no">04</div>
-        <div class="row-meta">
-          <span class="kicker">Przeglądarka</span>
-          <span class="row-author">R. Okafor</span>
+    <li>
+      <a class="card article-card" href="website.html">
+        <div class="card-head">
+          <div class="ac-meta">
+            <span class="kicker">Przeglądarka</span><span class="dot">·</span><span class="kicker ac-author">R. Okafor</span>
+          </div>
+          <div class="ac-read">
+            <span class="pill">Interaktywne</span>
+            <span class="ac-min">22 min</span>
+          </div>
         </div>
-        <div class="row-title">
-          <h3>Anatomia strony WWW</h3>
-          <p>Tekst, HTML, CSS i JavaScript to cztery warstwy, z których składa się każda strona. Włącz je po kolei i zobacz, jak rośnie.</p>
-        </div>
-        <div class="row-thumb">
+        <div class="card-body ac-body">
+          <div class="ac-text">
+            <h3>Anatomia strony WWW</h3>
+            <p>Tekst, HTML, CSS i JavaScript to cztery warstwy, z których składa się każda strona. Włącz je po kolei i zobacz, jak rośnie.</p>
+          </div>
+          <div class="ac-thumb">
           <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
             <g fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.55">
               <rect x="20" y="22" width="160" height="56" />
@@ -1520,25 +1133,27 @@
               <circle cx="54" cy="29" r="2" fill="currentColor" />
             </g>
           </svg>
-        </div>
-        <div class="row-read">
-          <span class="pill">Interaktywne</span>
-          <span>22 min</span>
+          </div>
         </div>
       </a>
     </li>
-    <li class="article-row">
-      <a href="api.html">
-        <div class="row-no">05</div>
-        <div class="row-meta">
-          <span class="kicker">Sieci</span>
-          <span class="row-author">M. Kowalska</span>
+    <li>
+      <a class="card article-card" href="api.html">
+        <div class="card-head">
+          <div class="ac-meta">
+            <span class="kicker">Sieci</span><span class="dot">·</span><span class="kicker ac-author">M. Kowalska</span>
+          </div>
+          <div class="ac-read">
+            <span class="pill">Interaktywne</span>
+            <span class="ac-min">14 min</span>
+          </div>
         </div>
-        <div class="row-title">
-          <h3>Czym jest API</h3>
-          <p>Aplikacje rzadko działają same, bo pobierają dane od innych programów. Pokazujemy tę rozmowę krok po kroku, na przykładzie portalu pobierającego pogodę.</p>
-        </div>
-        <div class="row-thumb">
+        <div class="card-body ac-body">
+          <div class="ac-text">
+            <h3>Czym jest API</h3>
+            <p>Aplikacje rzadko działają same, bo pobierają dane od innych programów. Pokazujemy tę rozmowę krok po kroku, na przykładzie portalu pobierającego pogodę.</p>
+          </div>
+          <div class="ac-thumb">
           <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
             <g fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.55">
               <rect x="18" y="28" width="56" height="44" />
@@ -1557,26 +1172,22 @@
               <path d="M 82 54 L 76 58 L 82 62" stroke-width="1.4" />
             </g>
           </svg>
-        </div>
-        <div class="row-read">
-          <span class="pill">Interaktywne</span>
-          <span>14 min</span>
+          </div>
         </div>
       </a>
     </li>
   </ul>
-</section>
+</div></section>
 
-<section class="manifesto">
-  <div class="m-grid">
-    <div class="m-label">Redakcja</div>
-    <div class="m-body">
-      <p>Na co dzień korzystamy z komputerów, nie zastanawiając się specjalnie nad tym, co dzieje się pod spodem. <em>Pliki</em>, <em>okna</em> czy <em>chmura</em> pomagają nam z nich korzystać, ale nie zawsze dobrze pokazują, jak technologia naprawdę działa.</p>
-      <p>Interaktywne demonstracje pozwalają zobaczyć procesy, które trudno wyjaśnić samym tekstem.</p>
-      <div class="m-sig">- Redakcja</div>
-    </div>
+<section class="sec"><div class="wrap">
+  <div class="sec-head"><h2>Redakcja</h2></div>
+  <div class="manifesto dropcap">
+    <p><span class="dc">N</span>a co dzień korzystamy z komputerów, nie zastanawiając się specjalnie nad tym, co dzieje się pod spodem. <em>Pliki</em>, <em>okna</em> czy <em>chmura</em> pomagają nam z nich korzystać, ale nie zawsze dobrze pokazują, jak technologia naprawdę działa.</p>
+    <p>Interaktywne demonstracje pozwalają zobaczyć procesy, które trudno wyjaśnić samym tekstem.</p>
+    <p class="m-sig">- Redakcja</p>
   </div>
-</section>
+</div></section>
+</main>
 
 <footer class="footer">
   <div class="footer-grid">
