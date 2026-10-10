@@ -56,8 +56,18 @@
   .chip.server { background: var(--green-soft);  color: var(--green-ink); }
   .chip.net    { background: var(--yellow-soft); color: var(--yellow-ink); }
 
-  /* ─── Start button + wide stage (breaks out of the 1100px column) ─── */
-  .api-start { margin: 0; }
+  /* ─── Send button: red, in the client's label bar ─── */
+  .btn.send {
+    background: var(--red-soft); border-color: var(--red-soft); color: var(--red-ink);
+    font-family: var(--font-display); padding: 8px 18px; font-size: 14px;
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--red) 30%, transparent);
+  }
+  .btn.send:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--red-soft) 82%, var(--ink));
+    border-color: color-mix(in srgb, var(--red-soft) 82%, var(--ink)); color: var(--red-ink);
+  }
+
+  /* ─── Wide stage (breaks out of the 1100px column) ─── */
   .api-wide {
     max-width: calc(1480px + 2 * var(--pad-x));
     margin: 28px auto 0; padding: 0 var(--pad-x);
@@ -431,9 +441,6 @@
   <div class="wrap">
     <div class="sec-head"><h2>Jak strona internetowa pobiera pogodę z serwera</h2></div>
     <p class="sec-lead">W pierwszym panelu jest strona portalu Daily News otwarta w przeglądarce. Nie ma własnych pomiarów, więc musi o nie poprosić; w języku API nazywamy ją <em>klientem</em>. W ostatnim pracuje serwer pogodowy: program bez ekranu, który trzyma bazę pomiarów. Między nimi widać dwie wiadomości: niebieskie <em>zapytanie</em> od strony do serwera i zieloną <em>odpowiedź</em> od serwera do strony. Wybierz miasto na stronie albo kliknij <em>Wyślij zapytanie</em> i obserwuj, jak liczba z bazy serwera trafia na ekran.</p>
-    <div class="api-start">
-      <button type="button" class="btn primary" id="primaryBtn">Wyślij zapytanie</button>
-    </div>
   </div>
 
   <div class="api-wide">
@@ -444,6 +451,7 @@
         <div class="actor-label">
           <span class="chip client">Klient</span>
           <strong>Strona internetowa</strong>
+          <button type="button" class="btn send" id="primaryBtn">Wyślij zapytanie</button>
         </div>
         <div class="actor-body">
         <div class="browser frame">
