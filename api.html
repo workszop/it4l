@@ -6,7 +6,7 @@
 <title>Czym jest API - Substrate</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700;8..60,800&display=swap" rel="stylesheet" />
 <script>
   (function(){
     try {
@@ -33,6 +33,8 @@
     --srv-ink-2: color-mix(in srgb, var(--srv-ink) 80%, var(--srv-bg));
     --srv-ink-3: color-mix(in srgb, var(--srv-ink) 62%, var(--srv-bg));
     --srv-line:  color-mix(in srgb, var(--srv-ink) 16%, var(--srv-bg));
+    /* the demo news site has its own type, so it reads as someone else's page */
+    --site-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
   }
   html[data-theme="dark"] {
     --srv-bg:  var(--paper-3);
@@ -141,7 +143,7 @@
   }
 
   /* ─── The news website itself (demo content) ─── */
-  .site { flex: 1; background: var(--paper); color: var(--ink); padding: 0 20px 18px; }
+  .site { flex: 1; background: var(--surface); color: var(--ink); padding: 0 20px 18px; }
   .site-head {
     display: flex; align-items: center; justify-content: space-between;
     gap: 12px; flex-wrap: wrap; padding: 16px 0 12px;
@@ -149,14 +151,15 @@
   }
   .site-logo {
     display: flex; align-items: center; gap: 8px;
-    font-family: var(--font-display); font-weight: 800; font-size: 26px;
-    letter-spacing: -.03em; line-height: 1;
+    font-family: var(--site-serif); font-weight: 800; font-size: 27px;
+    letter-spacing: -.02em; line-height: 1;
   }
   .site-logo .mark {
     width: 30px; height: 30px; border-radius: var(--r-xs);
     background: var(--red-soft); color: var(--red-ink);
     display: grid; place-items: center; font-size: 19px;
   }
+  .site-logo .mark { background: var(--red); color: var(--surface); }
   .site-date { font-size: 12px; color: var(--ink-3); }
   .site-nav { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 0; border-bottom: 1px solid var(--line); }
   .site-nav span {
@@ -222,27 +225,29 @@
   #demo[data-mapped="1"] .map-n { opacity: 1; }
 
   .site-lead {
-    display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 14px; align-items: center;
-    padding-bottom: 12px; border-bottom: 1px solid var(--line);
+    display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 14px; align-items: start;
+    padding-bottom: 14px; border-bottom: 1px solid var(--line);
   }
-  .site-img { aspect-ratio: 3 / 2; border-radius: var(--r-sm); overflow: hidden; background: var(--paper-3); }
-  .site-img svg { width: 100%; height: 100%; display: block; }
-  .site-img .i-sky   { fill: var(--paper-3); }
-  .site-img .i-box   { fill: var(--blue); }
-  .site-img .i-slot  { fill: var(--blue-soft); }
-  .site-img .i-paper { fill: var(--surface); }
-  .site-img .i-tick  { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
-  .site-img .i-sun   { fill: var(--yellow); }
+  .site-img {
+    display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover;
+    border-radius: var(--r-xs); background: var(--paper-3);
+  }
+  .site-dek { font-family: var(--font-sans); font-size: 13px; line-height: 1.45; color: var(--ink-2); margin: 6px 0 0; }
+  .site-by { font-family: var(--font-sans); font-size: 11.5px; color: var(--ink-3); margin-top: 8px; }
   .site-kicker {
     font-family: var(--font-mono); font-size: 10.5px; font-weight: 500;
     letter-spacing: .1em; text-transform: uppercase; color: var(--red-600);
   }
   .site-h {
-    font-family: var(--font-display); font-weight: 700; font-size: 17px;
-    line-height: 1.25; letter-spacing: -.01em; margin: 2px 0 0;
+    font-family: var(--site-serif); font-weight: 700; font-size: 19px;
+    line-height: 1.2; letter-spacing: -.01em; margin: 4px 0 0;
   }
-  .site-more { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding-top: 10px; }
-  .site-more .t { display: block; font-weight: 600; font-size: 13.5px; line-height: 1.3; margin-top: 2px; }
+  .site-more { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; padding-top: 12px; }
+  .site-more .site-img { margin-bottom: 7px; }
+  .site-more .t {
+    display: block; font-family: var(--site-serif); font-weight: 600;
+    font-size: 14px; line-height: 1.25; margin-top: 3px;
+  }
 
   /* ─── HTTP messages in the middle ─── */
   .msgs { display: flex; flex-direction: column; gap: 16px; }
@@ -381,7 +386,8 @@
     .actor-label { padding: 12px 16px; }
     .actor-body { padding: 12px; }
     .site { padding: 0 14px 16px; }
-    .site-more { grid-template-columns: minmax(0, 1fr); }
+    .site-lead { grid-template-columns: minmax(0, 1fr); }
+    .site-more { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (prefers-reduced-motion: reduce) {
     .packet, .frame, .msg, .fld, .actor-label, .msg-head { transition-duration: .01s; }
@@ -475,24 +481,18 @@
             </div>
 
             <article class="site-lead">
-              <div class="site-img" aria-hidden="true">
-                <svg viewBox="0 0 120 80" preserveAspectRatio="xMidYMid slice">
-                  <rect class="i-sky" width="120" height="80"/>
-                  <circle class="i-sun" cx="98" cy="18" r="9"/>
-                  <rect class="i-paper" x="49" y="12" width="22" height="28" rx="2" transform="rotate(-8 60 26)"/>
-                  <path class="i-tick" d="M54 26l4 4 8-9" transform="rotate(-8 60 26)"/>
-                  <rect class="i-box" x="30" y="38" width="60" height="42" rx="4"/>
-                  <rect class="i-slot" x="46" y="44" width="28" height="4" rx="2"/>
-                </svg>
-              </div>
+              <img class="site-img" src="img/news-lead.webp" alt="" width="720" height="480" />
               <div>
                 <div class="site-kicker">Wybory · Tekst dnia</div>
                 <h3 class="site-h">Rekordowa frekwencja w wyborach lokalnych</h3>
+                <p class="site-dek">Przed lokalami wyborczymi ustawiały się kolejki. W wielu gminach zabrakło kart do głosowania.</p>
+                <div class="site-by">Redakcja · 2 godz. temu</div>
               </div>
             </article>
             <div class="site-more">
-              <div><span class="site-kicker">Sport</span><span class="t">Legia wygrywa 3:1 w emocjonującym meczu</span></div>
-              <div><span class="site-kicker">Kultura</span><span class="t">Nowy musical bije rekordy kasowe</span></div>
+              <div><img class="site-img" src="img/news-sport.webp" alt="" width="420" height="280" /><span class="site-kicker">Sport</span><span class="t">Legia wygrywa 3:1 w emocjonującym meczu</span></div>
+              <div><img class="site-img" src="img/news-culture.webp" alt="" width="420" height="280" /><span class="site-kicker">Kultura</span><span class="t">Nowy musical bije rekordy kasowe</span></div>
+              <div><img class="site-img" src="img/news-city.webp" alt="" width="420" height="280" /><span class="site-kicker">Warszawa</span><span class="t">Jesień w stolicy: ruszają prace nad nowym bulwarem</span></div>
             </div>
           </div>
           <div class="br-status" id="brStatus" role="status" aria-live="polite"></div>
