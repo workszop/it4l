@@ -22,32 +22,27 @@
 <style>
   /* ─── Index page widgets (tokens + chrome come from site.css) ─── */
 
-  /* ─── Page head: text left, pixel-laptop panel right ─── */
-  :root { --pixel-panel: var(--ink); }
-  html[data-theme="dark"] { --pixel-panel: var(--paper-2); }
+  /* ─── Page head: text left, pixel laptop right (straight on the white page) ─── */
   .hub-head {
-    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
     gap: 48px; align-items: center;
   }
   .hub-head .app-title { margin-bottom: 16px; }
-  .hero-panel {
-    display: flex; align-items: center; justify-content: center;
-    padding: 34px 40px;
-    background: var(--pixel-panel); border-radius: var(--r-xl);
-  }
-  html[data-theme="dark"] .hero-panel { border: 1px solid var(--line-2); }
+  .hero-panel { display: flex; align-items: center; justify-content: center; }
   .hero-pixels {
     width: 100%; max-width: 300px; height: auto; display: block;
-    /* Pixel palette: SVG fill literals, identical in both themes */
-    --px-body:   #FFFFFF;
+    /* Pixel palette: SVG fill literals. Black laptop on the white page;
+       the dark theme flips it back to a white body so it stays visible. */
+    --px-body:   #1C1917;
     --px-shade:  #857C69;
-    --px-well:   #1C1917;
+    --px-well:   #625B53;
     --px-screen: #100E0D;
     --px-yellow: var(--yellow);
     --px-blue:   var(--blue);
     --px-green:  var(--green);
     --px-red:    var(--red);
   }
+  html[data-theme="dark"] .hero-pixels { --px-body: #FFFFFF; --px-well: #1C1917; }
 
   /* ─── Article cards ─── */
   .article-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
@@ -94,7 +89,6 @@
 
   @media (max-width: 768px) {
     .hub-head { grid-template-columns: 1fr; gap: 28px; }
-    .hero-panel { padding: 28px; }
     .hero-pixels { max-width: 220px; }
     .ac-body { grid-template-columns: 1fr; gap: 18px; }
     .ac-body h3 { font-size: 22px; }
@@ -110,14 +104,6 @@
       <img class="edu-logo" src="edulab-mark-ink.png" alt="edulab" />
       <span class="wordmark">edulab</span>
     </a>
-    <nav class="topnav" aria-label="Artykuły">
-      <a href="index.html" class="active" aria-current="page">Indeks</a>
-      <a href="binary.html">System dwójkowy</a>
-      <a href="image.html">Anatomia obrazu</a>
-      <a href="compilation.html">Kompilator i interpreter</a>
-      <a href="website.html">Anatomia strony WWW</a>
-      <a href="api.html">Czym jest API</a>
-    </nav>
     <button class="theme-toggle" id="themeToggle" aria-label="Przełącz motyw">
       <span class="th-mark"></span>
       <span class="lbl-jasny">Jasny</span>
@@ -1198,7 +1184,6 @@
     </div>
     <div class="col">
       <h6>Autor</h6>
-      <p>Andrzej Jankowski</p>
       <a href="https://andrzej.ai">andrzej.ai</a>
       <p class="foot-copy">© 2026</p>
     </div>
@@ -1215,12 +1200,5 @@
   });
 </script>
 
-<script>
-  // ─── Nav: keep the current article pill visible in the scrolling row ───
-  (function(){
-    var nav = document.querySelector('.topnav'), cur = nav && nav.querySelector('.active');
-    if (cur && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = cur.offsetLeft - (nav.clientWidth - cur.offsetWidth) / 2;
-  })();
-</script>
 </body>
 </html>

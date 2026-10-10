@@ -212,14 +212,6 @@
       <img class="edu-logo" src="edulab-mark-ink.png" alt="edulab" />
       <span class="wordmark">edulab</span>
     </a>
-    <nav class="topnav" aria-label="Artykuły">
-      <a href="index.html">Indeks</a>
-      <a href="binary.html">System dwójkowy</a>
-      <a href="image.html" class="active" aria-current="page">Anatomia obrazu</a>
-      <a href="compilation.html">Kompilator i interpreter</a>
-      <a href="website.html">Anatomia strony WWW</a>
-      <a href="api.html">Czym jest API</a>
-    </nav>
     <button class="theme-toggle" id="themeToggle" aria-label="Przełącz motyw">
       <span class="th-mark"></span>
       <span class="lbl-jasny">Jasny</span>
@@ -435,7 +427,6 @@
     </div>
     <div class="col">
       <h6>Autor</h6>
-      <p>Andrzej Jankowski</p>
       <a href="https://andrzej.ai">andrzej.ai</a>
       <p class="foot-copy">© 2026</p>
     </div>
@@ -756,12 +747,5 @@
   });
 </script>
 
-<script>
-  // ─── Nav: keep the current article pill visible in the scrolling row ───
-  (function(){
-    var nav = document.querySelector('.topnav'), cur = nav && nav.querySelector('.active');
-    if (cur && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = cur.offsetLeft - (nav.clientWidth - cur.offsetWidth) / 2;
-  })();
-</script>
 </body>
 </html>

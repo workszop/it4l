@@ -89,7 +89,7 @@ button { font-family: inherit; }
 .masthead .row {
   max-width: var(--shell); margin: 0 auto;
   padding: 8px var(--pad-x);
-  display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: 12px;
 }
 .masthead .brand { display: flex; align-items: center; gap: 2px; margin-right: auto; border-radius: var(--r-sm); }
 .masthead .edu-logo { width: 64px; height: 64px; display: block; margin-right: -6px; filter: var(--logo-filter); }
@@ -97,20 +97,6 @@ button { font-family: inherit; }
   font-family: var(--font-display); font-weight: 700;
   font-size: 22px; letter-spacing: -.02em; color: var(--ink);
 }
-.masthead .topnav {                               /* second header row: one pill per article */
-  order: 3; flex-basis: 100%;
-  display: flex; gap: 4px; margin: 0 -14px; padding: 2px 0 4px;
-  overflow-x: auto; scrollbar-width: none;
-}
-.masthead .topnav::-webkit-scrollbar { display: none; }
-.masthead .topnav a {
-  font-family: var(--font-sans); font-weight: 600; font-size: 14px;
-  color: var(--ink-2);
-  padding: 8px 14px; border-radius: var(--r-pill); white-space: nowrap;
-  transition: background .15s, color .15s;
-}
-.masthead .topnav a:hover { background: var(--paper-2); color: var(--ink); }
-.masthead .topnav a.active { background: var(--yellow); color: var(--yellow-ink); }
 
 /* Theme toggle: ghost pill in the header row */
 .theme-toggle {
@@ -306,8 +292,6 @@ main { display: block; }
 }
 @media (max-width: 768px) {
   :root { --pad-x: 16px; --pad-y: 56px; }
-  .masthead .row { gap: 6px; }
-  .masthead .topnav { margin: 0 calc(-1 * var(--pad-x)); padding: 2px var(--pad-x) 6px; }
   .masthead .edu-logo { width: 52px; height: 52px; }
   .page-head { padding: 28px var(--pad-x) 32px; }
   .page-head:has(+ .sec) { padding-bottom: 36px; }
